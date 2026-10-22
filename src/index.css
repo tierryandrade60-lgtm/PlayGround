@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  background-color: #a1c3e6;
+}
+
+
+/* Script editor syntax tokens */
+.tok-comment { color: #71717a; font-style: italic; }
+.tok-string { color: #86efac; }
+.tok-number { color: #fbbf24; }
+.tok-keyword { color: #c084fc; font-weight: 600; }
+.tok-type { color: #67e8f9; }
+.tok-function { color: #93c5fd; }
