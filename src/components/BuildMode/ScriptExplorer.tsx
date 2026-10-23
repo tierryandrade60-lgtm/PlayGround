@@ -40,6 +40,7 @@ const FOLDER_ORDER = ['Personagens', 'Sistemas', 'Configurações', 'Interface',
 const characterLabel = (character?: string): string => {
   if (character === 'agatha') return 'Agatha Harkness';
   if (character === 'ironman') return 'Homem de Ferro';
+  if (character === 'vision') return 'Visão';
   return 'Compartilhado';
 };
 
@@ -53,6 +54,10 @@ function resolvePath(script: ProjectScriptInfo): string[] {
   if (path.startsWith('/src/game/abilities/agatha/')) {
     const leaf = /Config\.ts$/.test(path) ? 'Configurações' : 'Habilidades';
     return ['Personagens', 'Agatha Harkness', leaf];
+  }
+  if (path.startsWith('/src/game/abilities/vision/')) {
+    const leaf = /Config\.ts$/.test(path) ? 'Configurações' : 'Habilidades';
+    return ['Personagens', 'Visão', leaf];
   }
   if (path.startsWith('/src/game/abilities/')) {
     return ['Personagens', 'Compartilhado', 'Habilidades'];
@@ -346,6 +351,8 @@ export const ScriptExplorer: React.FC<ScriptExplorerProps> = ({
                 ? 'text-purple-400'
                 : script.character === 'ironman'
                 ? 'text-cyan-400'
+                : script.character === 'vision'
+                ? 'text-yellow-300'
                 : 'text-[#a1a1aa]'
             }`}
           />

@@ -24,6 +24,14 @@ import ironManBeamFxSource from './abilities/ironman/IronManBeamFx.ts?raw';
 import ironManSpinningLasersSource from './abilities/ironman/IronManSpinningLasers.ts?raw';
 import ironManAbilitiesSource from './IronManAbilities.ts?raw';
 
+// Individual Vision Abilities & Config
+import visionConfigSource from './abilities/vision/VisionConfig.ts?raw';
+import visionSolarBlastSource from './abilities/vision/VisionSolarBlast.ts?raw';
+import visionMindBeamSource from './abilities/vision/VisionMindBeam.ts?raw';
+import visionPhasingSource from './abilities/vision/VisionPhasing.ts?raw';
+import visionAbilitiesSource from './VisionAbilities.ts?raw';
+import visionFlightConfigSource from './systems/flight/VisionFlightConfig.ts?raw';
+
 // Centralized Restrictions & Core Game Systems
 import gameplayRestrictionsSource from './GameplayRestrictions.ts?raw';
 import targetDummySource from './TargetDummy.ts?raw';
@@ -78,7 +86,7 @@ export interface ProjectScriptInfo {
   originalSource: string;
   fileExtension: 'ts' | 'tsx';
   dependencies: string[];
-  character?: 'agatha' | 'ironman' | 'shared';
+  character?: 'agatha' | 'ironman' | 'vision' | 'shared';
   isUserCreated?: boolean;
   runtimeIntegration?: RuntimeIntegration;
   keywords?: string[];
@@ -278,6 +286,66 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
   },
 
   // ==========================================
+  // HABILIDADES INDIVIDUAIS (Visão)
+  // ==========================================
+  {
+    id: 'vision-solar-blast',
+    name: 'Rajada Solar (Ataque Básico)',
+    filePath: '/src/game/abilities/vision/VisionSolarBlast.ts',
+    category: 'Habilidades',
+    character: 'vision',
+    summary:
+      'Projéteis solares amarelos disparados da palma direita, com colisão real contra estruturas, alvos e o chão da arena.',
+    originalSource: visionSolarBlastSource,
+    fileExtension: 'ts',
+    dependencies: ['VisionConfig', 'TargetDummy', 'WorldCollision'],
+    runtimeIntegration: 'restart-required',
+    keywords: ['vision', 'visao', 'solar', 'rajada', 'ataque', 'basico', 'projetil'],
+  },
+  {
+    id: 'vision-mind-beam',
+    name: 'Raio da Mind Stone (Habilidade 1)',
+    filePath: '/src/game/abilities/vision/VisionMindBeam.ts',
+    category: 'Habilidades',
+    character: 'vision',
+    summary:
+      'Feixe contínuo e amarelo disparado da gema da Mind Stone na testa, cortado por paredes e com dano sustentado no primeiro alvo válido.',
+    originalSource: visionMindBeamSource,
+    fileExtension: 'ts',
+    dependencies: ['VisionConfig', 'IronManBeamFx', 'WorldCollision', 'TargetDummy', 'SoundSystem'],
+    runtimeIntegration: 'restart-required',
+    keywords: ['vision', 'visao', 'mind stone', 'raio', 'feixe', 'beam', 'testa'],
+  },
+  {
+    id: 'vision-phasing',
+    name: 'Fase / Intangibilidade (Habilidade 2)',
+    filePath: '/src/game/abilities/vision/VisionPhasing.ts',
+    category: 'Habilidades',
+    character: 'vision',
+    summary:
+      'Atravessa paredes e estruturas por 6 segundos, rejeita dano e efeitos de controle inimigos e nunca atravessa o chão da arena.',
+    originalSource: visionPhasingSource,
+    fileExtension: 'ts',
+    dependencies: ['VisionConfig', 'StickmanRig', 'AudioSystem'],
+    runtimeIntegration: 'restart-required',
+    keywords: ['vision', 'visao', 'fase', 'phasing', 'intangivel', 'atravessar', 'parede'],
+  },
+  {
+    id: 'vision-abilities',
+    name: 'Controlador da Visão',
+    filePath: '/src/game/VisionAbilities.ts',
+    category: 'Controladores',
+    character: 'vision',
+    summary:
+      'Coordena Rajada Solar, Raio da Mind Stone, Fase e o Voo Psiónico com aura dourada no controlador ativo do jogo.',
+    originalSource: visionAbilitiesSource,
+    fileExtension: 'ts',
+    dependencies: ['VisionConfig', 'VisionSolarBlast', 'VisionMindBeam', 'VisionPhasing', 'StickmanRig', 'TargetDummy'],
+    runtimeIntegration: 'restart-required',
+    keywords: ['vision', 'visao', 'controlador', 'controller', 'habilidades', 'poderes'],
+  },
+
+  // ==========================================
   // 2. CONFIGURAÇÕES AJUSTÁVEIS (Parâmetros)
   // ==========================================
   {
@@ -305,6 +373,20 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     fileExtension: 'ts',
     dependencies: [],
     keywords: ['ironman', 'configuracao', 'config', 'dano', 'cooldown', 'parametros'],
+  },
+  {
+    id: 'vision-config',
+    name: 'Configuração de Poderes da Visão',
+    filePath: '/src/game/abilities/vision/VisionConfig.ts',
+    category: 'Configurações',
+    character: 'vision',
+    summary:
+      'Parâmetros editáveis da Rajada Solar, Raio da Mind Stone, duração da Fase, voo e paleta dourada de energia.',
+    originalSource: visionConfigSource,
+    fileExtension: 'ts',
+    dependencies: [],
+    runtimeIntegration: 'restart-required',
+    keywords: ['vision', 'visao', 'configuracao', 'config', 'dano', 'cooldown', 'parametros'],
   },
 
   // ==========================================
@@ -438,7 +520,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     filePath: '/src/components/PowerSelectModal.tsx',
     category: 'Interface & HUD',
     summary:
-      'Janela com troca instantânea entre Agatha Harkness, Homem de Ferro e Herói Clássico.',
+      'Janela com troca instantânea entre Agatha Harkness, Homem de Ferro, Visão e Herói Clássico.',
     originalSource: powerSelectModalSource,
     fileExtension: 'tsx',
     dependencies: ['AudioSystem'],
@@ -493,7 +575,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
       'Centraliza altitude, amortecimento, inclinação e intensidade dos propulsores, consumindo perfis individuais por personagem.',
     originalSource: flightSystemSource,
     fileExtension: 'ts',
-    dependencies: ['AgathaFlightConfig', 'IronManFlightConfig'],
+    dependencies: ['AgathaFlightConfig', 'IronManFlightConfig', 'VisionFlightConfig'],
     runtimeIntegration: 'hot-swap',
     keywords: ['voo', 'flight', 'altitude', 'propulsor', 'bank', 'hover'],
   },
@@ -524,6 +606,20 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     dependencies: ['FlightSystem'],
     runtimeIntegration: 'hot-swap',
     keywords: ['ironman', 'voo', 'flight', 'config', 'propulsor', 'thruster'],
+  },
+  {
+    id: 'vision-flight-config',
+    name: 'Configuração de Voo da Visão',
+    filePath: '/src/game/systems/flight/VisionFlightConfig.ts',
+    category: 'Configurações',
+    character: 'vision',
+    summary:
+      'Perfil do Voo Psiónico: altura de hover, amortecimento, inclinação e trilha dourada sutil.',
+    originalSource: visionFlightConfigSource,
+    fileExtension: 'ts',
+    dependencies: ['FlightSystem'],
+    runtimeIntegration: 'restart-required',
+    keywords: ['vision', 'visao', 'voo', 'flight', 'config', 'hover', 'psionico'],
   },
   {
     id: 'movement-system',

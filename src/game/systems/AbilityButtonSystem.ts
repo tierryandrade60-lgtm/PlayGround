@@ -4,7 +4,7 @@
  * values exactly so the update does not change balance.
  */
 
-export type PowerSet = 'ironman' | 'agatha';
+export type PowerSet = 'ironman' | 'agatha' | 'vision';
 
 export interface AbilityButtonDefinition {
   id: number;
@@ -45,6 +45,16 @@ export const COMBAT_BUTTON_PROFILES: Record<PowerSet, CombatButtonProfile> = {
       { id: 4, name: 'Spinning Lasers', cooldown: 12.0, toggle: true, cancelDelay: 0.5, cooldownStart: 'cancelOrNaturalEnd' },
     ],
   },
+  vision: {
+    powerSet: 'vision',
+    attackCooldown: 0.22,
+    dashCooldown: 2.2,
+    abilities: [
+      { id: 1, name: 'Raio da Mind Stone', cooldown: 9.0, toggle: true, cancelDelay: 0.45, cooldownStart: 'cancelOrNaturalEnd' },
+      { id: 2, name: 'Fase / Intangibilidade', cooldown: 10.0, toggle: true, cancelDelay: 0.35, cooldownStart: 'cancelOrNaturalEnd' },
+      { id: 3, name: 'Voo Psiónico', cooldown: 0, toggle: true, cancelDelay: 0.2, cooldownStart: 'activation' },
+    ],
+  },
 };
 
 let activeProfileProvider: (powerSet: PowerSet) => CombatButtonProfile = (powerSet) =>
@@ -67,5 +77,6 @@ export function installCombatButtonProfileProvider(
   }
   provider('ironman');
   provider('agatha');
+  provider('vision');
   activeProfileProvider = provider;
 }

@@ -1,8 +1,8 @@
 import React from 'react';
-import { X, Sparkles, Shield, Rocket, Zap, Crosshair, Orbit, Flame } from 'lucide-react';
+import { X, Sparkles, Shield, Rocket, Zap, Crosshair, Orbit, Flame, Plane, Wind } from 'lucide-react';
 import { audioSystem } from '../game/AudioSystem';
 
-export type PowerSetType = 'ironman' | 'agatha';
+export type PowerSetType = 'ironman' | 'agatha' | 'vision';
 
 interface PowerSelectModalProps {
   isOpen: boolean;
@@ -262,6 +262,82 @@ export const PowerSelectModal: React.FC<PowerSelectModalProps> = ({
                 <span>Lasers Giratórios (360°)</span>
               </div>
             </div>
+          </div>
+
+          {/* Vision Power Set */}
+          <div
+            onClick={() => handleSelect('vision')}
+            style={{
+              padding: '14px 16px',
+              borderRadius: '12px',
+              border: activeSet === 'vision' ? '1.5px solid #facc15' : '1px solid rgba(250, 204, 21, 0.24)',
+              backgroundColor: activeSet === 'vision' ? 'rgba(250, 204, 21, 0.14)' : 'rgba(250, 204, 21, 0.04)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+            }}
+            className="hover:border-yellow-300/80"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div
+                  style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(250, 204, 21, 0.18)',
+                    border: '1px solid #facc15',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Sparkles size={15} className="text-yellow-200" />
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff' }}>
+                  Visão (Mind Stone & Energia Solar)
+                </span>
+              </div>
+              {activeSet === 'vision' && (
+                <span
+                  style={{
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
+                    backgroundColor: '#facc15',
+                    color: '#1c1917',
+                    padding: '2px 8px',
+                    borderRadius: '12px',
+                  }}
+                >
+                  ATIVO
+                </span>
+              )}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px', marginTop: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#fef9c3' }}>
+                <Zap size={13} className="text-yellow-300 shrink-0" />
+                <span>Rajada Solar (Ataque Básico)</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#fef9c3' }}>
+                <Sparkles size={13} className="text-amber-300 shrink-0" />
+                <span>Raio da Mind Stone (Feixe)</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#fef9c3' }}>
+                <Wind size={13} className="text-yellow-200 shrink-0" />
+                <span>Fase / Intangibilidade (6s)</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#fef9c3' }}>
+                <Plane size={13} className="text-amber-200 shrink-0" />
+                <span>Voo Psiónico (Energia Dourada)</span>
+              </div>
+            </div>
+            <p style={{ fontSize: '11px', color: '#fde68a', margin: '2px 0 0 0' }}>
+              ✦ Fase atravessa paredes e estruturas, mas nunca o chão da arena.
+            </p>
           </div>
 
         </div>

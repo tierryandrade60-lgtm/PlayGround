@@ -347,7 +347,7 @@ class ScriptRuntimeEngine {
   private appliedSyncStarted = false;
   private lastAppliedStoreSource: 'server' | 'bundle' = 'bundle';
 
-  public onPowerSetRequested?: (powerSet: 'ironman' | 'agatha') => void;
+  public onPowerSetRequested?: (powerSet: 'ironman' | 'agatha' | 'vision') => void;
 
   constructor() {
     this.loadPersistedCatalog();
@@ -654,7 +654,7 @@ class ScriptRuntimeEngine {
     return this.activeGameScene;
   }
 
-  public requestPowerSet(powerSet: 'ironman' | 'agatha'): void {
+  public requestPowerSet(powerSet: 'ironman' | 'agatha' | 'vision'): void {
     this.onPowerSetRequested?.(powerSet);
   }
 
@@ -2040,8 +2040,12 @@ class ScriptRuntimeEngine {
    * rebound to the new nodes without changing the active hero.
    */
   private async rebindCharacterToRig(scene: any): Promise<void> {
-    const powerSet: 'agatha' | 'ironman' =
-      scene.currentPowerSet === 'agatha' ? 'agatha' : 'ironman';
+    const powerSet: 'agatha' | 'ironman' | 'vision' =
+      scene.currentPowerSet === 'agatha'
+        ? 'agatha'
+        : scene.currentPowerSet === 'vision'
+        ? 'vision'
+        : 'ironman';
 
     const agathaClass = this.effectiveClass(
       'agatha-abilities',
@@ -2066,7 +2070,10 @@ class ScriptRuntimeEngine {
     await this.reapplyAppliedModules([...AGATHA_ABILITY_IDS, ...IRONMAN_ABILITY_IDS], scene);
 
     scene.currentPowerSet = powerSet;
-    if (scene.animController) scene.animController.isAgatha = powerSet === 'agatha';
+    if (scene.animController) {
+      scene.animController.isAgatha = powerSet === 'agatha';
+      scene.animController.isVision = powerSet === 'vision';
+    }
   }
 
   /** Re-installs the given hot-swapped modules using their already-applied code. */

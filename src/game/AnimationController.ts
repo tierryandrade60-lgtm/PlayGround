@@ -34,6 +34,12 @@ export class AnimationController {
   public runicWardTime: number = 0;
   public isAgatha: boolean = false;
 
+  // Vision (Mind Stone / phasing) states
+  public isVision: boolean = false;
+  public mindBeamActive: boolean = false;
+  public mindBeamPitch: number = 0;
+  public phasingActive: boolean = false;
+
   // Flight & Dash locomotion states
   public isFlying: boolean = false;
   public flightBlend: number = 0; // 0 = ground, 1 = flying
@@ -168,18 +174,20 @@ export class AnimationController {
     // Arms idle: curved elbows, soft wrist drape, relaxed fingers
     const agathaArmSpread = this.isAgatha ? 0.18 : 0;
     const agathaWristCurl = this.isAgatha ? Math.sin(t * 2.5) * 0.15 : 0;
+    const visionArmSpread = this.isVision ? 0.05 : 0;
+    const visionWristDrift = this.isVision ? Math.sin(t * 1.6) * 0.04 : 0;
 
     // Left arm (-X)
     const idleLeftShoulderRotX = breath * 0.03 + (this.isAgatha ? 0.22 : 0);
-    const idleLeftShoulderRotZ = -0.14 - breath * 0.018 - agathaArmSpread;
-    const idleLeftElbowRotX = 0.26 - breath * 0.025 + (this.isAgatha ? 0.35 : 0);
-    const idleLeftWristRotX = -0.06 + agathaWristCurl;
+    const idleLeftShoulderRotZ = -0.14 - breath * 0.018 - agathaArmSpread - visionArmSpread;
+    const idleLeftElbowRotX = 0.26 - breath * 0.025 + (this.isAgatha ? 0.35 : 0) + (this.isVision ? 0.08 : 0);
+    const idleLeftWristRotX = -0.06 + agathaWristCurl + visionWristDrift;
 
     // Right arm (+X)
     const idleRightShoulderRotX = breath * 0.03 + (this.isAgatha ? 0.22 : 0);
-    const idleRightShoulderRotZ = 0.14 + breath * 0.018 + agathaArmSpread;
-    const idleRightElbowRotX = 0.26 - breath * 0.025 + (this.isAgatha ? 0.35 : 0);
-    const idleRightWristRotX = -0.06 - agathaWristCurl;
+    const idleRightShoulderRotZ = 0.14 + breath * 0.018 + agathaArmSpread + visionArmSpread;
+    const idleRightElbowRotX = 0.26 - breath * 0.025 + (this.isAgatha ? 0.35 : 0) + (this.isVision ? 0.08 : 0);
+    const idleRightWristRotX = -0.06 - agathaWristCurl - visionWristDrift;
 
     // Legs idle: grounded with natural slight knee flex
     const idleLeftHipRotX = 0.02;
@@ -288,16 +296,18 @@ export class AnimationController {
       n.leftAnkle.rotation.x = THREE.MathUtils.lerp(n.leftAnkle.rotation.x, 0.45, fb);
       n.rightAnkle.rotation.x = THREE.MathUtils.lerp(n.rightAnkle.rotation.x, 0.45, fb);
 
-      if (!this.isAttacking && !this.isRepulsorActive && !this.dualBeamActive && !this.spinningLasersActive && !this.chaosOrbActive && !this.runicWardActive) {
-        const armFlightX = -0.36 - (this.isDashing ? 0.55 : this.smoothedSpeed * 0.32);
+      if (!this.isAttacking && !this.isRepulsorActive && !this.dualBeamActive && !this.spinningLasersActive && !this.chaosOrbActive && !this.runicWardActive && !this.mindBeamActive && !this.phasingActive) {
+        const armFlightX = this.isVision
+          ? -0.52 - (this.isDashing ? 0.5 : this.smoothedSpeed * 0.22)
+          : -0.36 - (this.isDashing ? 0.55 : this.smoothedSpeed * 0.32);
         targetLeftShoulderRotX = THREE.MathUtils.lerp(targetLeftShoulderRotX, armFlightX, fb);
-        targetLeftShoulderRotZ = THREE.MathUtils.lerp(targetLeftShoulderRotZ, -0.24, fb);
-        targetLeftElbowRotX = THREE.MathUtils.lerp(targetLeftElbowRotX, 0.18, fb);
+        targetLeftShoulderRotZ = THREE.MathUtils.lerp(targetLeftShoulderRotZ, this.isVision ? -0.38 : -0.24, fb);
+        targetLeftElbowRotX = THREE.MathUtils.lerp(targetLeftElbowRotX, this.isVision ? 0.1 : 0.18, fb);
         targetLeftWristRotX = THREE.MathUtils.lerp(targetLeftWristRotX, -0.24, fb);
 
         targetRightShoulderRotX = THREE.MathUtils.lerp(targetRightShoulderRotX, armFlightX, fb);
-        targetRightShoulderRotZ = THREE.MathUtils.lerp(targetRightShoulderRotZ, 0.24, fb);
-        targetRightElbowRotX = THREE.MathUtils.lerp(targetRightElbowRotX, 0.18, fb);
+        targetRightShoulderRotZ = THREE.MathUtils.lerp(targetRightShoulderRotZ, this.isVision ? 0.38 : 0.24, fb);
+        targetRightElbowRotX = THREE.MathUtils.lerp(targetRightElbowRotX, this.isVision ? 0.1 : 0.18, fb);
         targetRightWristRotX = THREE.MathUtils.lerp(targetRightWristRotX, -0.24, fb);
       }
 
@@ -392,7 +402,30 @@ export class AnimationController {
     // ==========================================
     // 5. ABILITY POSES (Dual Beam, Lasers, Chaos Orb, Runic Ward, Choke)
     // ==========================================
-    if (this.dualBeamActive) {
+    if (this.mindBeamActive) {
+      const beamElev = THREE.MathUtils.clamp(this.mindBeamPitch, -0.45, 0.45);
+      targetHeadRotX = 0.22 + beamElev * 0.5;
+      targetWaistRotX = -0.06;
+      targetLeftShoulderRotX = -0.2;
+      targetLeftShoulderRotZ = -0.34;
+      targetLeftElbowRotX = 0.42;
+      targetRightShoulderRotX = -0.2;
+      targetRightShoulderRotZ = 0.34;
+      targetRightElbowRotX = 0.42;
+      targetLeftWristRotX = -0.18;
+      targetRightWristRotX = -0.18;
+    } else if (this.phasingActive) {
+      targetWaistRotX = -0.02;
+      targetHeadRotX = 0.03;
+      targetLeftShoulderRotX = -0.05;
+      targetLeftShoulderRotZ = -0.3;
+      targetLeftElbowRotX = 0.2;
+      targetRightShoulderRotX = -0.05;
+      targetRightShoulderRotZ = 0.3;
+      targetRightElbowRotX = 0.2;
+      targetLeftWristRotX = -0.08;
+      targetRightWristRotX = -0.08;
+    } else if (this.dualBeamActive) {
       const beamElev = this.dualBeamPitch;
       targetRightShoulderRotX = 1.48 + beamElev;
       targetRightShoulderRotY = 0.05;
@@ -490,6 +523,14 @@ export class AnimationController {
     if (this.arcaneChokeActive) {
       leftFingerCurl = 0.82;
       rightFingerCurl = 0.82;
+    }
+    if (this.isVision) {
+      leftFingerCurl = this.phasingActive ? 0.08 : 0.14;
+      rightFingerCurl = this.phasingActive ? 0.08 : 0.14;
+    }
+    if (this.mindBeamActive) {
+      leftFingerCurl = 0.02;
+      rightFingerCurl = 0.02;
     }
     this.applyFingerCurl(n.leftHand, leftFingerCurl);
     this.applyFingerCurl(n.rightHand, rightFingerCurl);

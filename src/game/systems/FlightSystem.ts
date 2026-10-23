@@ -13,8 +13,9 @@ import {
 } from './flight/AgathaFlightConfig';
 import { AGATHA_FLIGHT_PROFILE } from './flight/AgathaFlightConfig';
 import { IRONMAN_FLIGHT_PROFILE } from './flight/IronManFlightConfig';
+import { VISION_FLIGHT_PROFILE } from './flight/VisionFlightConfig';
 
-export type FlightPowerSet = 'ironman' | 'agatha';
+export type FlightPowerSet = 'ironman' | 'agatha' | 'vision';
 
 export interface ThrusterLevels {
   foot: number;
@@ -25,6 +26,7 @@ export interface ThrusterLevels {
 export class FlightSystem {
   public getProfile(powerSet: FlightPowerSet): CharacterFlightProfile {
     if (powerSet === 'agatha') return AGATHA_FLIGHT_PROFILE;
+    if (powerSet === 'vision') return VISION_FLIGHT_PROFILE;
     return IRONMAN_FLIGHT_PROFILE;
   }
 
