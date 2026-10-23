@@ -11,7 +11,7 @@ export interface CombatButtonsProps {
   onDash?: () => boolean;
   onToggleFlight?: () => boolean;
   isFlying?: boolean;
-  powerSet?: 'ironman' | 'agatha';
+  powerSet?: 'ironman' | 'agatha' | 'vision';
   gameScene?: any;
 }
 
@@ -27,7 +27,7 @@ interface AbilityState {
   lockRemaining: number;
 }
 
-const getAbilityIcon = (powerSet: 'ironman' | 'agatha', id: number): React.ReactNode => {
+const getAbilityIcon = (powerSet: 'ironman' | 'agatha' | 'vision', id: number): React.ReactNode => {
   if (powerSet === 'agatha') {
     if (id === 1) return <Zap size={19} className="text-purple-300" />;
     if (id === 2) return <Orbit size={19} className="text-violet-300" />;
@@ -40,13 +40,18 @@ const getAbilityIcon = (powerSet: 'ironman' | 'agatha', id: number): React.React
     if (id === 3) return <Crosshair size={19} className="text-yellow-400" />;
     return <Orbit size={19} className="text-cyan-400" />;
   }
+  if (powerSet === 'vision') {
+    if (id === 1) return <Sparkles size={19} className="text-yellow-200" />;
+    if (id === 2) return <Wind size={19} className="text-amber-200" />;
+    return <Plane size={19} className="text-yellow-300" />;
+  }
   if (id === 1) return <Flame size={19} className="text-amber-400" />;
   if (id === 2) return <Shield size={19} className="text-cyan-400" />;
   if (id === 3) return <Zap size={19} className="text-yellow-300" />;
   return <Sparkles size={19} className="text-purple-400" />;
 };
 
-const getInitialAbilities = (powerSet: 'ironman' | 'agatha'): AbilityState[] =>
+const getInitialAbilities = (powerSet: 'ironman' | 'agatha' | 'vision'): AbilityState[] =>
   getCombatButtonProfile(powerSet).abilities.map((ability) => ({
     id: ability.id,
     name: ability.name,
@@ -233,7 +238,7 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
   const ATTACK_CX = 206;
   const ATTACK_CY = 166;
   const ORBIT_RADIUS = 76;
-  const angles = [-6, 28, 62, 96];
+  const angles = abilities.length >= 4 ? [-6, 28, 62, 96] : abilities.length === 3 ? [-6, 28, 62] : [-6, 28];
 
   const maxAttackCd = getCombatButtonProfile(powerSet).attackCooldown;
 
@@ -388,6 +393,8 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
                 ? 'radial-gradient(circle at 35% 35%, #4c1d95, #1e0933)'
                 : powerSet === 'ironman'
                 ? 'radial-gradient(circle at 35% 35%, #3d2a1d, #1a1412)'
+                : powerSet === 'vision'
+                ? 'radial-gradient(circle at 35% 35%, #4a3d12, #201b09)'
                 : 'radial-gradient(circle at 35% 35%, #343a46, #1b1e24)',
               border: isDark
                 ? '1.5px solid rgba(255, 255, 255, 0.15)'
@@ -395,6 +402,8 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
                 ? '1.5px solid rgba(192, 132, 252, 0.75)'
                 : powerSet === 'ironman'
                 ? '1.5px solid rgba(245, 158, 11, 0.55)'
+                : powerSet === 'vision'
+                ? '1.5px solid rgba(253, 224, 71, 0.75)'
                 : '1.5px solid rgba(255, 255, 255, 0.45)',
               boxShadow: isDark
                 ? '0 2px 6px rgba(0, 0, 0, 0.4)'
@@ -402,6 +411,8 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
                 ? '0 3px 10px rgba(0, 0, 0, 0.35), 0 0 10px rgba(168, 85, 247, 0.4)'
                 : powerSet === 'ironman'
                 ? '0 3px 10px rgba(0, 0, 0, 0.35), 0 0 8px rgba(245, 158, 11, 0.25)'
+                : powerSet === 'vision'
+                ? '0 3px 10px rgba(0, 0, 0, 0.35), 0 0 10px rgba(253, 224, 71, 0.35)'
                 : '0 3px 10px rgba(0, 0, 0, 0.35), 0 0 8px rgba(255, 255, 255, 0.08)',
               display: 'flex',
               alignItems: 'center',
@@ -468,6 +479,8 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
             ? 'radial-gradient(circle at 35% 35%, #581c87, #1e0933)'
             : powerSet === 'ironman'
             ? 'radial-gradient(circle at 35% 35%, #7f1d1d, #2b0b0b)'
+            : powerSet === 'vision'
+            ? 'radial-gradient(circle at 35% 35%, #7a5a0a, #2b2106)'
             : 'radial-gradient(circle at 35% 35%, #2c3e50, #16202c)',
           border: attackCooldown > 0
             ? '2.5px solid rgba(255, 255, 255, 0.25)'
@@ -475,6 +488,8 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
             ? '2.5px solid rgba(192, 132, 252, 0.95)'
             : powerSet === 'ironman'
             ? '2.5px solid rgba(239, 68, 68, 0.9)'
+            : powerSet === 'vision'
+            ? '2.5px solid rgba(253, 224, 71, 0.9)'
             : '2.5px solid rgba(72, 202, 228, 0.85)',
           boxShadow: isAttackPressed
             ? powerSet === 'agatha'
@@ -484,6 +499,8 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
             ? '0 6px 20px rgba(0, 0, 0, 0.45), 0 0 22px rgba(168, 85, 247, 0.5)'
             : powerSet === 'ironman'
             ? '0 6px 20px rgba(0, 0, 0, 0.45), 0 0 18px rgba(239, 68, 68, 0.35)'
+            : powerSet === 'vision'
+            ? '0 6px 20px rgba(0, 0, 0, 0.45), 0 0 22px rgba(253, 224, 71, 0.45)'
             : '0 6px 20px rgba(0, 0, 0, 0.45), 0 0 22px rgba(72, 202, 228, 0.35)',
           display: 'flex',
           flexDirection: 'column',
@@ -514,6 +531,8 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
             <Sparkles size={28} className="text-purple-300 drop-shadow-sm" />
           ) : powerSet === 'ironman' ? (
             <Zap size={28} className="text-red-300 drop-shadow-sm" />
+          ) : powerSet === 'vision' ? (
+            <Sparkles size={28} className="text-yellow-200 drop-shadow-sm" />
           ) : (
             <Sword size={28} className="text-cyan-300 drop-shadow-sm" />
           )}
@@ -522,11 +541,11 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
               fontSize: '9px',
               fontWeight: 800,
               letterSpacing: '0.08em',
-              color: powerSet === 'agatha' ? '#f3e8ff' : '#fecaca',
+              color: powerSet === 'agatha' ? '#f3e8ff' : powerSet === 'vision' ? '#fef9c3' : '#fecaca',
               marginTop: '2px',
             }}
           >
-            {powerSet === 'agatha' ? 'RAJADA' : 'ATTACK'}
+            {powerSet === 'agatha' ? 'RAJADA' : powerSet === 'vision' ? 'SOLAR' : 'ATTACK'}
           </span>
         </div>
       </div>

@@ -60,8 +60,8 @@ interface BuildModeContainerProps {
   onExitBuildMode: () => void;
   inspectTarget?: string | null;
   onSelectInspectTarget?: (target: string | null) => void;
-  currentPowerSet?: 'ironman' | 'agatha';
-  onSelectPowerSet?: (set: 'ironman' | 'agatha') => void;
+  currentPowerSet?: 'ironman' | 'agatha' | 'vision';
+  onSelectPowerSet?: (set: 'ironman' | 'agatha' | 'vision') => void;
   onExportProject?: () => void | Promise<void>;
   isExportingProject?: boolean;
 }
@@ -353,6 +353,10 @@ export const BuildModeContainer: React.FC<BuildModeContainerProps> = ({
           onSelectPowerSet?.('ironman');
           gameScene.setPowerSet('ironman');
           showToast('Homem de Ferro ATIVADO no jogo com suas alterações!', 'success');
+        } else if (activeScript.character === 'vision' || activeScript.id.startsWith('vision-')) {
+          onSelectPowerSet?.('vision');
+          gameScene.setPowerSet('vision');
+          showToast('Visão ATIVADA no jogo com suas alterações!', 'success');
         } else {
           showToast(`Alterações aplicadas: ${activeScript.name}`, 'success');
         }
@@ -518,6 +522,23 @@ export const BuildModeContainer: React.FC<BuildModeContainerProps> = ({
             <span className="hidden sm:inline">Homem de Ferro</span>
             <span className="sm:hidden">Iron Man</span>
           </button>
+          <button
+            onClick={() => {
+              audioSystem.playUiClick?.();
+              onSelectPowerSet?.('vision');
+              gameScene.setPowerSet('vision');
+              showToast('Personagem ativo no Play Test: Visão', 'info');
+            }}
+            className={`px-2.5 py-1 text-xs rounded font-medium flex items-center gap-1.5 transition-colors ${
+              currentPowerSet === 'vision'
+                ? 'bg-[#a16207] text-white shadow-sm'
+                : 'text-[#a1a1aa] hover:text-white'
+            }`}
+          >
+            <Sparkles size={13} />
+            <span className="hidden sm:inline">Visão</span>
+            <span className="sm:hidden">Vision</span>
+          </button>
         </div>
 
         {/* Right Toolbar Actions */}
@@ -681,6 +702,9 @@ export const BuildModeContainer: React.FC<BuildModeContainerProps> = ({
               } else if (activeScript?.character === 'ironman' || activeScript?.id.startsWith('ironman-')) {
                 onSelectPowerSet?.('ironman');
                 gameScene.setPowerSet('ironman');
+              } else if (activeScript?.character === 'vision' || activeScript?.id.startsWith('vision-')) {
+                onSelectPowerSet?.('vision');
+                gameScene.setPowerSet('vision');
               }
               onExitBuildMode();
             }}

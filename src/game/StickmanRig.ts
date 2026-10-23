@@ -17,6 +17,7 @@ export interface StickmanNodes {
   upperTorso: THREE.Group;
   neckJoint: THREE.Group;
   head: THREE.Group;
+  mindStone: THREE.Group;
   
   // Left arm (-X)
   leftShoulder: THREE.Group;
@@ -155,6 +156,26 @@ export function createStickmanRig(): StickmanNodes {
   headMesh.receiveShadow = true;
   headMesh.position.y = 0.22;
   head.add(headMesh);
+
+  // --- MIND STONE (Vision) ---
+  const mindStone = new THREE.Group();
+  mindStone.name = 'MindStone';
+  mindStone.position.set(0, 0.30, -0.255);
+  const mindStoneMat = new THREE.MeshStandardMaterial({
+    color: 0xffe066,
+    emissive: 0xffc400,
+    emissiveIntensity: 1.7,
+    roughness: 0.18,
+    metalness: 0.15,
+  });
+  const mindStoneGem = new THREE.Mesh(new THREE.OctahedronGeometry(0.058, 0), mindStoneMat);
+  mindStoneGem.scale.set(0.72, 1.15, 0.42);
+  mindStoneGem.castShadow = true;
+  const mindStoneLight = new THREE.PointLight(0xffc400, 0.55, 1.2, 2);
+  mindStoneLight.position.z = -0.05;
+  mindStone.add(mindStoneGem, mindStoneLight);
+  mindStone.visible = false;
+  head.add(mindStone);
 
   // --- LEFT ARM (-X) ---
   const leftShoulder = new THREE.Group();
@@ -458,6 +479,7 @@ export function createStickmanRig(): StickmanNodes {
     upperTorso,
     neckJoint,
     head,
+    mindStone,
     leftShoulder,
     leftUpperArm,
     leftElbow,

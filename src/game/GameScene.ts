@@ -5,12 +5,14 @@ import { TargetDummy } from './TargetDummy';
 import { ProjectileSystem } from './ProjectileSystem';
 import { IronManAbilities } from './IronManAbilities';
 import { AgathaAbilities } from './AgathaAbilities';
+import { VisionAbilities } from './VisionAbilities';
 import { audioSystem } from './AudioSystem';
 import { settingsManager, GameSettings, ReticlePosition } from './SettingsManager';
 import { BuildModeManager } from './BuildModeManager';
 import { liveConfigManager, LiveGameConfig } from './LiveConfigManager';
 import { activeAgathaConfig } from './abilities/agatha/AgathaConfig';
 import { activeIronManConfig } from './abilities/ironman/IronManConfig';
+import { activeVisionConfig } from './abilities/vision/VisionConfig';
 import { getCombatButtonProfile } from './systems/AbilityButtonSystem';
 import { scriptRuntimeEngine } from './ScriptRuntimeEngine';
 import { gameplayRestrictions } from './GameplayRestrictions';
@@ -67,8 +69,9 @@ export class GameScene {
   private movementSystem = movementSystem;
   public ironManAbilities!: IronManAbilities;
   public agathaAbilities!: AgathaAbilities;
-  public currentPowerSet: 'ironman' | 'agatha' = 'ironman';
-  private combatButtonProfileProvider: (powerSet: 'ironman' | 'agatha') => any =
+  public visionAbilities!: VisionAbilities;
+  public currentPowerSet: 'ironman' | 'agatha' | 'vision' = 'ironman';
+  private combatButtonProfileProvider: (powerSet: 'ironman' | 'agatha' | 'vision') => any =
     getCombatButtonProfile;
 
   // Dummies & Obstacles
@@ -116,6 +119,11 @@ export class GameScene {
   private playerVelocityY: number = 0;
   private isGrounded: boolean = true;
   private flightObstacle: THREE.Box3 | null = null;
+
+  // Player vitals. No enemy currently attacks the player, but this keeps the
+  // damage/control pipeline honest for future enemies and for phasing.
+  public playerMaxHealth: number = 100;
+  public playerHealth: number = 100;
 
   // Camera configuration (live-tunable through LiveConfigManager)
   private cameraBaseFov: number = 50;
@@ -296,6 +304,9 @@ export class GameScene {
     this.agathaAbilities.onArcaneCast = (hand, aimPitch) => {
       this.animController.triggerRepulsor(hand, aimPitch);
     };
+
+    // 8c. Vision (Mind Stone / solar / phasing / psionic flight)
+    this.visionAbilities = this.createVisionAbilities();
 
     // 9. Apply initial graphics settings
     this.applyGraphicsSettings(this.settings.graphics);
@@ -599,10 +610,50 @@ export class GameScene {
     ).normalize();
   }
 
-  public setPowerSet(set: 'ironman' | 'agatha'): void {
+  public setPowerSet(set: 'ironman' | 'agatha' | 'vision'): void {
     this.currentPowerSet = set;
     this.animController.isAgatha = set === 'agatha';
+    this.animController.isVision = set === 'vision';
+    if (this.stickman.mindStone) {
+      this.stickman.mindStone.visible = set === 'vision';
+    }
     this.respawnPlayer();
+  }
+
+  public isPlayerPhasing(): boolean {
+    return this.currentPowerSet === 'vision' && !!this.visionAbilities?.isPhasing;
+  }
+
+  /**
+   * Applies damage to the player through the same rules used by enemy powers.
+   * Phasing rejects the hit entirely (no damage, no control side effects).
+   */
+  public damagePlayer(amount: number): number {
+    if (this.isPlayerPhasing() || gameplayRestrictions.hasRestriction('Invulnerable')) {
+      return 0;
+    }
+    const damage = Math.max(0, Math.round(Number.isFinite(amount) ? amount : 0));
+    if (damage <= 0) return 0;
+    this.playerHealth = Math.max(0, this.playerHealth - damage);
+    if (this.playerHealth <= 0) {
+      this.playerHealth = this.playerMaxHealth;
+      this.respawnPlayer();
+    }
+    return damage;
+  }
+
+  /**
+   * Applies an enemy control effect unless Vision is currently intangible.
+   * Returns false when the effect was fully rejected.
+   */
+  public applyPlayerControlEffect(
+    type: 'NoPowers' | 'NoMovement' | 'NoFlight' | 'NoBasicAttack' | 'Anchored' | 'Stunned' | 'Silenced',
+    duration: number,
+    source: string = 'enemy-power'
+  ): boolean {
+    if (this.isPlayerPhasing()) return false;
+    gameplayRestrictions.applyRestriction(type, source, duration);
+    return true;
   }
 
   public respawnPlayer(): void {
@@ -630,6 +681,7 @@ export class GameScene {
     this.dashCooldownRemaining = 0;
     this.animController.isFlying = false;
     this.animController.isDashing = false;
+    this.playerHealth = this.playerMaxHealth;
 
     // Reset abilities
     if (this.ironManAbilities) {
@@ -642,11 +694,20 @@ export class GameScene {
       this.agathaAbilities.cancelArcaneChoke();
       this.agathaAbilities.isArcaneFlightActive = false;
     }
+    if (this.visionAbilities) {
+      this.visionAbilities.stopAll();
+    }
     audioSystem.stopAllLoops();
     this.animController.dualBeamActive = false;
     this.animController.spinningLasersActive = false;
     this.animController.darkDrainActive = false;
     this.animController.arcaneChokeActive = false;
+    this.animController.mindBeamActive = false;
+    this.animController.phasingActive = false;
+
+    if (this.stickman.mindStone) {
+      this.stickman.mindStone.visible = this.currentPowerSet === 'vision';
+    }
 
     this.stickman.thrusters.leftFoot.setIntensity(0);
     this.stickman.thrusters.rightFoot.setIntensity(0);
@@ -654,7 +715,8 @@ export class GameScene {
     this.stickman.thrusters.rightHand.setIntensity(0);
 
     // Particle spawn chime
-    this.projectileSystem.emitImpactParticles(new THREE.Vector3(0, 1, 0), 25, this.currentPowerSet === 'agatha' ? 0xa855f7 : 0x00f0ff);
+    const spawnColor = this.currentPowerSet === 'agatha' ? 0xa855f7 : this.currentPowerSet === 'vision' ? 0xffd54a : 0x00f0ff;
+    this.projectileSystem.emitImpactParticles(new THREE.Vector3(0, 1, 0), 25, spawnColor);
     if (this.currentPowerSet === 'agatha') {
       audioSystem.playShadowStep('arrive');
     } else {
@@ -709,6 +771,21 @@ export class GameScene {
           return (this.ironManAbilities as any).triggerAttack(aimPitch);
         }
         this.ironManAbilities.fireRepulsorShot(aimPitch);
+        return true;
+      }
+      return false;
+    }
+
+    if (this.currentPowerSet === 'vision' && this.visionAbilities) {
+      const aim = this.settings.aimAssist && this.activeTarget && !this.activeTarget.isDead
+        ? { pos: this.activeTarget.getCenter() }
+        : { pos: this.currentAimPoint.clone() };
+      const handPos = new THREE.Vector3();
+      this.stickman.rightHand.getWorldPosition(handPos);
+      const toAim = aim.pos.clone().sub(handPos).normalize();
+      const aimPitch = Math.asin(THREE.MathUtils.clamp(toAim.y, -0.99, 0.99));
+      if (this.visionAbilities.triggerAttack()) {
+        this.animController.triggerRepulsor('right', aimPitch);
         return true;
       }
       return false;
@@ -780,6 +857,14 @@ export class GameScene {
         return true;
       }
     }
+
+    if (this.currentPowerSet === 'vision' && this.visionAbilities) {
+      this.orientCharacterToAim();
+      if (id === 1) return this.visionAbilities.triggerAbility(1);
+      if (id === 2) return this.visionAbilities.triggerAbility(2);
+      if (id === 3) return this.toggleFlight();
+      return false;
+    }
     return false;
   }
 
@@ -796,6 +881,11 @@ export class GameScene {
       if (id === 2) return !!this.ironManAbilities.isDualBeamActive;
       if (id === 3) return !!this.ironManAbilities.isChargingHeavyBlast;
       if (id === 4) return !!this.ironManAbilities.isSpinningLasersActive;
+    }
+    if (this.currentPowerSet === 'vision' && this.visionAbilities) {
+      if (id === 1) return this.visionAbilities.isMindBeamActive;
+      if (id === 2) return this.visionAbilities.isPhasing;
+      if (id === 3) return this.isFlying;
     }
     return false;
   }
@@ -848,6 +938,21 @@ export class GameScene {
         };
       }
     }
+    if (this.currentPowerSet === 'vision') {
+      const map: Record<number, any> = {
+        1: activeVisionConfig.mindBeam,
+        2: activeVisionConfig.phasing,
+        3: { toggle: true, cancelDelay: 0.2, cooldownStart: 'activation' },
+      };
+      const section = map[id];
+      if (section) {
+        return {
+          toggle: section.toggle ?? true,
+          cancelDelay: section.cancelDelay ?? 0.4,
+          cooldownStart: section.cooldownStart ?? 'activation',
+        };
+      }
+    }
     // fallback static profile
     try {
       const profile = this.combatButtonProfileProvider(this.currentPowerSet);
@@ -886,6 +991,14 @@ export class GameScene {
       }
       if (id === 4 && this.ironManAbilities.isSpinningLasersActive) {
         this.ironManAbilities.stopSpinningLasers();
+        return true;
+      }
+    }
+    if (this.currentPowerSet === 'vision' && this.visionAbilities) {
+      if (id === 1) return this.visionAbilities.cancelAbility(1);
+      if (id === 2) return this.visionAbilities.cancelAbility(2);
+      if (id === 3 && this.isFlying) {
+        this.toggleFlight();
         return true;
       }
     }
@@ -1042,6 +1155,7 @@ export class GameScene {
    * because those positions are already at/above the roof plane.
    */
   private clampUnderWardCeiling(y: number): number {
+    if (this.isPlayerPhasing()) return y;
     const ceiling = worldCollision.wardCeiling;
     if (!ceiling) return y;
     if (this.playerPos.y >= ceiling.min.y) return y;
@@ -1061,8 +1175,9 @@ export class GameScene {
     const stepHeight = this.playerStepHeight;
 
     // Vertical queries see every solid face, including the ward roof, so the
-    // character can land on top of it instead of sinking through.
-    const verticalBoxes = worldCollision.getBoxes();
+    // character can land on top of it instead of sinking through. While
+    // phasing, only the arena floor remains solid.
+    const verticalBoxes = this.isPlayerPhasing() ? [] : worldCollision.getBoxes();
 
     const support = this.movementSystem.getSupportHeight(
       this.playerPos.x,
@@ -1362,13 +1477,14 @@ export class GameScene {
     };
 
     let blockedBox: THREE.Box3 | null = null;
+    const movementBoxes = this.isPlayerPhasing() ? [] : worldCollision.getMovementBoxes();
     if (this.isDashing) {
       this.dashTimer += dt;
       const step = this.movementSystem.moveWithCollision(
         this.playerPos,
         this.dashDir,
         this.dashSpeed * dt,
-        worldCollision.getMovementBoxes(),
+        movementBoxes,
         this.playerCollisionRadius,
         bodyProfile
       );
@@ -1385,7 +1501,7 @@ export class GameScene {
         this.playerPos,
         facingDir,
         this.currentSpeed * dt,
-        worldCollision.getMovementBoxes(),
+        movementBoxes,
         this.playerCollisionRadius,
         bodyProfile
       );
@@ -1437,7 +1553,9 @@ export class GameScene {
       this.stickman.thrusters.leftHand.setIntensity(0);
       this.stickman.thrusters.rightHand.setIntensity(0);
     } else {
-      const customCol = this.ironManAbilities?.customPowerColor;
+      const customCol = this.currentPowerSet === 'vision'
+        ? '#ffd54a'
+        : this.ironManAbilities?.customPowerColor;
       const thrusters = this.flightSystem.getThrusterLevels({
         powerSet: this.currentPowerSet,
         isFlying: this.isFlying,
@@ -1518,6 +1636,21 @@ export class GameScene {
       } catch (err) {
         console.warn('Error in AgathaAbilities update loop:', err);
       }
+    }
+
+    // 6c-2. Update Vision (solar bolts, Mind Stone beam, phasing, flight aura)
+    if (this.visionAbilities) {
+      this.animController.mindBeamActive = this.visionAbilities.isMindBeamActive;
+      this.animController.mindBeamPitch = this.camPitch;
+      this.animController.phasingActive = this.visionAbilities.isPhasing;
+      if (this.visionAbilities.isMindBeamActive) {
+        this.orientCharacterToAim();
+      }
+      this.visionAbilities.update(
+        dt,
+        this.dummies,
+        this.isFlying && this.currentPowerSet === 'vision'
+      );
     }
 
     // 6d. Handle Build Mode Camera (Free-Fly navigation & Orbit around focus point)
@@ -1867,6 +2000,54 @@ export class GameScene {
     this.buildFocusPoint.y = THREE.MathUtils.clamp(this.buildFocusPoint.y, -4.0, 100.0);
   }
 
+  private createVisionAbilities(): VisionAbilities {
+    const getAim = () => {
+      if (this.settings.aimAssist && this.activeTarget && !this.activeTarget.isDead) {
+        return { pos: this.activeTarget.getCenter(), target: this.activeTarget };
+      }
+      return { pos: this.currentAimPoint.clone(), target: null };
+    };
+
+    return new VisionAbilities(
+      this.scene,
+      this.stickman,
+      getAim,
+      (dummy, dmg, hitPos, kb) => {
+        this.dealDamage(dummy, dmg, hitPos, kb);
+      },
+      (position, color) => {
+        this.projectileSystem.emitImpactParticles(position, 14, color);
+      },
+      (amt) => {
+        if (this.settings.cameraShake) {
+          this.addCameraShake(amt);
+        }
+      },
+      (active) => {
+        if (!active) this.resolveVisionPhasingExit();
+      }
+    );
+  }
+
+  private resolveVisionPhasingExit(): void {
+    if (!this.visionAbilities || this.visionAbilities.isPhasing) return;
+    const resolved = this.movementSystem.resolvePenetration(
+      this.playerPos.x,
+      this.playerPos.z,
+      this.playerPos.y,
+      worldCollision.getMovementBoxes(),
+      this.playerCollisionRadius,
+      this.playerStepHeight,
+      this.playerBodyHeight
+    );
+    if (resolved.x !== this.playerPos.x || resolved.z !== this.playerPos.z) {
+      this.playerPos.x = resolved.x;
+      this.playerPos.z = resolved.z;
+      this.stickman.root.position.x = resolved.x;
+      this.stickman.root.position.z = resolved.z;
+    }
+  }
+
   // ==========================================
   // DYNAMIC SCRIPT RUNTIME HOT-SWAPPING
   // ==========================================
@@ -2161,6 +2342,7 @@ export class GameScene {
       const testController = new NewClass(this.stickman);
       testController.isFlying = this.isFlying;
       testController.isAgatha = this.currentPowerSet === 'agatha';
+      testController.isVision = this.currentPowerSet === 'vision';
       // Execute test update to ensure no runtime errors like "fingers is not iterable" occur!
       testController.update(0.016, 0);
 
@@ -2177,6 +2359,7 @@ export class GameScene {
       this.animController = new AnimationController(this.stickman);
       this.animController.isFlying = this.isFlying;
       this.animController.isAgatha = this.currentPowerSet === 'agatha';
+      this.animController.isVision = this.currentPowerSet === 'vision';
       scriptRuntimeEngine.markScriptExecutionError(
         'animation-controller',
         'Erro em tempo de execução no AnimationController. Revertido com segurança para o controlador estável.'
@@ -2226,6 +2409,14 @@ export class GameScene {
     this.animController = new AnimationController(this.stickman);
     this.animController.isFlying = this.isFlying;
     this.animController.isAgatha = previousAgatha;
+    this.animController.isVision = this.currentPowerSet === 'vision';
+    if (this.stickman.mindStone) {
+      this.stickman.mindStone.visible = this.currentPowerSet === 'vision';
+    }
+    if (this.visionAbilities) {
+      this.visionAbilities.dispose();
+    }
+    this.visionAbilities = this.createVisionAbilities();
   }
 
   public updateTargetDummyClass(NewClass: any): void {
@@ -2305,6 +2496,9 @@ export class GameScene {
     }
     if (this.agathaAbilities) {
       this.agathaAbilities.dispose();
+    }
+    if (this.visionAbilities) {
+      this.visionAbilities.dispose();
     }
     audioSystem.stopAllLoops();
 

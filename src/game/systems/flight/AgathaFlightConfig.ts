@@ -4,7 +4,7 @@
  */
 
 export interface CharacterFlightProfile {
-  id: 'agatha' | 'ironman';
+  id: 'agatha' | 'ironman' | 'vision';
   label: string;
   hoverHeight: number;
   hoverAmplitude: number;

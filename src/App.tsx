@@ -361,12 +361,16 @@ export default function App() {
                   ? '1.5px solid rgba(168, 85, 247, 0.85)'
                   : powerSet === 'ironman'
                   ? '1.5px solid rgba(245, 158, 11, 0.65)'
+                  : powerSet === 'vision'
+                  ? '1.5px solid rgba(250, 204, 21, 0.8)'
                   : '1.5px solid rgba(255, 255, 255, 0.22)',
               boxShadow:
                 powerSet === 'agatha'
                   ? '0 4px 14px rgba(0, 0, 0, 0.35), 0 0 12px rgba(168, 85, 247, 0.35)'
                   : powerSet === 'ironman'
                   ? '0 4px 14px rgba(0, 0, 0, 0.35), 0 0 10px rgba(245, 158, 11, 0.2)'
+                  : powerSet === 'vision'
+                  ? '0 4px 14px rgba(0, 0, 0, 0.35), 0 0 12px rgba(250, 204, 21, 0.3)'
                   : '0 4px 14px rgba(0, 0, 0, 0.35)',
               display: 'flex',
               alignItems: 'center',
@@ -387,11 +391,13 @@ export default function App() {
                   ? 'text-purple-400'
                   : powerSet === 'ironman'
                   ? 'text-amber-400'
+                  : powerSet === 'vision'
+                  ? 'text-yellow-300'
                   : 'text-cyan-400'
               }
             />
             <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.06em' }}>
-              {powerSet === 'agatha' ? 'AGATHA HARKNESS' : 'HOMEM DE FERRO'}
+              {powerSet === 'agatha' ? 'AGATHA HARKNESS' : powerSet === 'vision' ? 'VISÃO' : 'HOMEM DE FERRO'}
             </span>
           </button>
 
