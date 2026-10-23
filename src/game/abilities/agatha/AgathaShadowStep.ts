@@ -200,7 +200,7 @@ export class AgathaShadowStep {
       this.chargeDuration + 0.12
     );
 
-    audioSystem.playShadowStep?.();
+    audioSystem.playShadowStep?.('depart');
     this.onShake(0.035);
 
     this.startAnimation();
@@ -391,7 +391,7 @@ export class AgathaShadowStep {
         pending.phase = 'arrival';
         pending.elapsed = 0;
 
-        audioSystem.playShadowStep?.();
+        audioSystem.playShadowStep?.('arrive');
         this.onShake(0.06);
       }
 

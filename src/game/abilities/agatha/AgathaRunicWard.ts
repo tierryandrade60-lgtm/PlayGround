@@ -15,6 +15,7 @@ import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { audioSystem } from '../../AudioSystem';
 import { gameplayRestrictions } from '../../GameplayRestrictions';
+import { worldCollision } from '../../systems/WorldCollision';
 import { activeAgathaConfig } from './AgathaConfig';
 
 type RuneNode = {
@@ -41,7 +42,7 @@ type RopeSegment = {
 type WardWall = {
   mesh: THREE.Mesh;
   material: THREE.MeshBasicMaterial;
-  kind: 'front' | 'back' | 'left' | 'right' | 'floor';
+  kind: 'front' | 'back' | 'left' | 'right' | 'floor' | 'ceiling';
   baseScale: THREE.Vector3;
   edgeMeshes: THREE.Mesh[];
 };
@@ -71,6 +72,11 @@ export class AgathaRunicWard {
   private walls: WardWall[] = [];
   private castEffects: THREE.Group[] = [];
 
+  // Physical colliders of the six ward faces, registered with WorldCollision.
+  private collisionWalls: THREE.Box3[] = [];
+  private collisionCeiling: THREE.Box3 | null = null;
+  private collidersRegistered = false;
+
   private origin = new THREE.Vector3();
   private corners: THREE.Vector3[] = [];
   private launchStarts: THREE.Vector3[] = [];
@@ -80,10 +86,10 @@ export class AgathaRunicWard {
   private readonly source = 'agatha-runic-ward';
   private readonly castSource = 'agatha-runic-ward-cast';
 
-  private readonly halfWidth = 7.5;
-  private readonly halfDepth = 6.0;
+  private readonly halfWidth = 10.0;
+  private readonly halfDepth = 8.0;
   private readonly runeHeight = 1.65;
-  private readonly wallHeight = 5.5;
+  private readonly wallHeight = 7.5;
 
   private readonly runeColor = 0x9870c7;
   private readonly runeEmissive = 0x59317d;
@@ -441,13 +447,22 @@ export class AgathaRunicWard {
         position: new THREE.Vector3(0, 0.035, 0),
         rotation: new THREE.Euler(-Math.PI / 2, 0, 0),
       },
+      {
+        kind: 'ceiling',
+        width: this.halfWidth * 2,
+        height: this.halfDepth * 2,
+        position: new THREE.Vector3(0, this.wallHeight, 0),
+        rotation: new THREE.Euler(Math.PI / 2, 0, 0),
+      },
     ];
 
     for (const definition of definitions) {
       const isFloor = definition.kind === 'floor';
+      const isCeiling = definition.kind === 'ceiling';
+      const isHorizontal = isFloor || isCeiling;
 
       const material = new THREE.MeshBasicMaterial({
-        color: isFloor ? 0x8b4bc7 : 0x9d68df,
+        color: isFloor ? 0x8b4bc7 : isCeiling ? 0x7441b4 : 0x9d68df,
         transparent: true,
         opacity: 0,
         side: THREE.DoubleSide,
@@ -491,59 +506,63 @@ export class AgathaRunicWard {
         6
       );
 
-      const edgePositions = isFloor
+      const edgeY = isFloor ? 0.045 : this.wallHeight;
+      const edgePositions = isHorizontal
         ? [
             [
               new THREE.Vector3(
                 -this.halfWidth,
-                0.045,
+                edgeY,
                 -this.halfDepth
               ),
               new THREE.Vector3(
                 this.halfWidth,
-                0.045,
+                edgeY,
                 -this.halfDepth
               ),
             ],
             [
               new THREE.Vector3(
                 this.halfWidth,
-                0.045,
+                edgeY,
                 -this.halfDepth
               ),
               new THREE.Vector3(
                 this.halfWidth,
-                0.045,
+                edgeY,
                 this.halfDepth
               ),
             ],
             [
               new THREE.Vector3(
                 this.halfWidth,
-                0.045,
+                edgeY,
                 this.halfDepth
               ),
               new THREE.Vector3(
                 -this.halfWidth,
-                0.045,
+                edgeY,
                 this.halfDepth
               ),
             ],
             [
               new THREE.Vector3(
                 -this.halfWidth,
-                0.045,
+                edgeY,
                 this.halfDepth
               ),
               new THREE.Vector3(
                 -this.halfWidth,
-                0.045,
+                edgeY,
                 -this.halfDepth
               ),
             ],
           ]
         : this.getWallEdgePositions(
-            definition.kind as Exclude<WardWall['kind'], 'floor'>
+            definition.kind as Exclude<
+              WardWall['kind'],
+              'floor' | 'ceiling'
+            >
           );
 
       for (const [start, end] of edgePositions) {
@@ -571,7 +590,7 @@ export class AgathaRunicWard {
   }
 
   private getWallEdgePositions(
-    kind: Exclude<WardWall['kind'], 'floor'>
+    kind: Exclude<WardWall['kind'], 'floor' | 'ceiling'>
   ): [THREE.Vector3, THREE.Vector3][] {
     const x = kind === 'left'
       ? -this.halfWidth
@@ -1051,7 +1070,8 @@ export class AgathaRunicWard {
       : 1;
 
     for (const wall of this.walls) {
-      const isFloor = wall.kind === 'floor';
+      const isHorizontal =
+        wall.kind === 'floor' || wall.kind === 'ceiling';
       const visible = this.elapsed >= this.wallStart;
 
       wall.mesh.visible = visible;
@@ -1066,7 +1086,7 @@ export class AgathaRunicWard {
         0.92 + Math.sin(this.elapsed * 3.2) * 0.08;
 
       wall.material.opacity =
-        (isFloor ? 0.17 : 0.22) *
+        (isHorizontal ? 0.17 : 0.22) *
         eased *
         shimmer *
         fade;
@@ -1313,9 +1333,76 @@ export class AgathaRunicWard {
     this.updateRopes(runeProgress, fade);
     this.updateWalls();
 
+    // The physical barrier materializes together with the visible walls.
+    if (!this.collidersRegistered && this.elapsed >= this.wallStart) {
+      this.registerColliders();
+    }
+
     if (this.timer <= 0) {
       this.cancel();
     }
+  }
+
+  /**
+   * Builds the physical faces of the ward — 4 walls + floor (which block
+   * horizontal movement, projectiles and knockback) and the roof (which blocks
+   * ascent and every projectile crossing it) — and registers them with the
+   * shared collision world.
+   */
+  private registerColliders(): void {
+    const wallThickness = 0.3;
+    const half = wallThickness / 2;
+    const floorThickness = 0.06;
+    const ceilingThickness = 0.1;
+    const ox = this.origin.x;
+    const oy = this.origin.y;
+    const oz = this.origin.z;
+    const hw = this.halfWidth;
+    const hd = this.halfDepth;
+    const wh = this.wallHeight;
+
+    this.collisionWalls = [
+      // Front / back planes: full width, corners overlapped.
+      new THREE.Box3(
+        new THREE.Vector3(ox - hw - wallThickness, oy, oz + hd - half),
+        new THREE.Vector3(ox + hw + wallThickness, oy + wh, oz + hd + half)
+      ),
+      new THREE.Box3(
+        new THREE.Vector3(ox - hw - wallThickness, oy, oz - hd - half),
+        new THREE.Vector3(ox + hw + wallThickness, oy + wh, oz - hd + half)
+      ),
+      // Left / right planes: full depth, corners overlapped.
+      new THREE.Box3(
+        new THREE.Vector3(ox - hw - half, oy, oz - hd - wallThickness),
+        new THREE.Vector3(ox - hw + half, oy + wh, oz + hd + wallThickness)
+      ),
+      new THREE.Box3(
+        new THREE.Vector3(ox + hw - half, oy, oz - hd - wallThickness),
+        new THREE.Vector3(ox + hw + half, oy + wh, oz + hd + wallThickness)
+      ),
+      // Floor slab under the visible plane (y = origin + 0.035).
+      new THREE.Box3(
+        new THREE.Vector3(ox - hw, oy + 0.005, oz - hd),
+        new THREE.Vector3(ox + hw, oy + 0.005 + floorThickness, oz + hd)
+      ),
+    ];
+
+    this.collisionCeiling = new THREE.Box3(
+      new THREE.Vector3(ox - hw, oy + wh - ceilingThickness, oz - hd),
+      new THREE.Vector3(ox + hw, oy + wh, oz + hd)
+    );
+
+    worldCollision.setWard(this.collisionWalls, this.collisionCeiling);
+    this.collidersRegistered = true;
+  }
+
+  private clearColliders(): void {
+    if (this.collidersRegistered) {
+      worldCollision.clearWard();
+    }
+    this.collidersRegistered = false;
+    this.collisionWalls = [];
+    this.collisionCeiling = null;
   }
 
   public cancel(): void {
@@ -1323,6 +1410,7 @@ export class AgathaRunicWard {
 
     this.isActive = false;
     this.timer = 0;
+    this.clearColliders();
 
     gameplayRestrictions.clearRestrictionsBySource(
       this.source

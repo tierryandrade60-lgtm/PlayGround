@@ -34,17 +34,19 @@ export class DealDamageSystem {
     hitPosition: THREE.Vector3,
     knockback?: THREE.Vector3
   ): DamageResult {
-    const result = dummy.takeDamage(damage, hitPosition, knockback);
+    const intDamage = Math.max(0, Math.round(Number.isFinite(damage) ? damage : 0));
+    const result = dummy.takeDamage(intDamage, hitPosition, knockback);
 
     if (result.actualDamage > 0) {
       this.onHitConfirmed();
     }
 
-    this.projectileSystem.spawnDamageNumber(result.actualDamage, hitPosition);
+    const actualDamage = Math.max(0, Math.round(Number.isFinite(result.actualDamage) ? result.actualDamage : 0));
+    this.projectileSystem.spawnDamageNumber(actualDamage, hitPosition);
 
     return {
-      requestedDamage: damage,
-      actualDamage: result.actualDamage,
+      requestedDamage: intDamage,
+      actualDamage,
     };
   }
 }

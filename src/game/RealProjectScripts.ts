@@ -20,6 +20,7 @@ import ironManRepulsorSource from './abilities/ironman/IronManRepulsor.ts?raw';
 import ironManMicroMissilesSource from './abilities/ironman/IronManMicroMissiles.ts?raw';
 import ironManUnibeamSource from './abilities/ironman/IronManUnibeam.ts?raw';
 import ironManDualBeamsSource from './abilities/ironman/IronManDualBeams.ts?raw';
+import ironManBeamFxSource from './abilities/ironman/IronManBeamFx.ts?raw';
 import ironManSpinningLasersSource from './abilities/ironman/IronManSpinningLasers.ts?raw';
 import ironManAbilitiesSource from './IronManAbilities.ts?raw';
 
@@ -31,12 +32,12 @@ import stickmanRigSource from './StickmanRig.ts?raw';
 import animControllerSource from './AnimationController.ts?raw';
 import gameSceneSource from './GameScene.ts?raw';
 import audioSystemSource from './AudioSystem.ts?raw';
+import audioManifestSource from './audio/AudioManifest.ts?raw';
 
 // HUD & Interface Components
 import combatButtonsSource from '../components/CombatButtons.tsx?raw';
 import virtualJoystickSource from '../components/VirtualJoystick.tsx?raw';
 import aimReticleSource from '../components/AimReticle.tsx?raw';
-import beamClashBannerSource from '../components/BeamClashBanner.tsx?raw';
 import powerSelectModalSource from '../components/PowerSelectModal.tsx?raw';
 import settingsModalSource from '../components/SettingsModal.tsx?raw';
 import orientationGuardSource from '../components/OrientationGuard.tsx?raw';
@@ -52,6 +53,7 @@ import flightSystemSource from './systems/FlightSystem.ts?raw';
 import agathaFlightConfigSource from './systems/flight/AgathaFlightConfig.ts?raw';
 import ironManFlightConfigSource from './systems/flight/IronManFlightConfig.ts?raw';
 import movementSystemSource from './systems/MovementSystem.ts?raw';
+import worldCollisionSource from './systems/WorldCollision.ts?raw';
 import cooldownSystemSource from './systems/CooldownSystem.ts?raw';
 import abilityButtonSystemSource from './systems/AbilityButtonSystem.ts?raw';
 import soundSystemSource from './systems/SoundSystem.ts?raw';
@@ -242,11 +244,24 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     category: 'Habilidades',
     character: 'ironman',
     summary:
-      'Feixes contínuos das duas mãos com dano sustentado, detecção de alvo e minigame Beam Clash com empurrão por toques e finalização explosiva.',
+      'Feixes contínuos das duas mãos com colisão real, dano sustentado e Beam Clash exclusivo contra o NPC rival, com disco de impacto e sem minigame.',
     originalSource: ironManDualBeamsSource,
     fileExtension: 'ts',
-    dependencies: ['IronManConfig', 'TargetDummy', 'StickmanRig', 'SoundSystem'],
+    dependencies: ['IronManConfig', 'IronManBeamFx', 'WorldCollision', 'TargetDummy', 'StickmanRig', 'SoundSystem'],
     keywords: ['ironman', 'feixes', 'duplos', 'dual', 'beam', 'clash', 'duelo'],
+  },
+  {
+    id: 'ironman-beam-fx',
+    name: 'Efeitos de Beam & Disco de Clash',
+    filePath: '/src/game/abilities/ironman/IronManBeamFx.ts',
+    category: 'Habilidades',
+    character: 'ironman',
+    summary:
+      'Camadas de núcleo, brilho e aura para os feixes, anéis de energia e disco circular de impacto com bordas, raios e partículas.',
+    originalSource: ironManBeamFxSource,
+    fileExtension: 'ts',
+    dependencies: [],
+    keywords: ['ironman', 'beam', 'feixe', 'fx', 'clash', 'disco', 'particulas'],
   },
   {
     id: 'ironman-spinning-lasers',
@@ -418,18 +433,6 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     keywords: ['joystick', 'controle', 'touch', 'movimento', 'mobile'],
   },
   {
-    id: 'beam-clash-banner',
-    name: 'Banner do Duelo Beam Clash',
-    filePath: '/src/components/BeamClashBanner.tsx',
-    category: 'Interface & HUD',
-    summary:
-      'Medidor cinemático de cabo de guerra com faíscas animadas e prompt de toques rápidos para vencer o confronto de raios.',
-    originalSource: beamClashBannerSource,
-    fileExtension: 'tsx',
-    dependencies: [],
-    keywords: ['beam', 'clash', 'banner', 'duelo', 'raio', 'hud'],
-  },
-  {
     id: 'power-select-modal',
     name: 'Modal de Seleção de Personagem',
     filePath: '/src/components/PowerSelectModal.tsx',
@@ -491,7 +494,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: flightSystemSource,
     fileExtension: 'ts',
     dependencies: ['AgathaFlightConfig', 'IronManFlightConfig'],
-    runtimeIntegration: 'restart-required',
+    runtimeIntegration: 'hot-swap',
     keywords: ['voo', 'flight', 'altitude', 'propulsor', 'bank', 'hover'],
   },
   {
@@ -505,7 +508,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: agathaFlightConfigSource,
     fileExtension: 'ts',
     dependencies: ['FlightSystem'],
-    runtimeIntegration: 'restart-required',
+    runtimeIntegration: 'hot-swap',
     keywords: ['agatha', 'voo', 'flight', 'config', 'hover', 'arcano'],
   },
   {
@@ -519,7 +522,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: ironManFlightConfigSource,
     fileExtension: 'ts',
     dependencies: ['FlightSystem'],
-    runtimeIntegration: 'restart-required',
+    runtimeIntegration: 'hot-swap',
     keywords: ['ironman', 'voo', 'flight', 'config', 'propulsor', 'thruster'],
   },
   {
@@ -532,8 +535,21 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: movementSystemSource,
     fileExtension: 'ts',
     dependencies: ['GameScene'],
-    runtimeIntegration: 'restart-required',
+    runtimeIntegration: 'hot-swap',
     keywords: ['movimento', 'movement', 'colisao', 'estrutura', 'speed'],
+  },
+  {
+    id: 'world-collision',
+    name: 'Colisão Universal do Mundo',
+    filePath: '/src/game/systems/WorldCollision.ts',
+    category: 'Sistemas',
+    summary:
+      'Fonte única de consultas de sólidos para projéteis, feixes, lasers e linha de visão, incluindo estruturas, chão e Runic Ward.',
+    originalSource: worldCollisionSource,
+    fileExtension: 'ts',
+    dependencies: [],
+    runtimeIntegration: 'hot-swap',
+    keywords: ['colisao', 'collision', 'solido', 'projetil', 'beam', 'laser', 'ward'],
   },
   {
     id: 'cooldown-system',
@@ -545,7 +561,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: cooldownSystemSource,
     fileExtension: 'ts',
     dependencies: [],
-    runtimeIntegration: 'restart-required',
+    runtimeIntegration: 'hot-swap',
     keywords: ['cooldown', 'recarga', 'habilidades', 'hud', 'tempo'],
   },
   {
@@ -558,7 +574,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: abilityButtonSystemSource,
     fileExtension: 'ts',
     dependencies: ['CooldownSystem'],
-    runtimeIntegration: 'restart-required',
+    runtimeIntegration: 'hot-swap',
     keywords: ['botao', 'button', 'habilidades', 'hud', 'combate', 'recarga'],
   },
   {
@@ -571,7 +587,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: soundSystemSource,
     fileExtension: 'ts',
     dependencies: ['AudioSystem'],
-    runtimeIntegration: 'restart-required',
+    runtimeIntegration: 'hot-swap',
     keywords: ['som', 'sound', 'audio', 'efeitos', 'central'],
   },
   {
@@ -584,7 +600,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: settingsManagerSource,
     fileExtension: 'ts',
     dependencies: [],
-    runtimeIntegration: 'read-only',
+    runtimeIntegration: 'hot-swap',
     keywords: ['settings', 'configuracoes', 'singleton', 'persistencia'],
   },
   {
@@ -597,7 +613,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: liveConfigManagerSource,
     fileExtension: 'ts',
     dependencies: [],
-    runtimeIntegration: 'read-only',
+    runtimeIntegration: 'hot-swap',
     keywords: ['live config', 'ajustes', 'singleton', 'camera', 'combate'],
   },
   {
@@ -610,7 +626,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: buildModeManagerSource,
     fileExtension: 'ts',
     dependencies: [],
-    runtimeIntegration: 'read-only',
+    runtimeIntegration: 'hot-swap',
     keywords: ['build mode', 'editor', 'cena', 'transformacao', 'snapshot'],
   },
   {
@@ -636,20 +652,33 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     originalSource: stickmanRigSource,
     fileExtension: 'ts',
     dependencies: [],
-    runtimeIntegration: 'restart-required',
+    runtimeIntegration: 'hot-swap',
     keywords: ['esqueleto', 'rig', 'stickman', 'modelo', 'personagem'],
   },
   {
+    id: 'audio-manifest',
+    name: 'Manifesto Central de Áudio',
+    filePath: '/src/game/audio/AudioManifest.ts',
+    category: 'Sistemas',
+    summary:
+      'Registro tipado de efeitos, caminhos locais, ganhos, limites de polifonia e loops contínuos usado pelo AudioSystem.',
+    originalSource: audioManifestSource,
+    fileExtension: 'ts',
+    dependencies: [],
+    runtimeIntegration: 'hot-swap',
+    keywords: ['audio', 'manifesto', 'sons', 'sfx', 'loops', 'volume'],
+  },
+  {
     id: 'audio-system',
-    name: 'Sistema de Áudio Sintético',
+    name: 'Sistema de Áudio Cinematográfico',
     filePath: '/src/game/AudioSystem.ts',
     category: 'Sistemas',
     summary:
-      'Sintetizador Web Audio com osciladores e envelopes sem dependências de arquivos de áudio externos.',
+      'Motor Web Audio baseado em samples locais com cache assíncrono, unlock por gesto, volume global, polifonia limitada e loops contínuos para habilidades.',
     originalSource: audioSystemSource,
     fileExtension: 'ts',
-    dependencies: [],
-    runtimeIntegration: 'restart-required',
-    keywords: ['audio', 'som', 'sons', 'volume', 'sintetizador', 'web audio'],
+    dependencies: ['AudioManifest'],
+    runtimeIntegration: 'hot-swap',
+    keywords: ['audio', 'som', 'sons', 'volume', 'samples', 'loops', 'web audio'],
   },
 ];

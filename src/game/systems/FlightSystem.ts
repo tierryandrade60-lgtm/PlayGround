@@ -14,7 +14,7 @@ import {
 import { AGATHA_FLIGHT_PROFILE } from './flight/AgathaFlightConfig';
 import { IRONMAN_FLIGHT_PROFILE } from './flight/IronManFlightConfig';
 
-export type FlightPowerSet = 'classic' | 'ironman' | 'agatha';
+export type FlightPowerSet = 'ironman' | 'agatha';
 
 export interface ThrusterLevels {
   foot: number;

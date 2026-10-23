@@ -324,7 +324,7 @@ export const AimReticle: React.FC<AimReticleProps> = ({
             fontFamily: 'system-ui, -apple-system, sans-serif',
           }}
         >
-          {dn.value}
+          {Math.round(dn.value)}
         </div>
       ))}
     </div>

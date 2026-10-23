@@ -12,6 +12,7 @@ import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { audioSystem } from '../../AudioSystem';
 import { activeAgathaConfig } from './AgathaConfig';
+import { worldCollision } from '../../systems/WorldCollision';
 
 export interface ArcaneBoltInstance {
   mesh: THREE.Group;
@@ -252,9 +253,20 @@ export class AgathaArcaneBlast {
         }
       }
 
+      const previousPos = bolt.pos.clone();
       const step = bolt.vel.clone().multiplyScalar(safeDt);
       bolt.pos.add(step);
       bolt.traveled += step.length();
+
+      if (cfg.collideWithWorld !== false) {
+        const solidHit = worldCollision.segmentHit(previousPos, bolt.pos, 0.18);
+        if (solidHit) {
+          this.createImpact(solidHit.point.clone(), 0.62);
+          this.removeBolt(bolt);
+          this.bolts.splice(i, 1);
+          continue;
+        }
+      }
 
       bolt.mesh.position.copy(bolt.pos);
 

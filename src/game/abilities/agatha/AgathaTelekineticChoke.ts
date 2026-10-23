@@ -433,6 +433,7 @@ export class AgathaTelekineticChoke {
     );
 
     audioSystem.playArcaneChokeStart?.();
+    audioSystem.startArcaneChokeLoop?.();
     this.onShake(0.06);
 
     return true;
@@ -581,7 +582,7 @@ export class AgathaTelekineticChoke {
       );
 
       this.onShake(0.02);
-      audioSystem.playImpact?.();
+      audioSystem.playArcaneChokeTick?.();
     }
 
     if (this.timer <= 0) {
@@ -891,6 +892,7 @@ export class AgathaTelekineticChoke {
     this.tickTimer = 0;
 
     this.setEffectsVisible(false);
+    audioSystem.stopArcaneChokeLoop?.();
 
     // Release burst at the target's last position.
     if (lastPosition) {

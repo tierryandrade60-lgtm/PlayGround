@@ -60,8 +60,8 @@ interface BuildModeContainerProps {
   onExitBuildMode: () => void;
   inspectTarget?: string | null;
   onSelectInspectTarget?: (target: string | null) => void;
-  currentPowerSet?: 'classic' | 'ironman' | 'agatha';
-  onSelectPowerSet?: (set: 'classic' | 'ironman' | 'agatha') => void;
+  currentPowerSet?: 'ironman' | 'agatha';
+  onSelectPowerSet?: (set: 'ironman' | 'agatha') => void;
   onExportProject?: () => void | Promise<void>;
   isExportingProject?: boolean;
 }
@@ -423,7 +423,26 @@ export const BuildModeContainer: React.FC<BuildModeContainerProps> = ({
   }, [code, activeScript]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#09090b] text-[#f4f4f5] font-sans select-none overflow-hidden antialiased">
+    <div className="fixed inset-0 z-50 flex bg-[#09090b] text-[#f4f4f5] font-sans select-none overflow-hidden antialiased">
+      <ScriptExplorer
+        scripts={allScripts}
+        selectedScriptId={selectedScriptId}
+        onSelect={(id) => {
+          setSelectedScriptId(id);
+          setMobileDrawer('none');
+        }}
+        isOpen={isLeftNavOpen}
+        mobileOpen={mobileDrawer === 'left'}
+        onCloseMobile={() => setMobileDrawer('none')}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        onRestoreAll={handleRestoreAll}
+      />
+
+      {/* ============================================================== */}
+      {/* HEADER + WORKSPACE COLUMN */}
+      {/* ============================================================== */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
       {/* ============================================================== */}
       {/* 1. TOP HEADER / TOOLBAR */}
       {/* ============================================================== */}
@@ -678,21 +697,6 @@ export const BuildModeContainer: React.FC<BuildModeContainerProps> = ({
       {/* 2. MAIN THREE-PANEL WORKSPACE */}
       {/* ============================================================== */}
       <div className="flex-1 flex overflow-hidden relative">
-        <ScriptExplorer
-          scripts={allScripts}
-          selectedScriptId={selectedScriptId}
-          onSelect={(id) => {
-            setSelectedScriptId(id);
-            setMobileDrawer('none');
-          }}
-          isOpen={isLeftNavOpen}
-          mobileOpen={mobileDrawer === 'left'}
-          onCloseMobile={() => setMobileDrawer('none')}
-          searchQuery={searchQuery}
-          onSearchQueryChange={setSearchQuery}
-          onRestoreAll={handleRestoreAll}
-        />
-
         {/* Mobile backdrop for left drawer */}
         {mobileDrawer === 'left' && (
           <div
@@ -1252,6 +1256,7 @@ export const BuildModeContainer: React.FC<BuildModeContainerProps> = ({
             className="md:hidden fixed inset-0 bg-black/60 z-30"
           />
         )}
+      </div>
       </div>
 
       {/* Live Configuration Overlay */}

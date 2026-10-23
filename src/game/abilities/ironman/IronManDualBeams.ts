@@ -1,17 +1,16 @@
 /**
  * IronManDualBeams.ts
- * Modular dual-hand beam and Beam Clash ability.
- *
- * Keeps the original damage, range, duration, clash push and visual timing.
- * Installed by the ScriptRuntimeEngine; when absent the controller uses its
- * built-in fallback.
+ * Modular dual-hand beam with real beam-vs-beam collision and a cinematic
+ * impact disk. The rival NPC is the only dummy allowed to answer with a beam.
  */
 
 import * as THREE from 'three';
 import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { soundSystem } from '../../systems/SoundSystem';
+import { worldCollision } from '../../systems/WorldCollision';
 import { activeIronManConfig } from './IronManConfig';
+import { IronManBeamVisual, BeamClashDisk } from './IronManBeamFx';
 
 export interface BeamClashState {
   active: boolean;
@@ -20,7 +19,6 @@ export interface BeamClashState {
   clashPoint: THREE.Vector3;
   duration: number;
   maxDuration: number;
-  lastTapTime: number;
 }
 
 type AimProvider = () => { pos: THREE.Vector3; target: TargetDummy | null };
@@ -44,15 +42,14 @@ export class IronManDualBeams {
   private active = false;
   private timer = 0;
   private damageTimer = 0;
+  private elapsed = 0;
 
-  private leftBeamMesh: THREE.Line;
-  private rightBeamMesh: THREE.Line;
-  private leftBeamGlow: THREE.Mesh;
-  private rightBeamGlow: THREE.Mesh;
-  private rivalBeamMesh: THREE.Line;
-  private rivalBeamGlow: THREE.Mesh;
-  private clashSphere: THREE.Mesh;
-  private clashLight: THREE.PointLight;
+  private leftBeam: IronManBeamVisual;
+  private rightBeam: IronManBeamVisual;
+  private rivalBeam: IronManBeamVisual;
+  private clashDisk: BeamClashDisk;
+  private playerClashEnd = new THREE.Vector3();
+  private rivalClashEnd = new THREE.Vector3();
 
   constructor(
     scene: THREE.Scene,
@@ -71,70 +68,28 @@ export class IronManDualBeams {
     this.onExplosion = onExplosion;
     this.clashState = clashState;
 
-    const baseBeamMaterial = new THREE.LineBasicMaterial({ color: 0xffea00, linewidth: 3 });
-    const leftGeometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(),
-      new THREE.Vector3(),
-    ]);
-    const rightGeometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(),
-      new THREE.Vector3(),
-    ]);
+    const config = activeIronManConfig.dualBeams;
+    const playerPalette = {
+      core: config.beamCoreColor ?? 0xfff7b0,
+      inner: config.beamGlowColor ?? 0xffb300,
+      outer: config.beamOuterColor ?? 0xff3b00,
+      light: config.beamGlowColor ?? 0xffb300,
+    };
+    const rivalPalette = {
+      core: config.rivalBeamCoreColor ?? 0x66f0ff,
+      inner: config.rivalBeamGlowColor ?? 0x00a8ff,
+      outer: config.rivalBeamOuterColor ?? 0x7a00ff,
+      light: config.rivalBeamGlowColor ?? 0x00e5ff,
+    };
 
-    this.leftBeamMesh = new THREE.Line(leftGeometry, baseBeamMaterial);
-    this.rightBeamMesh = new THREE.Line(rightGeometry, baseBeamMaterial.clone());
-    this.leftBeamMesh.visible = false;
-    this.rightBeamMesh.visible = false;
-    this.scene.add(this.leftBeamMesh, this.rightBeamMesh);
-
-    const glowGeometry = new THREE.CylinderGeometry(0.12, 0.12, 1, 12, 1, true);
-    const glowMaterial = new THREE.MeshBasicMaterial({
-      color: 0xff2200,
-      transparent: true,
-      opacity: 0.6,
-      depthWrite: false,
-    });
-    this.leftBeamGlow = new THREE.Mesh(glowGeometry, glowMaterial);
-    this.rightBeamGlow = new THREE.Mesh(glowGeometry, glowMaterial.clone());
-    this.leftBeamGlow.visible = false;
-    this.rightBeamGlow.visible = false;
-    this.scene.add(this.leftBeamGlow, this.rightBeamGlow);
-
-    const rivalMaterial = new THREE.LineBasicMaterial({ color: 0x00f0ff, linewidth: 3 });
-    this.rivalBeamMesh = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]),
-      rivalMaterial
+    this.leftBeam = new IronManBeamVisual(scene, playerPalette, 0.24, 5);
+    this.rightBeam = new IronManBeamVisual(scene, playerPalette, 0.24, 5);
+    this.rivalBeam = new IronManBeamVisual(scene, rivalPalette, 0.3, 6);
+    this.clashDisk = new BeamClashDisk(
+      scene,
+      playerPalette.inner,
+      rivalPalette.inner
     );
-    this.rivalBeamMesh.visible = false;
-    this.scene.add(this.rivalBeamMesh);
-
-    this.rivalBeamGlow = new THREE.Mesh(
-      glowGeometry.clone(),
-      new THREE.MeshBasicMaterial({
-        color: 0xaa00ff,
-        transparent: true,
-        opacity: 0.65,
-        depthWrite: false,
-      })
-    );
-    this.rivalBeamGlow.visible = false;
-    this.scene.add(this.rivalBeamGlow);
-
-    this.clashSphere = new THREE.Mesh(
-      new THREE.SphereGeometry(0.55, 16, 16),
-      new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.95,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      })
-    );
-    this.clashSphere.visible = false;
-    this.scene.add(this.clashSphere);
-
-    this.clashLight = new THREE.PointLight(0xffaa00, 0, 12);
-    this.scene.add(this.clashLight);
   }
 
   public get isActive(): boolean {
@@ -150,29 +105,20 @@ export class IronManDualBeams {
     this.active = true;
     this.timer = 0;
     this.damageTimer = 0;
+    this.elapsed = 0;
     soundSystem.playBeamBurst();
+    soundSystem.startBeamLoop?.();
     return true;
   }
 
   public stop(): void {
     this.active = false;
-    this.leftBeamMesh.visible = false;
-    this.rightBeamMesh.visible = false;
-    this.leftBeamGlow.visible = false;
-    this.rightBeamGlow.visible = false;
+    this.leftBeam.setVisible(false);
+    this.rightBeam.setVisible(false);
+    this.rivalBeam.setVisible(false);
+    this.clashDisk.setVisible(false);
+    soundSystem.stopBeamLoop?.();
     this.resolveClash(false);
-  }
-
-  public onClashTap(): void {
-    if (!this.clashState.active) return;
-    this.clashState.progress = Math.min(1, this.clashState.progress + 0.15);
-    this.clashState.lastTapTime = performance.now();
-    soundSystem.playBeamClash();
-    this.onShake(0.1);
-
-    if (this.clashState.progress >= 1) {
-      this.resolveClash(true);
-    }
   }
 
   public update(dt: number, dummies: TargetDummy[]): void {
@@ -181,6 +127,7 @@ export class IronManDualBeams {
     const config = activeIronManConfig.dualBeams;
     const maxDuration = Math.max(0.1, config.maxDuration);
     this.timer += dt;
+    this.elapsed += dt;
 
     if (this.timer >= maxDuration) {
       this.stop();
@@ -194,100 +141,121 @@ export class IronManDualBeams {
 
     const aim = this.getAim();
     const maxRange = config.range;
-    let endPoint = aim.pos.clone();
     const midHand = leftHandPos.clone().add(rightHandPos).multiplyScalar(0.5);
+    let aimEnd = aim.pos.clone();
 
-    if (midHand.distanceTo(endPoint) > maxRange) {
-      const direction = endPoint.clone().sub(midHand).normalize();
-      endPoint = midHand.clone().addScaledVector(direction, maxRange);
+    if (midHand.distanceTo(aimEnd) > maxRange) {
+      const direction = aimEnd.clone().sub(midHand).normalize();
+      aimEnd = midHand.clone().addScaledVector(direction, maxRange);
     }
 
+    const collide = config.collideWithWorld !== false;
+    const leftLimit = this.beamLimit(leftHandPos, aimEnd, collide);
+    const rightLimit = this.beamLimit(rightHandPos, aimEnd, collide);
+    const midLimit = this.beamLimit(midHand, aimEnd, collide);
+
     let clashTarget: TargetDummy | null = null;
-    for (const dummy of dummies) {
-      if (dummy.isDead || dummy.rivalCooldown > 0) continue;
-      const center = dummy.getCenter();
-      if (midHand.distanceTo(center) > maxRange) continue;
-      const distance = this.distanceToSegment(center, midHand, endPoint);
-      if (distance <= dummy.radius + 1.2 || (aim.target && aim.target.id === dummy.id)) {
+    if (config.beamClash !== false) {
+      for (const dummy of dummies) {
+        if (!dummy.isRival || dummy.isDead || dummy.rivalCooldown > 0) continue;
+        const center = dummy.getCenter();
+        const distanceToBeam = this.distanceToSegment(center, midHand, aimEnd);
+        if (distanceToBeam > dummy.radius + 1.2) continue;
+        const t = this.closestT(center, midHand, aimEnd);
+        const along = t * midHand.distanceTo(aimEnd);
+        const clearLimit = Math.min(leftLimit, rightLimit, midLimit);
+        if (along > clearLimit + dummy.radius + 0.6) continue;
         clashTarget = dummy;
         break;
       }
     }
 
+    let beamEnd = aimEnd;
     if (clashTarget) {
+      const rivalPosition = clashTarget.getCenter();
       if (!this.clashState.active) {
         this.clashState.active = true;
         this.clashState.rival = clashTarget;
         this.clashState.progress = 0.5;
         this.clashState.duration = 0;
-        this.clashState.maxDuration = 6;
+        this.clashState.maxDuration = Math.max(0.5, maxDuration - 0.12);
         clashTarget.rivalBeamActive = true;
-        this.clashSphere.visible = true;
-        this.rivalBeamMesh.visible = true;
-        this.rivalBeamGlow.visible = true;
         soundSystem.playBeamClash();
+        this.onShake(0.14);
       }
 
       this.clashState.duration += dt;
-      this.clashState.progress = Math.max(0, this.clashState.progress - dt * 0.09);
+      this.clashState.progress = 0.5;
+      this.clashState.clashPoint.lerpVectors(midHand, rivalPosition, 0.5);
+      beamEnd = this.clashState.clashPoint;
 
-      const rivalPosition = clashTarget.getCenter();
-      this.clashState.clashPoint.lerpVectors(
-        midHand,
-        rivalPosition,
-        1 - this.clashState.progress
-      );
-      endPoint.copy(this.clashState.clashPoint);
-
-      this.updateBeamMesh(
-        this.rivalBeamMesh,
-        this.rivalBeamGlow,
-        rivalPosition,
-        this.clashState.clashPoint,
-        0.18
-      );
-
-      this.clashSphere.position.copy(this.clashState.clashPoint);
-      const pulse = 0.55 + Math.sin(performance.now() * 0.02) * 0.15;
-      this.clashSphere.scale.setScalar(pulse);
-      this.clashLight.position.copy(this.clashState.clashPoint);
-      this.clashLight.intensity = 2.2 + Math.sin(performance.now() * 0.02) * 0.4;
-      this.onShake(0.04);
+      const axis = rivalPosition.clone().sub(midHand);
+      const axisDirection = axis.clone().normalize();
+      const clashRadius = 1.05;
+      this.playerClashEnd.copy(beamEnd).addScaledVector(axisDirection, -clashRadius);
+      this.rivalClashEnd.copy(beamEnd).addScaledVector(axisDirection, clashRadius);
+      const intensity = 0.8 + Math.sin(this.elapsed * 18) * 0.12;
+      this.rivalBeam.update(rivalPosition, this.rivalClashEnd, this.elapsed, 1);
+      this.clashDisk.update(beamEnd, axis, this.elapsed, intensity);
+      this.onShake(0.025 + intensity * 0.012);
 
       if (this.clashState.duration >= this.clashState.maxDuration) {
-        this.resolveClash(this.clashState.progress > 0.5);
+        this.resolveClash(true);
       }
     } else if (this.clashState.active) {
       this.resolveClash(false);
     }
 
-    this.leftBeamMesh.visible = true;
-    this.rightBeamMesh.visible = true;
-    this.leftBeamGlow.visible = true;
-    this.rightBeamGlow.visible = true;
+    if (!this.clashState.active) {
+      this.rivalBeam.setVisible(false);
+      this.clashDisk.setVisible(false);
+      beamEnd = aimEnd;
+    }
 
-    this.updateBeamMesh(this.leftBeamMesh, this.leftBeamGlow, leftHandPos, endPoint, 0.12);
-    this.updateBeamMesh(this.rightBeamMesh, this.rightBeamGlow, rightHandPos, endPoint, 0.12);
+    const leftEnd = this.clashState.active
+      ? this.playerClashEnd
+      : this.collideBeam(leftHandPos, beamEnd, collide);
+    const rightEnd = this.clashState.active
+      ? this.playerClashEnd
+      : this.collideBeam(rightHandPos, beamEnd, collide);
+
+    this.leftBeam.update(leftHandPos, leftEnd, this.elapsed, 1);
+    this.rightBeam.update(rightHandPos, rightEnd, this.elapsed, 1);
 
     this.damageTimer += dt;
     if (this.damageTimer < 0.25) return;
     this.damageTimer = 0;
 
+    if (this.clashState.active && this.clashState.rival && !this.clashState.rival.isDead) {
+      this.onDamageDealt(
+        this.clashState.rival,
+        config.dps * 0.25,
+        this.clashState.clashPoint
+      );
+      return;
+    }
+
     let targetDummy: TargetDummy | null = null;
     if (aim.target && !aim.target.isDead) {
-      const distance = this.distanceToSegment(aim.target.getCenter(), midHand, endPoint);
-      if (distance <= aim.target.radius + 0.6) targetDummy = aim.target;
+      const distance = this.distanceToSegment(aim.target.getCenter(), midHand, beamEnd);
+      if (
+        distance <= aim.target.radius + 0.6 &&
+        (!collide || !worldCollision.isSegmentBlocked(midHand, aim.target.getCenter(), 0.1))
+      ) {
+        targetDummy = aim.target;
+      }
     }
 
     if (!targetDummy) {
       let bestDistance = Infinity;
       for (const dummy of dummies) {
         if (dummy.isDead) continue;
-        const distance = this.distanceToSegment(dummy.getCenter(), midHand, endPoint);
-        if (distance <= dummy.radius + 0.5 && distance < bestDistance) {
-          bestDistance = distance;
-          targetDummy = dummy;
-        }
+        const center = dummy.getCenter();
+        const distance = this.distanceToSegment(center, midHand, beamEnd);
+        if (distance > dummy.radius + 0.5 || distance >= bestDistance) continue;
+        if (collide && worldCollision.isSegmentBlocked(midHand, center, 0.1)) continue;
+        bestDistance = distance;
+        targetDummy = dummy;
       }
     }
 
@@ -296,45 +264,58 @@ export class IronManDualBeams {
     }
   }
 
-  private resolveClash(playerWon: boolean): void {
+  private resolveClash(impact: boolean): void {
     if (!this.clashState.active) return;
     const rival = this.clashState.rival;
 
-    if (playerWon && rival && !rival.isDead) {
-      const finishPosition = rival.getCenter();
-      this.onExplosion(finishPosition, 5, 0xffaa00);
-      const fling = new THREE.Vector3(0, 4, -18);
-      this.onDamageDealt(rival, 80, finishPosition, fling);
-      soundSystem.playExplosion();
-      this.onShake(0.42);
-      rival.rivalCooldown = 10;
+    if (impact && rival && !rival.isDead) {
+      const position = this.clashState.clashPoint.clone();
+      this.onExplosion(position, 1.4, 0xffd36a);
+      soundSystem.playBeamClash();
+      this.onShake(0.2);
+      rival.rivalCooldown = Math.max(rival.rivalCooldown, 1.2);
     }
 
     this.clashState.active = false;
-    this.clashSphere.visible = false;
-    this.rivalBeamMesh.visible = false;
-    this.rivalBeamGlow.visible = false;
-    this.clashLight.intensity = 0;
+    this.clashState.progress = 0.5;
+    this.clashState.duration = 0;
+    this.rivalBeam.setVisible(false);
+    this.clashDisk.setVisible(false);
     if (rival) rival.rivalBeamActive = false;
   }
 
-  private updateBeamMesh(
-    line: THREE.Line,
-    glow: THREE.Mesh,
+  private collideBeam(
     start: THREE.Vector3,
     end: THREE.Vector3,
-    thickness: number
-  ): void {
-    const geometry = line.geometry as THREE.BufferGeometry;
-    geometry.setFromPoints([start, end]);
+    collide: boolean
+  ): THREE.Vector3 {
+    if (!collide) return end.clone();
+    const hit = worldCollision.segmentHit(start, end, 0.08);
+    return hit ? hit.point.clone() : end.clone();
+  }
 
-    const distance = start.distanceTo(end);
-    const middle = start.clone().add(end).multiplyScalar(0.5);
-    glow.position.copy(middle);
-    glow.scale.set(thickness, distance, thickness);
-    glow.quaternion.setFromUnitVectors(
-      new THREE.Vector3(0, 1, 0),
-      end.clone().sub(start).normalize()
+  private beamLimit(
+    start: THREE.Vector3,
+    end: THREE.Vector3,
+    collide: boolean
+  ): number {
+    if (!collide) return Number.POSITIVE_INFINITY;
+    const hit = worldCollision.segmentHit(start, end, 0.08);
+    return hit ? hit.distance : Number.POSITIVE_INFINITY;
+  }
+
+  private closestT(
+    point: THREE.Vector3,
+    start: THREE.Vector3,
+    end: THREE.Vector3
+  ): number {
+    const segment = end.clone().sub(start);
+    const lengthSq = segment.lengthSq();
+    if (lengthSq <= 0.000001) return 0;
+    return THREE.MathUtils.clamp(
+      point.clone().sub(start).dot(segment) / lengthSq,
+      0,
+      1
     );
   }
 
@@ -353,30 +334,9 @@ export class IronManDualBeams {
 
   public dispose(): void {
     this.stop();
-    this.scene.remove(
-      this.leftBeamMesh,
-      this.rightBeamMesh,
-      this.leftBeamGlow,
-      this.rightBeamGlow,
-      this.rivalBeamMesh,
-      this.rivalBeamGlow,
-      this.clashSphere,
-      this.clashLight
-    );
-
-    this.leftBeamMesh.geometry.dispose();
-    this.rightBeamMesh.geometry.dispose();
-    this.rivalBeamMesh.geometry.dispose();
-    (this.leftBeamMesh.material as THREE.Material).dispose();
-    (this.rightBeamMesh.material as THREE.Material).dispose();
-    (this.rivalBeamMesh.material as THREE.Material).dispose();
-    (this.leftBeamGlow.material as THREE.Material).dispose();
-    (this.rightBeamGlow.material as THREE.Material).dispose();
-    (this.rivalBeamGlow.material as THREE.Material).dispose();
-    (this.clashSphere.material as THREE.Material).dispose();
-    this.leftBeamGlow.geometry.dispose();
-    this.rightBeamGlow.geometry.dispose();
-    this.rivalBeamGlow.geometry.dispose();
-    this.clashSphere.geometry.dispose();
+    this.leftBeam.dispose();
+    this.rightBeam.dispose();
+    this.rivalBeam.dispose();
+    this.clashDisk.dispose();
   }
 }

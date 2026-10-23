@@ -11,6 +11,7 @@ import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { soundSystem } from '../../systems/SoundSystem';
 import { activeIronManConfig } from './IronManConfig';
+import { worldCollision } from '../../systems/WorldCollision';
 
 export class IronManSpinningLasers {
   private scene: THREE.Scene;
@@ -88,6 +89,7 @@ export class IronManSpinningLasers {
 
   public stop(): void {
     this.active = false;
+    soundSystem.stopLaserSpin?.();
     this.leftLaser.visible = false;
     this.rightLaser.visible = false;
   }
@@ -121,9 +123,17 @@ export class IronManSpinningLasers {
     const leftStart = leftHand.clone().addScaledVector(leftDirection, startOffset);
     const rightStart = rightHand.clone().addScaledVector(rightDirection, startOffset);
 
-    const length = activeIronManConfig.spinningLasers.radius;
-    const leftEnd = leftStart.clone().addScaledVector(leftDirection, length);
-    const rightEnd = rightStart.clone().addScaledVector(rightDirection, length);
+    const config = activeIronManConfig.spinningLasers;
+    const length = config.radius;
+    let leftEnd = leftStart.clone().addScaledVector(leftDirection, length);
+    let rightEnd = rightStart.clone().addScaledVector(rightDirection, length);
+
+    if (config.collideWithWorld !== false) {
+      const leftHit = worldCollision.segmentHit(leftStart, leftEnd, 0.12);
+      if (leftHit) leftEnd = leftHit.point.clone();
+      const rightHit = worldCollision.segmentHit(rightStart, rightEnd, 0.12);
+      if (rightHit) rightEnd = rightHit.point.clone();
+    }
 
     this.orientLaser(this.leftLaser, leftStart, leftEnd);
     this.orientLaser(this.rightLaser, rightStart, rightEnd);

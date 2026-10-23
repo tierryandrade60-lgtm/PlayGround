@@ -14,6 +14,7 @@ import * as THREE from 'three';
 import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { audioSystem } from '../../AudioSystem';
+import { worldCollision } from '../../systems/WorldCollision';
 import { activeIronManConfig } from './IronManConfig';
 
 type EffectKind = 'trail' | 'smoke' | 'spark' | 'fireball' | 'launch';
@@ -26,6 +27,7 @@ type Missile = {
   controlB: THREE.Vector3;
   end: THREE.Vector3;
   position: THREE.Vector3;
+  previousPosition: THREE.Vector3;
   direction: THREE.Vector3;
   target: TargetDummy | null;
   progress: number;
@@ -228,6 +230,7 @@ export class IronManMicroMissiles {
         controlB,
         end,
         position: start.clone(),
+        previousPosition: start.clone(),
         direction: end.clone().sub(start).normalize(),
         target: validTarget,
         progress: 0,
@@ -414,6 +417,23 @@ export class IronManMicroMissiles {
           3 * u * t * t * missile.controlB.z +
           t * t * t * missile.end.z
       );
+
+      if (activeIronManConfig.microMissiles.collideWithWorld !== false) {
+        const solidHit = worldCollision.segmentHit(
+          missile.previousPosition,
+          missile.position,
+          0.12
+        );
+        if (solidHit) {
+          const impactPos = solidHit.point.clone();
+          this.createImpact(impactPos);
+          audioSystem.playImpact?.();
+          this.onShake(0.035);
+          this.removeMissile(i);
+          continue;
+        }
+      }
+      missile.previousPosition.copy(missile.position);
 
       missile.direction.set(
         3 * u * u * (missile.controlA.x - missile.start.x) +

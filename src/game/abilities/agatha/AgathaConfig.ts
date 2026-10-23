@@ -3,6 +3,8 @@
  * Tunable parameters and typed configurations for Agatha Harkness abilities.
  */
 
+export type AbilityToggleMode = 'activation' | 'cancelOrNaturalEnd';
+
 export interface AgathaAbilitySettings {
   // Arcane Blast (Basic Attack)
   arcaneBlast: {
@@ -16,6 +18,10 @@ export interface AgathaAbilitySettings {
     ringColor: number;
     lightColor: number;
     shakeAmount: number;
+    collideWithWorld: boolean;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
 
   // Dark Drain (Ability 1)
@@ -27,6 +33,9 @@ export interface AgathaAbilitySettings {
     tickInterval: number;
     tendrilColor: number;
     coreColor: number;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
 
   // Chaos Orb (Ability 2)
@@ -39,6 +48,10 @@ export interface AgathaAbilitySettings {
     homingStrength: number;
     cooldown: number;
     shakeAmount: number;
+    collideWithWorld: boolean;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
 
   // Runic Ward (Ability 3 - Shield)
@@ -49,6 +62,9 @@ export interface AgathaAbilitySettings {
     knockbackForce: number;
     damageReduction: number;
     cooldown: number;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
 
   // Arcane Choke (Ability 4 - Binding)
@@ -59,6 +75,9 @@ export interface AgathaAbilitySettings {
     maxRange: number;
     liftHeight: number;
     cooldown: number;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
 
   // Shadow Step (Dash)
@@ -66,6 +85,9 @@ export interface AgathaAbilitySettings {
     distance: number;
     cooldown: number;
     smokeCount: number;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
 }
 
@@ -81,6 +103,10 @@ export const DEFAULT_AGATHA_CONFIG: AgathaAbilitySettings = {
     ringColor: 0x3b0764,
     lightColor: 0xa855f7,
     shakeAmount: 0.025,
+    collideWithWorld: true,
+    toggle: false,
+    cancelDelay: 0.5,
+    cooldownStart: 'activation',
   },
   darkDrain: {
     duration: 3.0,
@@ -90,6 +116,9 @@ export const DEFAULT_AGATHA_CONFIG: AgathaAbilitySettings = {
     tickInterval: 0.2,
     tendrilColor: 0xa855f7,
     coreColor: 0x581c87,
+    toggle: true,
+    cancelDelay: 0.5,
+    cooldownStart: 'cancelOrNaturalEnd',
   },
   chaosOrb: {
     directDamage: 85,
@@ -100,6 +129,10 @@ export const DEFAULT_AGATHA_CONFIG: AgathaAbilitySettings = {
     homingStrength: 4.5,
     cooldown: 5.0,
     shakeAmount: 0.07,
+    collideWithWorld: true,
+    toggle: false,
+    cancelDelay: 0.5,
+    cooldownStart: 'activation',
   },
   runicWard: {
     duration: 5.5,
@@ -108,6 +141,9 @@ export const DEFAULT_AGATHA_CONFIG: AgathaAbilitySettings = {
     knockbackForce: 8.0,
     damageReduction: 0.65,
     cooldown: 8.0,
+    toggle: true,
+    cancelDelay: 0.5,
+    cooldownStart: 'cancelOrNaturalEnd',
   },
   arcaneChoke: {
     duration: 3.0,
@@ -116,11 +152,17 @@ export const DEFAULT_AGATHA_CONFIG: AgathaAbilitySettings = {
     maxRange: 26.0,
     liftHeight: 3.2,
     cooldown: 7.0,
+    toggle: true,
+    cancelDelay: 0.5,
+    cooldownStart: 'cancelOrNaturalEnd',
   },
   shadowStep: {
     distance: 14.0,
     cooldown: 3.0,
     smokeCount: 24,
+    toggle: false,
+    cancelDelay: 0.5,
+    cooldownStart: 'activation',
   },
 };
 

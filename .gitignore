@@ -7,3 +7,17 @@ coverage/
 .env*
 !.env.example
 .build-script/
+
+screenshots/
+
+*.pid
+
+.agents/
+
+.agentsweb/
+
+.omgithub-runtime/
+
+.opencode-ssh/
+
+.opencode-web/

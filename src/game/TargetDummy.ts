@@ -281,10 +281,11 @@ export class TargetDummy {
       return { killed: false, actualDamage: 0 };
     }
 
-    let actualDamage = amount;
+    const intAmount = Math.max(0, Math.round(Number.isFinite(amount) ? amount : 0));
+    let actualDamage = intAmount;
     // Shield check (mitigates 50% damage)
     if (gameplayRestrictions.hasRestriction('IsShield')) {
-      actualDamage = Math.max(1, Math.round(amount * 0.5));
+      actualDamage = Math.max(1, Math.round(intAmount * 0.5));
     }
 
     this.health = Math.max(0, this.health - actualDamage);

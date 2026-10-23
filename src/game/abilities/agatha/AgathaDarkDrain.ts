@@ -155,6 +155,7 @@ export class AgathaDarkDrain {
     this.createAbsorptionEffect();
 
     audioSystem.playDarkDrainPulse?.();
+    audioSystem.startDarkDrainLoop?.();
     this.onShake(0.035);
 
     return true;
@@ -891,6 +892,7 @@ export class AgathaDarkDrain {
 
     this.clearAllTendrils();
     this.removeAbsorptionEffect();
+    audioSystem.stopDarkDrainLoop?.();
   }
 
   public dispose(): void {

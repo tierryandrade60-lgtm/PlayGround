@@ -3,6 +3,8 @@
  * Tunable parameters and typed configurations for Iron Man armor systems.
  */
 
+export type AbilityToggleMode = 'activation' | 'cancelOrNaturalEnd';
+
 export interface IronManAbilitySettings {
   repulsor: {
     damage: number;
@@ -12,6 +14,10 @@ export interface IronManAbilitySettings {
     cooldown: number;
     beamColor: number;
     glowColor: number;
+    collideWithWorld: boolean;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
   microMissiles: {
     volleyCount: number;
@@ -19,24 +25,47 @@ export interface IronManAbilitySettings {
     speed: number;
     arcHeight: number;
     cooldown: number;
+    collideWithWorld: boolean;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
   dualBeams: {
     dps: number;
     maxDuration: number;
     range: number;
     cooldown: number;
+    collideWithWorld: boolean;
+    beamClash: boolean;
+    beamCoreColor: number;
+    beamGlowColor: number;
+    beamOuterColor: number;
+    rivalBeamCoreColor: number;
+    rivalBeamGlowColor: number;
+    rivalBeamOuterColor: number;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
   unibeam: {
     damage: number;
     chargeTime: number;
     range: number;
     cooldown: number;
+    collideWithWorld: boolean;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
   spinningLasers: {
     damage: number;
     radius: number;
     duration: number;
     cooldown: number;
+    collideWithWorld: boolean;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: AbilityToggleMode;
   };
 }
 
@@ -54,6 +83,10 @@ export const DEFAULT_IRONMAN_CONFIG: IronManAbilitySettings = {
     cooldown: 0.22,
     beamColor: 0xff1a2a,
     glowColor: 0xff1122,
+    collideWithWorld: true,
+    toggle: false,
+    cancelDelay: 0.5,
+    cooldownStart: 'activation',
   },
   microMissiles: {
     volleyCount: 6,
@@ -61,24 +94,47 @@ export const DEFAULT_IRONMAN_CONFIG: IronManAbilitySettings = {
     speed: 28.0,
     arcHeight: 5.5,
     cooldown: 6.0,
+    collideWithWorld: true,
+    toggle: false,
+    cancelDelay: 0.5,
+    cooldownStart: 'activation',
   },
   dualBeams: {
     dps: 20.0,
     maxDuration: 4.0,
     range: 22.0,
     cooldown: 10.0,
+    collideWithWorld: true,
+    beamClash: true,
+    beamCoreColor: 0xfff7b0,
+    beamGlowColor: 0xffb300,
+    beamOuterColor: 0xff3b00,
+    rivalBeamCoreColor: 0x66f0ff,
+    rivalBeamGlowColor: 0x00a8ff,
+    rivalBeamOuterColor: 0x7a00ff,
+    toggle: true,
+    cancelDelay: 0.5,
+    cooldownStart: 'cancelOrNaturalEnd',
   },
   unibeam: {
     damage: 55,
     chargeTime: 0.30,
     range: 60.0,
     cooldown: 8.0,
+    collideWithWorld: true,
+    toggle: false,
+    cancelDelay: 0.5,
+    cooldownStart: 'activation',
   },
   spinningLasers: {
     damage: 18,
     radius: 5.0,
     duration: 1.5,
     cooldown: 12.0,
+    collideWithWorld: true,
+    toggle: true,
+    cancelDelay: 0.5,
+    cooldownStart: 'cancelOrNaturalEnd',
   },
 };
 

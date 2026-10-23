@@ -2,7 +2,7 @@ import React from 'react';
 import { X, Sparkles, Shield, Rocket, Zap, Crosshair, Orbit, Flame } from 'lucide-react';
 import { audioSystem } from '../game/AudioSystem';
 
-export type PowerSetType = 'ironman' | 'agatha' | 'classic';
+export type PowerSetType = 'ironman' | 'agatha';
 
 interface PowerSelectModalProps {
   isOpen: boolean;
@@ -264,62 +264,6 @@ export const PowerSelectModal: React.FC<PowerSelectModalProps> = ({
             </div>
           </div>
 
-          {/* Classic Hero Power Set */}
-          <div
-            onClick={() => handleSelect('classic')}
-            style={{
-              padding: '14px 16px',
-              borderRadius: '12px',
-              border: activeSet === 'classic' ? '1.5px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
-              backgroundColor: activeSet === 'classic' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-            }}
-            className="hover:border-cyan-400/80"
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div
-                  style={{
-                    width: '28px',
-                    height: '28px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(56, 189, 248, 0.2)',
-                    border: '1px solid #38bdf8',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Shield size={15} className="text-cyan-400" />
-                </div>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff' }}>
-                  Classic Power Set
-                </span>
-              </div>
-              {activeSet === 'classic' && (
-                <span
-                  style={{
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    letterSpacing: '0.06em',
-                    backgroundColor: '#38bdf8',
-                    color: '#000000',
-                    padding: '2px 8px',
-                    borderRadius: '12px',
-                  }}
-                >
-                  ACTIVE
-                </span>
-              )}
-            </div>
-            <p style={{ fontSize: '11.5px', color: '#9ca3af', margin: '2px 0 0 0' }}>
-              Standard energy blast attack with elemental abilities and training dummy targets.
-            </p>
-          </div>
         </div>
       </div>
     </div>

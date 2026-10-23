@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { audioSystem } from '../../AudioSystem';
+import { WorldCollision, worldCollision } from '../../systems/WorldCollision';
 import { activeIronManConfig } from './IronManConfig';
 
 export interface RepulsorBoltInstance {
@@ -124,30 +125,64 @@ export class IronManRepulsor {
         bolt.vel.lerp(toTarget.multiplyScalar(cfg.speed), Math.min(1.0, dt * bolt.homingStrength));
       }
 
+      const prevPos = bolt.pos.clone();
       bolt.pos.add(bolt.vel.clone().multiplyScalar(dt));
       bolt.mesh.position.copy(bolt.pos);
       bolt.mesh.lookAt(bolt.pos.clone().add(bolt.vel));
 
-      if (bolt.pos.distanceTo(bolt.startPos) > bolt.maxRange || bolt.pos.y < -2.0) {
+      // Segment test against structures, ward faces and ground so the bolt can
+      // never tunnel through a surface.
+      const segmentLength = prevPos.distanceTo(bolt.pos);
+      const solidHit = cfg.collideWithWorld !== false
+        ? worldCollision.segmentHit(prevPos, bolt.pos, 0.2)
+        : null;
+      const solidDistance = solidHit ? solidHit.distance : Number.POSITIVE_INFINITY;
+
+      let hitDummy: TargetDummy | null = null;
+      let dummyDistance = Number.POSITIVE_INFINITY;
+      let dummyHitPos: THREE.Vector3 | null = null;
+
+      for (const dummy of dummies) {
+        if (dummy.isDead) continue;
+        const center = dummy.getCenter();
+        if (WorldCollision.distanceToSegment(prevPos, bolt.pos, center) >= 1.35) {
+          continue;
+        }
+        const t = WorldCollision.closestTOnSegment(prevPos, bolt.pos, center);
+        const along = t * segmentLength;
+        if (along >= dummyDistance || along >= solidDistance) continue;
+        dummyDistance = along;
+        dummyHitPos = new THREE.Vector3().lerpVectors(prevPos, bolt.pos, t);
+        hitDummy = dummy;
+      }
+
+      if (hitDummy && dummyHitPos && dummyDistance <= solidDistance) {
+        const knockback = bolt.vel.clone().normalize().multiplyScalar(5.0);
+        knockback.y = 2.0;
+        this.onDamageDealt(hitDummy, cfg.damage, dummyHitPos, knockback);
+        audioSystem.playImpact();
+        this.onShake(0.03);
         bolt.isDead = true;
         this.scene.remove(bolt.mesh);
         this.bolts.splice(i, 1);
         continue;
       }
 
-      for (const dummy of dummies) {
-        if (dummy.isDead) continue;
-        if (bolt.pos.distanceTo(dummy.getCenter()) < 1.35) {
-          const knockback = bolt.vel.clone().normalize().multiplyScalar(5.0);
-          knockback.y = 2.0;
-          this.onDamageDealt(dummy, cfg.damage, bolt.pos.clone(), knockback);
-          audioSystem.playImpact();
-          this.onShake(0.03);
-          bolt.isDead = true;
-          this.scene.remove(bolt.mesh);
-          this.bolts.splice(i, 1);
-          break;
-        }
+      if (solidHit) {
+        // Surface impact (structure, ward or ground): stop right there.
+        audioSystem.playImpact(solidHit.point);
+        this.onShake(0.02);
+        bolt.isDead = true;
+        this.scene.remove(bolt.mesh);
+        this.bolts.splice(i, 1);
+        continue;
+      }
+
+      if (bolt.pos.distanceTo(bolt.startPos) > bolt.maxRange) {
+        bolt.isDead = true;
+        this.scene.remove(bolt.mesh);
+        this.bolts.splice(i, 1);
+        continue;
       }
     }
   }

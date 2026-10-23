@@ -9,6 +9,9 @@ import { audioSystem } from './AudioSystem';
 import { settingsManager, GameSettings, ReticlePosition } from './SettingsManager';
 import { BuildModeManager } from './BuildModeManager';
 import { liveConfigManager, LiveGameConfig } from './LiveConfigManager';
+import { activeAgathaConfig } from './abilities/agatha/AgathaConfig';
+import { activeIronManConfig } from './abilities/ironman/IronManConfig';
+import { getCombatButtonProfile } from './systems/AbilityButtonSystem';
 import { scriptRuntimeEngine } from './ScriptRuntimeEngine';
 import { gameplayRestrictions } from './GameplayRestrictions';
 import { DealDamageSystem } from './systems/DealDamageSystem';
@@ -18,6 +21,7 @@ import {
   DEFAULT_BODY_HEIGHT,
   DEFAULT_STEP_HEIGHT,
 } from './systems/MovementSystem';
+import { worldCollision } from './systems/WorldCollision';
 
 export interface JoystickState {
   x: number; // -1 to 1
@@ -63,7 +67,9 @@ export class GameScene {
   private movementSystem = movementSystem;
   public ironManAbilities!: IronManAbilities;
   public agathaAbilities!: AgathaAbilities;
-  public currentPowerSet: 'classic' | 'ironman' | 'agatha' = 'ironman';
+  public currentPowerSet: 'ironman' | 'agatha' = 'ironman';
+  private combatButtonProfileProvider: (powerSet: 'ironman' | 'agatha') => any =
+    getCombatButtonProfile;
 
   // Dummies & Obstacles
   public dummies: TargetDummy[] = [];
@@ -134,6 +140,8 @@ export class GameScene {
   private targetFlightY: number = 0;
   private currentFlightY: number = 0;
   private flightBankRoll: number = 0;
+  // Free flight: vertical component of the look direction applied by the joystick
+  private freeFlightClimb: number = 0;
 
   // Camera follow state
   private cameraOffset: THREE.Vector3 = new THREE.Vector3(0, 2.3, 5.0);
@@ -273,7 +281,11 @@ export class GameScene {
         return { pos: this.currentAimPoint.clone(), target: null };
       },
       (dummy, dmg, hitPos, kb) => {
-        this.dealDamage(dummy, dmg, hitPos, kb);
+        let finalDmg = dmg;
+        if (this.agathaAbilities?.runicWardState?.active) {
+          finalDmg = dmg * 1.15;
+        }
+        this.dealDamage(dummy, finalDmg, hitPos, kb);
       },
       (amt) => {
         if (this.settings.cameraShake) {
@@ -438,7 +450,7 @@ export class GameScene {
       // matching the character collision model — no inflated vertical tests).
       const dummyRadius = 1.1;
       let intersects = false;
-      for (const box of this.structureBoxes) {
+      for (const box of worldCollision.getMovementBoxes()) {
         if (!box || box.isEmpty()) continue;
         if (
           pos.x > box.min.x - dummyRadius &&
@@ -587,7 +599,7 @@ export class GameScene {
     ).normalize();
   }
 
-  public setPowerSet(set: 'classic' | 'ironman' | 'agatha'): void {
+  public setPowerSet(set: 'ironman' | 'agatha'): void {
     this.currentPowerSet = set;
     this.animController.isAgatha = set === 'agatha';
     this.respawnPlayer();
@@ -609,6 +621,7 @@ export class GameScene {
     this.isFlying = false;
     this.targetFlightY = 0;
     this.currentFlightY = 0;
+    this.freeFlightClimb = 0;
     this.playerVelocityY = 0;
     this.isGrounded = true;
     this.flightObstacle = null;
@@ -625,10 +638,11 @@ export class GameScene {
       this.ironManAbilities.customPowerColor = null;
     }
     if (this.agathaAbilities) {
-      this.agathaAbilities.isDarkDrainActive = false;
+      this.agathaAbilities.cancelDarkDrain();
       this.agathaAbilities.cancelArcaneChoke();
       this.agathaAbilities.isArcaneFlightActive = false;
     }
+    audioSystem.stopAllLoops();
     this.animController.dualBeamActive = false;
     this.animController.spinningLasersActive = false;
     this.animController.darkDrainActive = false;
@@ -642,7 +656,7 @@ export class GameScene {
     // Particle spawn chime
     this.projectileSystem.emitImpactParticles(new THREE.Vector3(0, 1, 0), 25, this.currentPowerSet === 'agatha' ? 0xa855f7 : 0x00f0ff);
     if (this.currentPowerSet === 'agatha') {
-      audioSystem.playShadowStep();
+      audioSystem.playShadowStep('arrive');
     } else {
       audioSystem.playRepulsor();
     }
@@ -656,12 +670,6 @@ export class GameScene {
       gameplayRestrictions.hasRestriction('Stunned')
     ) {
       return false;
-    }
-
-    // If Beam Clash is active, tapping ATTACK pushes the clash forward!
-    if (this.ironManAbilities && this.ironManAbilities.clashState.active) {
-      this.ironManAbilities.onClashTap();
-      return true;
     }
 
     // Naturally orient character to aim direction when attacking
@@ -706,44 +714,7 @@ export class GameScene {
       return false;
     }
 
-    if (this.animController.getIsAttacking()) {
-      return false;
-    }
-
-    // Classic basic attack
-    const castingHandPos = new THREE.Vector3();
-    this.stickman.rightHand.getWorldPosition(castingHandPos);
-    const toAim = this.currentAimPoint.clone().sub(castingHandPos).normalize();
-    const aimPitch = Math.asin(toAim.y);
-
-    audioSystem.playAttackCast();
-
-    if (this.settings.cameraShake) {
-      this.addCameraShake(0.04);
-    }
-
-    this.animController.triggerAttack(aimPitch, () => {
-      this.stickman.rightHand.getWorldPosition(castingHandPos);
-
-      let targetDummy: TargetDummy | null = null;
-      let targetDir = new THREE.Vector3();
-
-      if (this.settings.aimAssist && this.activeTarget && !this.activeTarget.isDead) {
-        targetDummy = this.activeTarget;
-        targetDir.subVectors(targetDummy.getCenter(), castingHandPos).normalize();
-      } else {
-        targetDir.subVectors(this.currentAimPoint, castingHandPos).normalize();
-      }
-
-      this.projectileSystem.launch(
-        castingHandPos,
-        targetDir,
-        targetDummy,
-        this.settings.aimAssist && targetDummy !== null
-      );
-    });
-
-    return true;
+    return false;
   }
 
   public triggerAbility(id: number): boolean {
@@ -761,7 +732,7 @@ export class GameScene {
       // 1. Dynamic triggerAbility hook if defined by custom script
       if (typeof (this.agathaAbilities as any).triggerAbility === 'function') {
         const handled = (this.agathaAbilities as any).triggerAbility(id, this.playerPos, this.dummies);
-        if (handled !== undefined && handled !== false) return true;
+        if (handled !== undefined) return handled;
       }
 
       // 2. Standard independent ability dispatches
@@ -789,7 +760,7 @@ export class GameScene {
       this.orientCharacterToAim();
       if (typeof (this.ironManAbilities as any).triggerAbility === 'function') {
         const handled = (this.ironManAbilities as any).triggerAbility(id);
-        if (handled !== undefined && handled !== false) return true;
+        if (handled !== undefined) return handled;
       }
 
       if (id === 1) {
@@ -801,7 +772,120 @@ export class GameScene {
         this.ironManAbilities.fireHeavyMissile();
         return true;
       } else if (id === 4) {
+        if (this.ironManAbilities.isSpinningLasersActive) {
+          this.ironManAbilities.stopSpinningLasers();
+          return false;
+        }
         this.ironManAbilities.triggerSpinningLasers(this.playerRotationY);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // ===== Ability Toggle System =====
+  public isAbilityActive(id: number): boolean {
+    if (this.currentPowerSet === 'agatha' && this.agathaAbilities) {
+      if (id === 1) return !!this.agathaAbilities.isDarkDrainActive;
+      if (id === 2) return false;
+      if (id === 3) return !!this.agathaAbilities.runicWardState?.active;
+      if (id === 4) return !!this.agathaAbilities.chokeState?.active;
+    }
+    if (this.currentPowerSet === 'ironman' && this.ironManAbilities) {
+      if (id === 1) return false;
+      if (id === 2) return !!this.ironManAbilities.isDualBeamActive;
+      if (id === 3) return !!this.ironManAbilities.isChargingHeavyBlast;
+      if (id === 4) return !!this.ironManAbilities.isSpinningLasersActive;
+    }
+    return false;
+  }
+
+  public isAbilityToggle(id: number): boolean {
+    const cfg = this.getAbilityToggleConfig(id);
+    return !!cfg.toggle;
+  }
+
+  public getAbilityCancelDelay(id: number): number {
+    const cfg = this.getAbilityToggleConfig(id);
+    return typeof cfg.cancelDelay === 'number' ? cfg.cancelDelay : 0.5;
+  }
+
+  public getAbilityCooldownStartMode(id: number): 'activation' | 'cancelOrNaturalEnd' {
+    const cfg = this.getAbilityToggleConfig(id);
+    return (cfg.cooldownStart as any) || (cfg.toggle ? 'cancelOrNaturalEnd' : 'activation');
+  }
+
+  private getAbilityToggleConfig(id: number): { toggle: boolean; cancelDelay: number; cooldownStart: string } {
+    if (this.currentPowerSet === 'agatha') {
+      const map: Record<number, any> = {
+        1: activeAgathaConfig.darkDrain,
+        2: activeAgathaConfig.chaosOrb,
+        3: activeAgathaConfig.runicWard,
+        4: activeAgathaConfig.arcaneChoke,
+      };
+      const section = map[id];
+      if (section) {
+        return {
+          toggle: section.toggle ?? (id === 1 || id === 3 || id === 4),
+          cancelDelay: section.cancelDelay ?? 0.5,
+          cooldownStart: section.cooldownStart ?? 'cancelOrNaturalEnd',
+        };
+      }
+    }
+    if (this.currentPowerSet === 'ironman') {
+      const map: Record<number, any> = {
+        1: activeIronManConfig.microMissiles,
+        2: activeIronManConfig.dualBeams,
+        3: activeIronManConfig.unibeam,
+        4: activeIronManConfig.spinningLasers,
+      };
+      const section = map[id];
+      if (section) {
+        return {
+          toggle: section.toggle ?? (id === 2 || id === 4),
+          cancelDelay: section.cancelDelay ?? 0.5,
+          cooldownStart: section.cooldownStart ?? 'cancelOrNaturalEnd',
+        };
+      }
+    }
+    // fallback static profile
+    try {
+      const profile = this.combatButtonProfileProvider(this.currentPowerSet);
+      const def = profile?.abilities?.find((a: any) => a.id === id);
+      if (def) {
+        return {
+          toggle: def.toggle ?? false,
+          cancelDelay: def.cancelDelay ?? 0.5,
+          cooldownStart: def.cooldownStart ?? 'activation',
+        };
+      }
+    } catch { /* ignore */ }
+    return { toggle: false, cancelDelay: 0.5, cooldownStart: 'activation' };
+  }
+
+  public cancelAbility(id: number): boolean {
+    if (this.currentPowerSet === 'agatha' && this.agathaAbilities) {
+      if (id === 1 && this.agathaAbilities.isDarkDrainActive) {
+        this.agathaAbilities.cancelDarkDrain();
+        return true;
+      }
+      if (id === 3 && this.agathaAbilities.runicWardState?.active) {
+        this.agathaAbilities.runicWardModule?.cancel?.();
+        this.agathaAbilities.runicWardState.active = false;
+        return true;
+      }
+      if (id === 4 && this.agathaAbilities.chokeState?.active) {
+        this.agathaAbilities.cancelArcaneChoke();
+        return true;
+      }
+    }
+    if (this.currentPowerSet === 'ironman' && this.ironManAbilities) {
+      if (id === 2 && this.ironManAbilities.isDualBeamActive) {
+        this.ironManAbilities.stopDualBeam();
+        return true;
+      }
+      if (id === 4 && this.ironManAbilities.isSpinningLasersActive) {
+        this.ironManAbilities.stopSpinningLasers();
         return true;
       }
     }
@@ -826,7 +910,7 @@ export class GameScene {
         const customDash = (this.agathaAbilities as any).triggerDash(
           this.playerPos,
           this.getMovementDirection(),
-          this.structureBoxes
+          worldCollision.getMovementBoxes()
         );
         if (customDash) return true;
       }
@@ -836,7 +920,7 @@ export class GameScene {
         const success = this.agathaAbilities.triggerShadowStep(
           this.playerPos,
           dir,
-          this.structureBoxes,
+          worldCollision.getMovementBoxes(),
           (dest) => {
             this.playerPos.x = dest.x;
             this.playerPos.z = dest.z;
@@ -884,6 +968,14 @@ export class GameScene {
     this.isFlying = !this.isFlying;
     this.playerVelocityY = 0;
     this.flightObstacle = null;
+    if (this.isFlying) {
+      // Free flight take-off: start at the standard hover height, or hold the
+      // current altitude when already airborne.
+      this.targetFlightY = Math.max(
+        this.playerPos.y,
+        this.flightSystem.getTargetAltitude(true, this.currentPowerSet)
+      );
+    }
     if (this.currentPowerSet === 'agatha') {
       audioSystem.playArcaneFlight(this.isFlying);
       if (this.agathaAbilities) {
@@ -943,15 +1035,40 @@ export class GameScene {
    * - Flying / levitating: altitude is held above the surface below and clamped
    *   so solid geometry can never swallow the character.
    */
+  /**
+   * Hard ceiling of the active AgathaRunicWard: while the character is under
+   * the roof (inside its footprint) the ascent is capped so nothing can pass
+   * through the ceiling. Standing or walking on top of the roof is unaffected
+   * because those positions are already at/above the roof plane.
+   */
+  private clampUnderWardCeiling(y: number): number {
+    const ceiling = worldCollision.wardCeiling;
+    if (!ceiling) return y;
+    if (this.playerPos.y >= ceiling.min.y) return y;
+    const radius = this.playerCollisionRadius;
+    const insideFootprint =
+      this.playerPos.x > ceiling.min.x - radius &&
+      this.playerPos.x < ceiling.max.x + radius &&
+      this.playerPos.z > ceiling.min.z - radius &&
+      this.playerPos.z < ceiling.max.z + radius;
+    if (!insideFootprint) return y;
+    const maxY = ceiling.min.y - this.playerBodyHeight;
+    return y > maxY ? maxY : y;
+  }
+
   private resolveVerticalState(dt: number, chokeOffset: number): void {
     const radius = this.playerCollisionRadius;
     const stepHeight = this.playerStepHeight;
+
+    // Vertical queries see every solid face, including the ward roof, so the
+    // character can land on top of it instead of sinking through.
+    const verticalBoxes = worldCollision.getBoxes();
 
     const support = this.movementSystem.getSupportHeight(
       this.playerPos.x,
       this.playerPos.z,
       this.playerPos.y,
-      this.structureBoxes,
+      verticalBoxes,
       radius,
       stepHeight
     );
@@ -959,9 +1076,16 @@ export class GameScene {
     if (this.isFlying || chokeOffset > 0.001) {
       let desiredY = 0;
       if (this.isFlying) {
-        desiredY = this.flightSystem.getTargetAltitude(true, this.currentPowerSet);
+        // Free flight: altitude is steered by the joystick impulse along the
+        // look direction (ascend looking up, descend looking down).
+        if (Math.abs(this.freeFlightClimb) > 0.001) {
+          this.targetFlightY += this.freeFlightClimb * this.flightMaxSpeed * dt;
+        }
+        desiredY = this.targetFlightY;
         // Never sink into the surface being hovered over.
-        desiredY = Math.max(desiredY, support + FLYING_SURFACE_CLEARANCE);
+        const minY = support + FLYING_SURFACE_CLEARANCE;
+        if (desiredY < minY) desiredY = minY;
+        if (this.targetFlightY < minY) this.targetFlightY = minY;
 
         // Obstacles taller than the current altitude push the flight path up so
         // the character can clear them instead of being blocked forever. The
@@ -979,7 +1103,9 @@ export class GameScene {
             this.playerPos.y >= obstacle.max.y + FLYING_OBSTACLE_CLEARANCE * 0.5;
 
           if (stillNearObstacle && !climbedOverObstacle) {
-            desiredY = Math.max(desiredY, obstacle.max.y + FLYING_OBSTACLE_CLEARANCE);
+            const obstacleY = obstacle.max.y + FLYING_OBSTACLE_CLEARANCE;
+            if (desiredY < obstacleY) desiredY = obstacleY;
+            if (this.targetFlightY < obstacleY) this.targetFlightY = obstacleY;
           } else {
             this.flightObstacle = null;
           }
@@ -991,6 +1117,9 @@ export class GameScene {
       if (chokeOffset > 0.001) {
         desiredY = Math.max(desiredY, support + chokeOffset);
       }
+
+      // Never rise through the ward roof.
+      desiredY = this.clampUnderWardCeiling(desiredY);
 
       const hoverBob = this.flightSystem.getHoverOffset(
         this.isFlying,
@@ -1009,6 +1138,7 @@ export class GameScene {
       if (this.currentFlightY < support) {
         this.currentFlightY = support;
       }
+      this.currentFlightY = this.clampUnderWardCeiling(this.currentFlightY);
       this.playerPos.y = this.currentFlightY;
       this.playerVelocityY = 0;
       this.isGrounded = Math.abs(this.playerPos.y - support) < 0.02;
@@ -1026,7 +1156,7 @@ export class GameScene {
       this.playerPos.x,
       this.playerPos.z,
       Math.max(nextY, this.playerPos.y),
-      this.structureBoxes,
+      verticalBoxes,
       radius,
       stepHeight
     );
@@ -1063,6 +1193,10 @@ export class GameScene {
   };
 
   private update(dt: number): void {
+    audioSystem.setListenerPosition(this.playerPos);
+    // Keep the shared collision world in sync with the live structure boxes
+    // (test structures + Build Mode placements + Runic Ward registration).
+    worldCollision.setStructureBoxes(this.structureBoxes);
     // When in Build Mode, suspend character gameplay movement and update editor camera & dummies
     if (this.isBuildMode) {
       this.currentSpeed = 0;
@@ -1151,11 +1285,29 @@ export class GameScene {
     // 2. Camera-relative movement direction
     const camForward = new THREE.Vector3();
     this.camera.getWorldDirection(camForward);
-    camForward.y = 0;
-    camForward.normalize();
+
+    // Free flight: the joystick impulse follows the user's view direction,
+    // including the camera pitch (looking up ascends, looking down descends).
+    // On foot, movement remains horizontal.
+    const lookPitch = camForward.y;
+    const moveForward = new THREE.Vector3(
+      camForward.x,
+      this.isFlying ? lookPitch : 0,
+      camForward.z
+    );
+    if (moveForward.lengthSq() > 1e-6) {
+      moveForward.normalize();
+    } else {
+      moveForward.set(camForward.x, 0, camForward.z).normalize();
+    }
 
     const camRight = new THREE.Vector3();
-    camRight.crossVectors(camForward, new THREE.Vector3(0, 1, 0)).normalize();
+    camRight.crossVectors(moveForward, new THREE.Vector3(0, 1, 0));
+    if (camRight.lengthSq() > 1e-6) {
+      camRight.normalize();
+    } else {
+      camRight.set(-moveForward.z, 0, moveForward.x).normalize();
+    }
 
     const moveDir = new THREE.Vector3();
     const effectiveMaxSpeed = this.movementSystem.getEffectiveSpeed(
@@ -1166,8 +1318,9 @@ export class GameScene {
 
     if (normalizedMagnitude > 0) {
       moveDir.addScaledVector(camRight, normX);
-      moveDir.addScaledVector(camForward, -normY);
+      moveDir.addScaledVector(moveForward, -normY);
       moveDir.normalize();
+      this.freeFlightClimb = this.isFlying ? moveDir.y : 0;
 
       const targetSpeed = normalizedMagnitude * effectiveMaxSpeed;
       this.currentSpeed = THREE.MathUtils.damp(this.currentSpeed, targetSpeed, 28.0, dt);
@@ -1193,6 +1346,7 @@ export class GameScene {
       if (this.currentSpeed < 0.005) {
         this.currentSpeed = 0;
       }
+      this.freeFlightClimb = 0;
       this.flightBankRoll = this.flightSystem.dampLevelBank(
         this.flightBankRoll,
         this.currentPowerSet,
@@ -1214,7 +1368,7 @@ export class GameScene {
         this.playerPos,
         this.dashDir,
         this.dashSpeed * dt,
-        this.structureBoxes,
+        worldCollision.getMovementBoxes(),
         this.playerCollisionRadius,
         bodyProfile
       );
@@ -1231,7 +1385,7 @@ export class GameScene {
         this.playerPos,
         facingDir,
         this.currentSpeed * dt,
-        this.structureBoxes,
+        worldCollision.getMovementBoxes(),
         this.playerCollisionRadius,
         bodyProfile
       );
@@ -1259,7 +1413,9 @@ export class GameScene {
     const padHit = this.buildModeManager.checkJumpPads(this.playerPos);
     if (padHit && !this.isDashing) {
       this.isFlying = true;
-      const bounce = Math.min(16, this.playerPos.y + padHit.bouncePower * 0.38);
+      const bounce = this.clampUnderWardCeiling(
+        Math.min(16, this.playerPos.y + padHit.bouncePower * 0.38)
+      );
       this.playerPos.y = bounce;
       this.currentFlightY = bounce;
       this.targetFlightY = bounce;
@@ -1538,7 +1694,7 @@ export class GameScene {
 
       return {
         id: dn.id,
-        value: dn.value,
+        value: Math.round(dn.value),
         x: screenX,
         y: screenY,
         opacity,
@@ -1553,7 +1709,9 @@ export class GameScene {
     hitPosition: THREE.Vector3,
     knockback?: THREE.Vector3
   ): number {
-    return this.dealDamageSystem.deal(dummy, damage, hitPosition, knockback).actualDamage;
+    const intDamage = Math.max(0, Math.round(Number.isFinite(damage) ? damage : 0));
+    const result = this.dealDamageSystem.deal(dummy, intDamage, hitPosition, knockback);
+    return Math.max(0, Math.round(Number.isFinite(result.actualDamage) ? result.actualDamage : 0));
   }
 
   public updateDealDamageSystem(NewClass: any): void {
@@ -1838,7 +1996,102 @@ export class GameScene {
     }
   }
 
-  public updateAgathaAbilities(NewClass: any): void {
+  /** Installs an edited FlightSystem class. Throws before committing if invalid. */
+  public installFlightSystem(NewClass: any): void {
+    if (typeof NewClass !== 'function') {
+      throw new Error('Classe de FlightSystem inválida.');
+    }
+    const candidate = new NewClass();
+    const required = ['getProfile', 'getTargetAltitude', 'getHoverOffset', 'dampAltitude', 'dampBank', 'dampLevelBank', 'getThrusterLevels', 'getBankLimit'];
+    for (const method of required) {
+      if (typeof candidate[method] !== 'function') {
+        throw new Error(`FlightSystem editado não implementa "${method}".`);
+      }
+    }
+    // Smoke-test the contract with the active power set before committing.
+    candidate.getProfile(this.currentPowerSet);
+    this.flightSystem = candidate;
+  }
+
+  /** Installs an edited MovementSystem class. */
+  public installMovementSystem(NewClass: any): void {
+    if (typeof NewClass !== 'function') {
+      throw new Error('Classe de MovementSystem inválida.');
+    }
+    const candidate = new NewClass();
+    const required = ['getEffectiveSpeed', 'getSupportHeight', 'moveWithCollision', 'facingDirection'];
+    for (const method of required) {
+      if (typeof candidate[method] !== 'function') {
+        throw new Error(`MovementSystem editado não implementa "${method}".`);
+      }
+    }
+    candidate.facingDirection(this.playerRotationY);
+    this.movementSystem = candidate;
+  }
+
+  /** Installs an edited CombatButton profile provider used by gameplay logic. */
+  public installCombatButtonProfileProvider(provider: any): void {
+    if (typeof provider !== 'function') {
+      throw new Error('getCombatButtonProfile editado não é uma função.');
+    }
+    provider(this.currentPowerSet);
+    this.combatButtonProfileProvider = provider;
+  }
+
+  /** Installs an edited BuildModeManager class, preserving editor callbacks/state. */
+  public installBuildModeManager(NewClass: any): void {
+    if (typeof NewClass !== 'function') {
+      throw new Error('Classe de BuildModeManager inválida.');
+    }
+    const next = new NewClass(this.scene, this.camera, this.renderer);
+    const required = ['registerDefaultSunLight', 'registerDefaultBaseplate', 'registerDefaultStickman', 'exportSceneJson'];
+    for (const method of required) {
+      if (typeof next[method] !== 'function') {
+        throw new Error(`BuildModeManager editado não implementa "${method}".`);
+      }
+    }
+    next.onCollisionBoxesChanged = (boxes: THREE.Box3[]) => {
+      this.structureBoxes = boxes;
+    };
+    next.onDummyCreated = (dummy: TargetDummy) => {
+      this.dummies.push(dummy);
+    };
+    next.onDummyRemoved = (dummy: TargetDummy) => {
+      const idx = this.dummies.indexOf(dummy);
+      if (idx !== -1) this.dummies.splice(idx, 1);
+    };
+    next.registerDefaultSunLight(this.dirLight);
+    next.registerDefaultBaseplate(this.baseplateMesh);
+    next.registerDefaultStickman(this.stickman.root);
+
+    // Preserve objects, history, selection and snapping from the running editor
+    // instead of reloading storage (which would duplicate the saved scene).
+    const previous: any = this.buildModeManager;
+    const nextAny: any = next;
+    if (previous) {
+      nextAny.objectsMap = previous.objectsMap;
+      nextAny.undoStack = previous.undoStack;
+      nextAny.redoStack = previous.redoStack;
+      nextAny.selectedId = previous.selectedId;
+      nextAny.gridSnap = previous.gridSnap;
+      nextAny.rotateSnap = previous.rotateSnap;
+      nextAny.showCollisionHelpers = previous.showCollisionHelpers;
+      nextAny.isFreeFlyMode = previous.isFreeFlyMode;
+      nextAny.collisionHelpers = previous.collisionHelpers;
+      // Detach shared maps so dispose() does not clear the transferred state.
+      previous.objectsMap = new Map();
+      previous.collisionHelpers = new Map();
+      previous.listeners?.clear?.();
+    }
+    this.buildModeManager = next;
+    try {
+      previous?.dispose?.();
+    } catch {
+      // Old editor state is disposable.
+    }
+  }
+
+  public updateAgathaAbilities(NewClass: any, options?: { selectCharacter?: boolean }): void {
     if (this.agathaAbilities) {
       try {
         this.agathaAbilities.dispose();
@@ -1876,7 +2129,13 @@ export class GameScene {
       }
     } catch (err) {
       console.error('Error instantiating updated AgathaAbilities:', err);
-      this.agathaAbilities = new AgathaAbilities(this.scene, this.stickman, getAim, onDamage, onShake);
+      this.agathaAbilities = new AgathaAbilities(this.scene, this.stickman, getAim, (dummy, dmg, hitPos, kb) => {
+        let finalDmg = dmg;
+        if (this.agathaAbilities?.runicWardState?.active) {
+          finalDmg = dmg * 1.15;
+        }
+        this.dealDamage(dummy, finalDmg, hitPos, kb);
+      }, onShake);
     }
 
     if (this.agathaAbilities) {
@@ -1885,9 +2144,13 @@ export class GameScene {
       };
     }
 
-    // Automatically align power set to Agatha so play test immediately executes Agatha
-    this.currentPowerSet = 'agatha';
-    this.animController.isAgatha = true;
+    // Automatically align power set to Agatha so play test immediately executes
+    // Agatha. Structural rebuilds pass selectCharacter:false to keep the
+    // currently active hero untouched.
+    if (options?.selectCharacter !== false) {
+      this.currentPowerSet = 'agatha';
+      this.animController.isAgatha = true;
+    }
   }
 
   public updateAnimationController(NewClass: any): void {
@@ -1938,16 +2201,31 @@ export class GameScene {
   }
 
   public updateStickmanRig(rigFactory: () => StickmanNodes): void {
+    if (typeof rigFactory !== 'function') {
+      throw new Error('Fábrica de StickmanRig inválida.');
+    }
+    const previousAgatha = this.currentPowerSet === 'agatha';
+    const candidate = rigFactory();
+    if (
+      !candidate ||
+      !candidate.root ||
+      !candidate.thrusters ||
+      !candidate.leftHand ||
+      !candidate.rightHand
+    ) {
+      throw new Error('StickmanRig editado não expõe os nós obrigatórios (root/thrusters/mãos).');
+    }
     if (this.stickman) {
       this.scene.remove(this.stickman.root);
     }
-    this.stickman = rigFactory();
+    this.stickman = candidate;
     this.scene.add(this.stickman.root);
     this.stickman.root.position.copy(this.playerPos);
     this.stickman.root.rotation.y = this.playerRotationY;
+    this.buildModeManager?.registerDefaultStickman?.(this.stickman.root);
     this.animController = new AnimationController(this.stickman);
     this.animController.isFlying = this.isFlying;
-    this.animController.isAgatha = this.currentPowerSet === 'agatha';
+    this.animController.isAgatha = previousAgatha;
   }
 
   public updateTargetDummyClass(NewClass: any): void {
@@ -2028,6 +2306,7 @@ export class GameScene {
     if (this.agathaAbilities) {
       this.agathaAbilities.dispose();
     }
+    audioSystem.stopAllLoops();
 
     if (this.renderer.domElement && this.renderer.domElement.parentNode) {
       this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);

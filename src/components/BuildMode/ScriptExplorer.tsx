@@ -398,14 +398,14 @@ export const ScriptExplorer: React.FC<ScriptExplorerProps> = ({
   };
 
   const visibility = mobileOpen
-    ? 'fixed inset-y-12 left-0 z-40 flex shadow-2xl'
+    ? 'fixed inset-y-0 left-0 z-40 flex shadow-2xl'
     : isOpen
-    ? 'hidden md:flex'
+    ? 'hidden relative md:flex'
     : 'hidden';
 
   return (
     <aside
-      className={`relative border-r border-[#27272a] bg-[#101013] flex-col shrink-0 transition-transform ${visibility}`}
+      className={`border-r border-[#27272a] bg-[#101013] flex-col shrink-0 transition-transform ${visibility}`}
       style={{ width: mobileOpen ? 'min(340px, 86vw)' : width }}
       aria-label="Explorador de scripts"
     >

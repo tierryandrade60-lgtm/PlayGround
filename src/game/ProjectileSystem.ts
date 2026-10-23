@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { TargetDummy } from './TargetDummy';
 import { audioSystem } from './AudioSystem';
+import { WorldCollision, worldCollision } from './systems/WorldCollision';
 
 export interface DamageNumber {
   id: number;
@@ -124,9 +125,10 @@ export class ProjectileSystem {
   private nextDamageId: number = 1;
 
   public spawnDamageNumber(value: number, worldPos: THREE.Vector3): void {
+    const intValue = Math.max(0, Math.round(Number.isFinite(value) ? value : 0));
     this.damageNumbers.push({
       id: this.nextDamageId++,
-      value,
+      value: intValue,
       worldPos: worldPos.clone().add(new THREE.Vector3(0, 0.4, 0)),
       age: 0,
       maxAge: 0.95,
@@ -195,6 +197,7 @@ export class ProjectileSystem {
     // 1. Update active projectiles
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const p = this.projectiles[i];
+      const prevPos = p.pos.clone();
       p.update(dt);
 
       // Trail sparks
@@ -217,38 +220,53 @@ export class ProjectileSystem {
         });
       }
 
-      // Check collision with dummies
-      let hit = false;
+      // Segment test against structures + ward + ground so fast projectiles
+      // can never tunnel through a surface.
+      const segmentLength = prevPos.distanceTo(p.pos);
+      const solidHit = worldCollision.segmentHit(prevPos, p.pos, 0.15);
+      const solidDistance = solidHit ? solidHit.distance : Number.POSITIVE_INFINITY;
+
+      // Nearest dummy along the travelled segment.
+      let hitDummy: TargetDummy | null = null;
+      let dummyDistance = Number.POSITIVE_INFINITY;
+      let dummyHitPos: THREE.Vector3 | null = null;
+
       for (const dummy of dummies) {
         if (dummy.isDead) continue;
         const dummyCenter = dummy.getCenter();
-        const dist = p.pos.distanceTo(dummyCenter);
 
-        if (dist <= dummy.radius + 0.3) {
-          hit = true;
-          const hitPos = p.pos.clone();
-          const { actualDamage } = dummy.takeDamage(25, hitPos);
-
-          // Add floating damage number
-          this.damageNumbers.push({
-            id: this.nextDamageId++,
-            value: actualDamage,
-            worldPos: hitPos.clone().add(new THREE.Vector3(0, 0.4, 0)),
-            age: 0,
-            maxAge: 0.95,
-          });
-
-          this.emitImpactParticles(hitPos, 22, 0x48cae4);
-          audioSystem.playImpact();
-          this.onImpactCallback(true);
-          break;
+        if (
+          WorldCollision.distanceToSegment(prevPos, p.pos, dummyCenter) >
+          dummy.radius + 0.3
+        ) {
+          continue;
         }
+
+        const t = WorldCollision.closestTOnSegment(prevPos, p.pos, dummyCenter);
+        const along = t * segmentLength;
+        if (along >= dummyDistance || along >= solidDistance) continue;
+
+        dummyDistance = along;
+        dummyHitPos = new THREE.Vector3().lerpVectors(prevPos, p.pos, t);
+        hitDummy = dummy;
       }
 
-      // Check ground collision
-      if (!hit && p.pos.y <= 0.05) {
+      let hit = false;
+
+      if (hitDummy && dummyHitPos && dummyDistance <= solidDistance) {
         hit = true;
-        this.emitImpactParticles(p.pos, 12, 0x7a8694);
+        const hitPos = dummyHitPos;
+        const { actualDamage } = hitDummy.takeDamage(25, hitPos);
+        this.spawnDamageNumber(actualDamage, hitPos);
+
+        this.emitImpactParticles(hitPos, 22, 0x48cae4);
+        audioSystem.playImpact();
+        this.onImpactCallback(true);
+      } else if (solidHit) {
+        // Structure wall or ground: splash on the surface, never beyond it.
+        hit = true;
+        const hitPos = solidHit.point.clone();
+        this.emitImpactParticles(hitPos, 12, solidHit.box ? 0x9aa7b5 : 0x7a8694);
         audioSystem.playImpact();
         this.onImpactCallback(false);
       }
@@ -269,12 +287,20 @@ export class ProjectileSystem {
       }
 
       // Gravity and air drag
+      const prevX = part.pos.x;
+      const prevY = part.pos.y;
+      const prevZ = part.pos.z;
       part.vel.y -= 9.8 * dt;
       part.vel.multiplyScalar(0.96);
       part.pos.addScaledVector(part.vel, dt);
 
-      // Floor bounce
-      if (part.pos.y < 0.02) {
+      if (worldCollision.isPointInSolid(part.pos, part.size)) {
+        // Structures (and ward faces) absorb the particle: step back to the
+        // surface and kill most of its momentum instead of passing through.
+        part.pos.set(prevX, prevY, prevZ);
+        part.vel.multiplyScalar(-0.25);
+      } else if (part.pos.y < 0.02) {
+        // Floor bounce
         part.pos.y = 0.02;
         part.vel.y = -part.vel.y * 0.4;
       }

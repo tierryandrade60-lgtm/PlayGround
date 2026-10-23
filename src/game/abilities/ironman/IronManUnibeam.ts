@@ -23,6 +23,7 @@ import { StickmanNodes } from '../../StickmanRig';
 import { audioSystem } from '../../AudioSystem';
 import { activeIronManConfig } from './IronManConfig';
 import { gameplayRestrictions } from '../../GameplayRestrictions';
+import { worldCollision } from '../../systems/WorldCollision';
 
 const MAX_RANGE = 34;
 const CHARGE_TIME = 0.24;
@@ -157,9 +158,14 @@ export class IronManUnibeam {
       MAX_RANGE
     );
 
-    const endpoint = chestPos
+    let endpoint = chestPos
       .clone()
       .addScaledVector(direction, beamLength);
+
+    if (cfg.collideWithWorld !== false) {
+      const solidHit = worldCollision.segmentHit(chestPos, endpoint, 0.12);
+      if (solidHit) endpoint = solidHit.point.clone();
+    }
 
     // Registra o disparo somente após validar a direção.
     this.lastFireAt = now;
@@ -168,7 +174,7 @@ export class IronManUnibeam {
     this.applyUnibeamRestrictions();
 
     try {
-      audioSystem.playUnibeamCharge?.();
+      audioSystem.playUnibeamSequence?.();
 
       this.onShake(0.045);
 
@@ -176,7 +182,9 @@ export class IronManUnibeam {
       if (
         aimDestination.target &&
         !aimDestination.target.isDead &&
-        requestedDistance <= MAX_RANGE
+        requestedDistance <= MAX_RANGE &&
+        (cfg.collideWithWorld === false ||
+          !worldCollision.isSegmentBlocked(chestPos, aimDestination.target.getCenter(), 0.12))
       ) {
         const knockback = direction
           .clone()

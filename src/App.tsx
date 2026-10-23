@@ -20,14 +20,11 @@ import { CombatButtons } from './components/CombatButtons';
 import { AimReticle } from './components/AimReticle';
 import { SettingsModal } from './components/SettingsModal';
 import { PowerSelectModal, PowerSetType } from './components/PowerSelectModal';
-import { BeamClashBanner } from './components/BeamClashBanner';
 import { OrientationGuard } from './components/OrientationGuard';
 import { BuildModeContainer } from './components/BuildMode/BuildModeContainer';
 import { settingsManager, GameSettings } from './game/SettingsManager';
 import { audioSystem } from './game/AudioSystem';
-import { BeamClashState } from './game/IronManAbilities';
 import { scriptRuntimeEngine } from './game/ScriptRuntimeEngine';
-import * as THREE from 'three';
 
 export default function App() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -154,17 +151,6 @@ export default function App() {
     gameSceneRef.current?.respawnPlayer();
   }, []);
 
-  // Beam Clash Real-time State
-  const [clashState, setClashState] = useState<BeamClashState>({
-    active: false,
-    rival: null,
-    progress: 0.5,
-    clashPoint: new THREE.Vector3(),
-    duration: 0,
-    maxDuration: 6.0,
-    lastTapTime: 0,
-  });
-
   // Camera Drag Touch Tracking
   const cameraTouchIdRef = useRef<number | null>(null);
   const lastTouchPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -191,22 +177,6 @@ export default function App() {
     };
   }, []);
 
-  // Poll Beam Clash state for reactive UI updates
-  useEffect(() => {
-    let animId = 0;
-    const checkClash = () => {
-      if (gameSceneRef.current?.ironManAbilities) {
-        const cs = gameSceneRef.current.ironManAbilities.clashState;
-        if (cs.active !== clashState.active || Math.abs(cs.progress - clashState.progress) > 0.01) {
-          setClashState({ ...cs });
-        }
-      }
-      animId = requestAnimationFrame(checkClash);
-    };
-    animId = requestAnimationFrame(checkClash);
-    return () => cancelAnimationFrame(animId);
-  }, [clashState.active, clashState.progress]);
-
   const handleJoystickMove = useCallback((x: number, y: number, active: boolean) => {
     gameSceneRef.current?.setJoystickInput(x, y, active);
   }, []);
@@ -217,6 +187,10 @@ export default function App() {
 
   const handleAbility = useCallback((id: number): boolean => {
     return gameSceneRef.current?.triggerAbility(id) ?? false;
+  }, []);
+
+  const handleCancelAbility = useCallback((id: number): boolean => {
+    return gameSceneRef.current?.cancelAbility(id) ?? false;
   }, []);
 
   const handleDash = useCallback((): boolean => {
@@ -299,8 +273,6 @@ export default function App() {
     (scriptRuntimeEngine.getComponent('aim-reticle') as typeof AimReticle) || AimReticle;
   const ActiveVirtualJoystick =
     (scriptRuntimeEngine.getComponent('virtual-joystick') as typeof VirtualJoystick) || VirtualJoystick;
-  const ActiveBeamClashBanner =
-    (scriptRuntimeEngine.getComponent('beam-clash-banner') as typeof BeamClashBanner) || BeamClashBanner;
   const ActivePowerSelectModal =
     (scriptRuntimeEngine.getComponent('power-select-modal') as typeof PowerSelectModal) || PowerSelectModal;
   const ActiveSettingsModal =
@@ -350,9 +322,6 @@ export default function App() {
             aimAssistEnabled={settings.aimAssist}
           />
 
-          {/* Beam Clash Tug-of-War Interactive Banner */}
-          <ActiveBeamClashBanner clashState={clashState} />
-
           {/* Mobile Virtual Joystick (Bottom-Left) */}
           <div data-control="true">
             <ActiveVirtualJoystick onMove={handleJoystickMove} />
@@ -363,11 +332,12 @@ export default function App() {
             <ActiveCombatButtons
               onAttack={handleAttack}
               onAbility={handleAbility}
+              onCancelAbility={handleCancelAbility}
+              gameScene={gameSceneState}
               onDash={handleDash}
               onToggleFlight={handleToggleFlight}
               isFlying={isFlying}
               powerSet={powerSet}
-              isClashActive={clashState.active}
             />
           </div>
 
@@ -421,7 +391,7 @@ export default function App() {
               }
             />
             <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.06em' }}>
-              {powerSet === 'agatha' ? 'AGATHA HARKNESS' : powerSet === 'ironman' ? 'HOMEM DE FERRO' : 'CLASSIC POWERS'}
+              {powerSet === 'agatha' ? 'AGATHA HARKNESS' : 'HOMEM DE FERRO'}
             </span>
           </button>
 

@@ -19,11 +19,13 @@ import {
   activeAgathaConfig,
   updateAgathaConfig,
   resetAgathaConfig,
+  type AbilityToggleMode,
 } from '../../game/abilities/agatha/AgathaConfig';
 import {
   activeIronManConfig,
   updateIronManConfig,
   resetIronManConfig,
+  type AbilityToggleMode as IronAbilityToggleMode,
 } from '../../game/abilities/ironman/IronManConfig';
 import { audioSystem } from '../../game/AudioSystem';
 
@@ -240,35 +242,115 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ onToast }) => {
               <RangeRow label="Dano" value={agatha.arcaneBlast.damage} min={5} max={200} onChange={(v) => updateAgatha({ arcaneBlast: { ...agatha.arcaneBlast, damage: v } })} />
               <RangeRow label="Velocidade" value={agatha.arcaneBlast.speed} min={10} max={90} step={0.5} onChange={(v) => updateAgatha({ arcaneBlast: { ...agatha.arcaneBlast, speed: v } })} />
               <RangeRow label="Alcance" value={agatha.arcaneBlast.maxRange} min={10} max={120} onChange={(v) => updateAgatha({ arcaneBlast: { ...agatha.arcaneBlast, maxRange: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Colide com cenário</span>
+                <input type="checkbox" checked={agatha.arcaneBlast.collideWithWorld} onChange={(e) => updateAgatha({ arcaneBlast: { ...agatha.arcaneBlast, collideWithWorld: e.target.checked } })} className="accent-cyan-500" />
+              </label>
               <RangeRow label="Recarga" value={agatha.arcaneBlast.cooldown} min={0.05} max={3} step={0.01} unit="s" onChange={(v) => updateAgatha({ arcaneBlast: { ...agatha.arcaneBlast, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={agatha.arcaneBlast.toggle} onChange={(e) => updateAgatha({ arcaneBlast: { ...agatha.arcaneBlast, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={agatha.arcaneBlast.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateAgatha({ arcaneBlast: { ...agatha.arcaneBlast, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={agatha.arcaneBlast.cooldownStart} onChange={(e) => updateAgatha({ arcaneBlast: { ...agatha.arcaneBlast, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <Section title="Dreno Sombrio">
               <RangeRow label="DPS" value={agatha.darkDrain.dps} min={1} max={150} onChange={(v) => updateAgatha({ darkDrain: { ...agatha.darkDrain, dps: v } })} />
               <RangeRow label="Cura por segundo" value={agatha.darkDrain.healRate} min={0} max={100} onChange={(v) => updateAgatha({ darkDrain: { ...agatha.darkDrain, healRate: v } })} />
               <RangeRow label="Duração" value={agatha.darkDrain.duration} min={0.5} max={10} step={0.1} unit="s" onChange={(v) => updateAgatha({ darkDrain: { ...agatha.darkDrain, duration: v } })} />
               <RangeRow label="Alcance" value={agatha.darkDrain.range} min={5} max={60} onChange={(v) => updateAgatha({ darkDrain: { ...agatha.darkDrain, range: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={agatha.darkDrain.toggle} onChange={(e) => updateAgatha({ darkDrain: { ...agatha.darkDrain, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={agatha.darkDrain.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateAgatha({ darkDrain: { ...agatha.darkDrain, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={agatha.darkDrain.cooldownStart} onChange={(e) => updateAgatha({ darkDrain: { ...agatha.darkDrain, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <Section title="Orbe do Caos">
               <RangeRow label="Dano direto" value={agatha.chaosOrb.directDamage} min={5} max={300} onChange={(v) => updateAgatha({ chaosOrb: { ...agatha.chaosOrb, directDamage: v } })} />
               <RangeRow label="Dano em área" value={agatha.chaosOrb.splashDamage} min={0} max={300} onChange={(v) => updateAgatha({ chaosOrb: { ...agatha.chaosOrb, splashDamage: v } })} />
               <RangeRow label="Raio da explosão" value={agatha.chaosOrb.splashRadius} min={1} max={20} step={0.5} onChange={(v) => updateAgatha({ chaosOrb: { ...agatha.chaosOrb, splashRadius: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Colide com cenário</span>
+                <input type="checkbox" checked={agatha.chaosOrb.collideWithWorld} onChange={(e) => updateAgatha({ chaosOrb: { ...agatha.chaosOrb, collideWithWorld: e.target.checked } })} className="accent-cyan-500" />
+              </label>
               <RangeRow label="Recarga" value={agatha.chaosOrb.cooldown} min={0.5} max={30} step={0.1} unit="s" onChange={(v) => updateAgatha({ chaosOrb: { ...agatha.chaosOrb, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={agatha.chaosOrb.toggle} onChange={(e) => updateAgatha({ chaosOrb: { ...agatha.chaosOrb, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={agatha.chaosOrb.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateAgatha({ chaosOrb: { ...agatha.chaosOrb, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={agatha.chaosOrb.cooldownStart} onChange={(e) => updateAgatha({ chaosOrb: { ...agatha.chaosOrb, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <Section title="Proteção Rúnica">
               <RangeRow label="Saúde do escudo" value={agatha.runicWard.shieldHealth} min={10} max={500} onChange={(v) => updateAgatha({ runicWard: { ...agatha.runicWard, shieldHealth: v } })} />
               <RangeRow label="Duração" value={agatha.runicWard.duration} min={1} max={20} step={0.5} unit="s" onChange={(v) => updateAgatha({ runicWard: { ...agatha.runicWard, duration: v } })} />
               <RangeRow label="Redução de dano" value={agatha.runicWard.damageReduction} min={0} max={0.95} step={0.05} onChange={(v) => updateAgatha({ runicWard: { ...agatha.runicWard, damageReduction: v } })} />
               <RangeRow label="Recarga" value={agatha.runicWard.cooldown} min={1} max={30} step={0.5} unit="s" onChange={(v) => updateAgatha({ runicWard: { ...agatha.runicWard, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={agatha.runicWard.toggle} onChange={(e) => updateAgatha({ runicWard: { ...agatha.runicWard, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={agatha.runicWard.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateAgatha({ runicWard: { ...agatha.runicWard, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={agatha.runicWard.cooldownStart} onChange={(e) => updateAgatha({ runicWard: { ...agatha.runicWard, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <Section title="Estrangulamento Arcano">
               <RangeRow label="Dano por tick" value={agatha.arcaneChoke.tickDamage} min={1} max={150} onChange={(v) => updateAgatha({ arcaneChoke: { ...agatha.arcaneChoke, tickDamage: v } })} />
               <RangeRow label="Duração" value={agatha.arcaneChoke.duration} min={0.5} max={10} step={0.1} unit="s" onChange={(v) => updateAgatha({ arcaneChoke: { ...agatha.arcaneChoke, duration: v } })} />
               <RangeRow label="Alcance" value={agatha.arcaneChoke.maxRange} min={5} max={80} onChange={(v) => updateAgatha({ arcaneChoke: { ...agatha.arcaneChoke, maxRange: v } })} />
               <RangeRow label="Recarga" value={agatha.arcaneChoke.cooldown} min={1} max={30} step={0.5} unit="s" onChange={(v) => updateAgatha({ arcaneChoke: { ...agatha.arcaneChoke, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={agatha.arcaneChoke.toggle} onChange={(e) => updateAgatha({ arcaneChoke: { ...agatha.arcaneChoke, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={agatha.arcaneChoke.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateAgatha({ arcaneChoke: { ...agatha.arcaneChoke, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={agatha.arcaneChoke.cooldownStart} onChange={(e) => updateAgatha({ arcaneChoke: { ...agatha.arcaneChoke, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <Section title="Passo das Sombras">
               <RangeRow label="Distância" value={agatha.shadowStep.distance} min={2} max={50} step={0.5} onChange={(v) => updateAgatha({ shadowStep: { ...agatha.shadowStep, distance: v } })} />
               <RangeRow label="Recarga" value={agatha.shadowStep.cooldown} min={0.5} max={20} step={0.5} unit="s" onChange={(v) => updateAgatha({ shadowStep: { ...agatha.shadowStep, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={agatha.shadowStep.toggle} onChange={(e) => updateAgatha({ shadowStep: { ...agatha.shadowStep, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={agatha.shadowStep.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateAgatha({ shadowStep: { ...agatha.shadowStep, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={agatha.shadowStep.cooldownStart} onChange={(e) => updateAgatha({ shadowStep: { ...agatha.shadowStep, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <button
               onClick={() => {
@@ -290,31 +372,115 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ onToast }) => {
               <RangeRow label="Dano" value={iron.repulsor.damage} min={1} max={200} onChange={(v) => updateIron({ repulsor: { ...iron.repulsor, damage: v } })} />
               <RangeRow label="Velocidade" value={iron.repulsor.speed} min={10} max={120} step={0.5} onChange={(v) => updateIron({ repulsor: { ...iron.repulsor, speed: v } })} />
               <RangeRow label="Alcance" value={iron.repulsor.maxRange} min={5} max={150} onChange={(v) => updateIron({ repulsor: { ...iron.repulsor, maxRange: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Colide com cenário</span>
+                <input type="checkbox" checked={iron.repulsor.collideWithWorld} onChange={(e) => updateIron({ repulsor: { ...iron.repulsor, collideWithWorld: e.target.checked } })} className="accent-cyan-500" />
+              </label>
               <RangeRow label="Recarga" value={iron.repulsor.cooldown} min={0.05} max={3} step={0.01} unit="s" onChange={(v) => updateIron({ repulsor: { ...iron.repulsor, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={iron.repulsor.toggle} onChange={(e) => updateIron({ repulsor: { ...iron.repulsor, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={iron.repulsor.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateIron({ repulsor: { ...iron.repulsor, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={iron.repulsor.cooldownStart} onChange={(e) => updateIron({ repulsor: { ...iron.repulsor, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <Section title="Micro-mísseis">
               <RangeRow label="Quantidade" value={iron.microMissiles.volleyCount} min={1} max={16} onChange={(v) => updateIron({ microMissiles: { ...iron.microMissiles, volleyCount: v } })} />
               <RangeRow label="Dano por míssil" value={iron.microMissiles.damagePerMissile} min={1} max={100} onChange={(v) => updateIron({ microMissiles: { ...iron.microMissiles, damagePerMissile: v } })} />
               <RangeRow label="Velocidade" value={iron.microMissiles.speed} min={5} max={80} step={0.5} onChange={(v) => updateIron({ microMissiles: { ...iron.microMissiles, speed: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Colide com cenário</span>
+                <input type="checkbox" checked={iron.microMissiles.collideWithWorld} onChange={(e) => updateIron({ microMissiles: { ...iron.microMissiles, collideWithWorld: e.target.checked } })} className="accent-cyan-500" />
+              </label>
               <RangeRow label="Recarga" value={iron.microMissiles.cooldown} min={0.5} max={30} step={0.5} unit="s" onChange={(v) => updateIron({ microMissiles: { ...iron.microMissiles, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={iron.microMissiles.toggle} onChange={(e) => updateIron({ microMissiles: { ...iron.microMissiles, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={iron.microMissiles.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateIron({ microMissiles: { ...iron.microMissiles, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={iron.microMissiles.cooldownStart} onChange={(e) => updateIron({ microMissiles: { ...iron.microMissiles, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <Section title="Unibeam">
               <RangeRow label="Dano" value={iron.unibeam.damage} min={5} max={400} onChange={(v) => updateIron({ unibeam: { ...iron.unibeam, damage: v } })} />
               <RangeRow label="Tempo de carga" value={iron.unibeam.chargeTime} min={0} max={3} step={0.05} unit="s" onChange={(v) => updateIron({ unibeam: { ...iron.unibeam, chargeTime: v } })} />
               <RangeRow label="Alcance" value={iron.unibeam.range} min={10} max={200} onChange={(v) => updateIron({ unibeam: { ...iron.unibeam, range: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Colide com cenário</span>
+                <input type="checkbox" checked={iron.unibeam.collideWithWorld} onChange={(e) => updateIron({ unibeam: { ...iron.unibeam, collideWithWorld: e.target.checked } })} className="accent-cyan-500" />
+              </label>
               <RangeRow label="Recarga" value={iron.unibeam.cooldown} min={0.5} max={40} step={0.5} unit="s" onChange={(v) => updateIron({ unibeam: { ...iron.unibeam, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={iron.unibeam.toggle} onChange={(e) => updateIron({ unibeam: { ...iron.unibeam, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={iron.unibeam.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateIron({ unibeam: { ...iron.unibeam, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={iron.unibeam.cooldownStart} onChange={(e) => updateIron({ unibeam: { ...iron.unibeam, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <Section title="Feixes Duplos">
               <RangeRow label="DPS" value={iron.dualBeams.dps} min={1} max={200} onChange={(v) => updateIron({ dualBeams: { ...iron.dualBeams, dps: v } })} />
               <RangeRow label="Alcance" value={iron.dualBeams.range} min={5} max={100} onChange={(v) => updateIron({ dualBeams: { ...iron.dualBeams, range: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Colide com cenário</span>
+                <input type="checkbox" checked={iron.dualBeams.collideWithWorld} onChange={(e) => updateIron({ dualBeams: { ...iron.dualBeams, collideWithWorld: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Beam Clash com o rival</span>
+                <input type="checkbox" checked={iron.dualBeams.beamClash} onChange={(e) => updateIron({ dualBeams: { ...iron.dualBeams, beamClash: e.target.checked } })} className="accent-cyan-500" />
+              </label>
               <RangeRow label="Duração máxima" value={iron.dualBeams.maxDuration} min={0.5} max={20} step={0.5} unit="s" onChange={(v) => updateIron({ dualBeams: { ...iron.dualBeams, maxDuration: v } })} />
               <RangeRow label="Recarga" value={iron.dualBeams.cooldown} min={0.5} max={40} step={0.5} unit="s" onChange={(v) => updateIron({ dualBeams: { ...iron.dualBeams, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={iron.dualBeams.toggle} onChange={(e) => updateIron({ dualBeams: { ...iron.dualBeams, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={iron.dualBeams.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateIron({ dualBeams: { ...iron.dualBeams, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={iron.dualBeams.cooldownStart} onChange={(e) => updateIron({ dualBeams: { ...iron.dualBeams, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <Section title="Lasers Giratórios">
               <RangeRow label="Dano" value={iron.spinningLasers.damage} min={1} max={200} onChange={(v) => updateIron({ spinningLasers: { ...iron.spinningLasers, damage: v } })} />
               <RangeRow label="Raio" value={iron.spinningLasers.radius} min={1} max={20} step={0.5} onChange={(v) => updateIron({ spinningLasers: { ...iron.spinningLasers, radius: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Colide com cenário</span>
+                <input type="checkbox" checked={iron.spinningLasers.collideWithWorld} onChange={(e) => updateIron({ spinningLasers: { ...iron.spinningLasers, collideWithWorld: e.target.checked } })} className="accent-cyan-500" />
+              </label>
               <RangeRow label="Duração" value={iron.spinningLasers.duration} min={0.2} max={10} step={0.1} unit="s" onChange={(v) => updateIron({ spinningLasers: { ...iron.spinningLasers, duration: v } })} />
               <RangeRow label="Recarga" value={iron.spinningLasers.cooldown} min={0.5} max={40} step={0.5} unit="s" onChange={(v) => updateIron({ spinningLasers: { ...iron.spinningLasers, cooldown: v } })} />
+              <label className="flex items-center justify-between text-[11px] text-[#d4d4d8]">
+                <span>Toggle</span>
+                <input type="checkbox" checked={iron.spinningLasers.toggle} onChange={(e) => updateIron({ spinningLasers: { ...iron.spinningLasers, toggle: e.target.checked } })} className="accent-cyan-500" />
+              </label>
+              <RangeRow label="Tempo de cancelamento" value={iron.spinningLasers.cancelDelay} min={0.1} max={3} step={0.1} unit="s" onChange={(v) => updateIron({ spinningLasers: { ...iron.spinningLasers, cancelDelay: v } })} />
+              <label className="block text-[11px] space-y-1">
+                <span className="text-[#d4d4d8]">Início do cooldown</span>
+                <select value={iron.spinningLasers.cooldownStart} onChange={(e) => updateIron({ spinningLasers: { ...iron.spinningLasers, cooldownStart: e.target.value as AbilityToggleMode } })} className="w-full bg-[#101013] border border-[#27272a] rounded px-2 py-1 text-[11px] text-white">
+                  <option value="activation">Na ativação</option>
+                  <option value="cancelOrNaturalEnd">Após cancelar/terminar</option>
+                </select>
+              </label>
             </Section>
             <button
               onClick={() => {

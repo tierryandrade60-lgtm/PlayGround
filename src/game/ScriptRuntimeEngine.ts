@@ -22,7 +22,7 @@ import {
   subscribeAppliedChanges,
   AppliedScriptRecord,
 } from './AppliedScriptStore';
-import { liveConfigManager } from './LiveConfigManager';
+import { liveConfigManager, DEFAULT_LIVE_CONFIG } from './LiveConfigManager';
 import { audioSystem } from './AudioSystem';
 import { settingsManager, DEFAULT_SETTINGS } from './SettingsManager';
 import { TargetDummy } from './TargetDummy';
@@ -30,6 +30,7 @@ import { createStickmanRig } from './StickmanRig';
 import { AnimationController } from './AnimationController';
 import { ProjectileSystem } from './ProjectileSystem';
 import { BuildModeManager } from './BuildModeManager';
+import { BUILD_MODE_SCENE } from './generated/BuildModeDefaults';
 import { AgathaAbilities } from './AgathaAbilities';
 import { IronManAbilities } from './IronManAbilities';
 import { gameplayRestrictions, GameplayRestrictionsManager } from './GameplayRestrictions';
@@ -57,17 +58,28 @@ import { IronManRepulsor } from './abilities/ironman/IronManRepulsor';
 import { IronManMicroMissiles } from './abilities/ironman/IronManMicroMissiles';
 import { IronManUnibeam } from './abilities/ironman/IronManUnibeam';
 import { IronManDualBeams } from './abilities/ironman/IronManDualBeams';
+import { IronManBeamVisual, BeamClashDisk } from './abilities/ironman/IronManBeamFx';
 import { IronManSpinningLasers } from './abilities/ironman/IronManSpinningLasers';
 import { DealDamageSystem } from './systems/DealDamageSystem';
 import { FlightSystem } from './systems/FlightSystem';
 import { CooldownSystem } from './systems/CooldownSystem';
 import { MovementSystem } from './systems/MovementSystem';
+import {
+  WorldCollision,
+  worldCollision,
+  installWorldCollisionInstance,
+} from './systems/WorldCollision';
 import { soundSystem } from './systems/SoundSystem';
+import {
+  COMBAT_BUTTON_PROFILES,
+  getCombatButtonProfile,
+  installCombatButtonProfileProvider,
+} from './systems/AbilityButtonSystem';
+import { AUDIO_MANIFEST, LOOP_AUDIO_KEYS } from './audio/AudioManifest';
 
 import { CombatButtons } from '../components/CombatButtons';
 import { VirtualJoystick } from '../components/VirtualJoystick';
 import { AimReticle } from '../components/AimReticle';
-import { BeamClashBanner } from '../components/BeamClashBanner';
 import { PowerSelectModal } from '../components/PowerSelectModal';
 import { SettingsModal } from '../components/SettingsModal';
 
@@ -170,12 +182,79 @@ const RUNTIME_FACADE_MODULES = new Set([
   'settingsmanager',
   'liveconfigmanager',
   'buildmodemanager',
+  'buildmodedefaults',
   'scriptruntimeengine',
 ]);
+
+const AGATHA_ABILITY_IDS = [
+  'agatha-arcane-blast',
+  'agatha-dark-drain',
+  'agatha-chaos-orb',
+  'agatha-runic-ward',
+  'agatha-choke',
+  'agatha-shadow-step',
+];
+
+const IRONMAN_ABILITY_IDS = [
+  'ironman-repulsor',
+  'ironman-micro-missiles',
+  'ironman-unibeam',
+  'ironman-dual-beams',
+  'ironman-spinning-lasers',
+];
+
+/**
+ * Explicit "who must be reinstalled when this module changes" edges. Catalog
+ * dependencies cover imports; these cover semantic runtime wiring that is not
+ * expressed as an import (HUD pulling a system, controllers owning modules).
+ */
+const EXTRA_DEPENDENTS: Record<string, string[]> = {
+  'cooldown-system': ['combat-buttons'],
+  'ability-button-system': ['combat-buttons'],
+  'settings-manager': ['combat-buttons', 'settings-modal', 'aim-reticle'],
+  'sound-system': ['ironman-dual-beams', 'ironman-spinning-lasers'],
+  'ironman-beam-fx': ['ironman-dual-beams', 'ironman-unibeam'],
+  'agatha-abilities': AGATHA_ABILITY_IDS,
+  'ironman-abilities': IRONMAN_ABILITY_IDS,
+  'target-dummy': ['projectile-system'],
+  'level-geometry': [],
+};
+
+// Values exposed to compiled modules in place of `import.meta`.
+const RUNTIME_IMPORT_META_ENV = {
+  BASE_URL: import.meta.env.BASE_URL || '/',
+  MODE: import.meta.env.MODE || 'production',
+  DEV: false,
+  PROD: true,
+};
+const RUNTIME_IMPORT_META_URL =
+  typeof location !== 'undefined' ? location.href : '';
+
+/**
+ * HUD components that statically import a system. When the system changes at
+ * runtime they must be recompiled (even if unedited) so the new code is used.
+ */
+const FORCE_DEPENDENT_REINSTALL: Record<string, string[]> = {
+  'cooldown-system': ['combat-buttons'],
+  'ability-button-system': ['combat-buttons'],
+};
 
 const EXPECTED_EXPORTS: Record<string, string[]> = {
   'agatha-config': ['activeAgathaConfig', 'default'],
   'ironman-config': ['activeIronManConfig', 'default'],
+  'agatha-flight-config': ['AGATHA_FLIGHT_PROFILE'],
+  'ironman-flight-config': ['IRONMAN_FLIGHT_PROFILE'],
+  'flight-system': ['FlightSystem'],
+  'movement-system': ['MovementSystem'],
+  'cooldown-system': ['CooldownSystem'],
+  'ability-button-system': ['COMBAT_BUTTON_PROFILES', 'getCombatButtonProfile'],
+  'sound-system': ['audioSystem', 'soundSystem'],
+  'world-collision': ['WorldCollision'],
+  'audio-manifest': ['AUDIO_MANIFEST'],
+  'settings-manager': ['settingsManager', 'DEFAULT_SETTINGS'],
+  'live-config-manager': ['liveConfigManager', 'DEFAULT_LIVE_CONFIG'],
+  'build-mode-manager': ['BuildModeManager'],
+  'ironman-beam-fx': ['IronManBeamVisual', 'BeamClashDisk'],
   'agatha-arcane-blast': ['AgathaArcaneBlast', 'default'],
   'agatha-dark-drain': ['AgathaDarkDrain', 'default'],
   'agatha-chaos-orb': ['AgathaChaosOrb', 'default'],
@@ -190,9 +269,6 @@ const EXPECTED_EXPORTS: Record<string, string[]> = {
   'ironman-spinning-lasers': ['IronManSpinningLasers', 'default'],
   'ironman-abilities': ['IronManAbilities', 'default'],
   'deal-damage-system': ['DealDamageSystem', 'default'],
-  'flight-system': ['FlightSystem', 'default'],
-  'movement-system': ['MovementSystem', 'default'],
-  'cooldown-system': ['CooldownSystem', 'default'],
   'animation-controller': ['AnimationController', 'default'],
   'projectile-system': ['ProjectileSystem', 'default'],
   'target-dummy': ['TargetDummy', 'default'],
@@ -200,7 +276,6 @@ const EXPECTED_EXPORTS: Record<string, string[]> = {
   'combat-buttons': ['CombatButtons', 'default'],
   'virtual-joystick': ['VirtualJoystick', 'default'],
   'aim-reticle': ['AimReticle', 'default'],
-  'beam-clash-banner': ['BeamClashBanner', 'default'],
   'power-select-modal': ['PowerSelectModal', 'default'],
   'settings-modal': ['SettingsModal', 'default'],
   'orientation-guard': ['OrientationGuard', 'default'],
@@ -250,6 +325,14 @@ class ScriptRuntimeEngine {
   private uiComponentRegistry: Map<string, React.ComponentType<any>> = new Map();
   private compiledModules: Map<string, Record<string, unknown>> = new Map();
   private aliasToScriptId: Map<string, string> = new Map();
+  private dependentGraph: Map<string, string[]> = new Map();
+  /**
+   * Modules actually installed during THIS session. The persisted `record.running`
+   * is only meaningful when it is in this set, otherwise the UI would show a
+   * stale "running" badge for restart-required code left over from last visit.
+   */
+  private runningNow: Set<string> = new Set();
+  private effectiveWorldCollisionClass: typeof WorldCollision = WorldCollision;
   private rehydratedScenes: WeakSet<object> = new WeakSet();
   private operationQueues: Map<string, Promise<unknown>> = new Map();
   private applyTokens: Map<string, number> = new Map();
@@ -264,7 +347,7 @@ class ScriptRuntimeEngine {
   private appliedSyncStarted = false;
   private lastAppliedStoreSource: 'server' | 'bundle' = 'bundle';
 
-  public onPowerSetRequested?: (powerSet: 'classic' | 'ironman' | 'agatha') => void;
+  public onPowerSetRequested?: (powerSet: 'ironman' | 'agatha') => void;
 
   constructor() {
     this.loadPersistedCatalog();
@@ -533,6 +616,34 @@ class ScriptRuntimeEngine {
       this.aliasToScriptId.set(normalizeKey(fileBase.replace(/\.(ts|tsx|js|jsx)$/i, '')), script.id);
       this.aliasToScriptId.set(normalizeKey(script.name), script.id);
     }
+    this.rebuildDependencyGraph();
+  }
+
+  /**
+   * Reverse dependency graph: "when module X changes, module Y must be
+   * reinstalled". Built from the catalog `dependencies` plus semantic edges
+   * that are not expressed as imports.
+   */
+  private rebuildDependencyGraph(): void {
+    this.dependentGraph.clear();
+    const addEdge = (dependencyId: string, dependentId: string) => {
+      if (!dependencyId || !dependentId || dependencyId === dependentId) return;
+      const current = this.dependentGraph.get(dependencyId) ?? [];
+      if (!current.includes(dependentId)) {
+        current.push(dependentId);
+        this.dependentGraph.set(dependencyId, current);
+      }
+    };
+
+    for (const script of [...PROJECT_SCRIPTS, ...this.customScripts]) {
+      for (const dependencyName of script.dependencies ?? []) {
+        const dependencyId = this.aliasToScriptId.get(normalizeKey(dependencyName));
+        if (dependencyId) addEdge(dependencyId, script.id);
+      }
+    }
+    for (const [dependencyId, dependents] of Object.entries(EXTRA_DEPENDENTS)) {
+      for (const dependentId of dependents) addEdge(dependencyId, dependentId);
+    }
   }
 
   public setGameScene(scene: unknown): void {
@@ -543,7 +654,7 @@ class ScriptRuntimeEngine {
     return this.activeGameScene;
   }
 
-  public requestPowerSet(powerSet: 'classic' | 'ironman' | 'agatha'): void {
+  public requestPowerSet(powerSet: 'ironman' | 'agatha'): void {
     this.onPowerSetRequested?.(powerSet);
   }
 
@@ -692,7 +803,8 @@ class ScriptRuntimeEngine {
     const record = this.getRecord(id);
     const original = script?.originalSource || '';
     const draft = record.draft ?? record.applied ?? record.saved ?? original;
-    const running = this.activeGameScene ? record.running : null;
+    const running =
+      this.activeGameScene && this.runningNow.has(id) ? record.running : null;
     const hasUnappliedChanges = !!record.applied && record.applied !== draft;
     const hasDraftChanges = draft !== original;
 
@@ -921,9 +1033,13 @@ class ScriptRuntimeEngine {
       record.applied = code;
       record.appliedHash = hash;
       record.appliedAt = Date.now();
+      record.running = null;
+      record.runningHash = null;
+      record.runningAt = null;
       record.revision += 1;
       record.updatedAt = Date.now();
       record.error = null;
+      this.runningNow.delete(id);
       this.statusErrors.delete(id);
       this.persistRecord(record);
       try {
@@ -1047,7 +1163,7 @@ class ScriptRuntimeEngine {
 
       let integration: { note: string; runningSource?: string };
       try {
-        integration = this.integrate(id, compiled.moduleExports, scene, options);
+        integration = await this.integrate(id, compiled.moduleExports, scene, options);
       } catch (err) {
         const message = (err as Error).message || 'Falha de integração com o jogo.';
         const diagnostic = this.recordError(
@@ -1085,6 +1201,7 @@ class ScriptRuntimeEngine {
       record.runningAt = Date.now();
       record.lastWorking = record.running;
       record.lastWorkingHash = record.runningHash;
+      this.runningNow.add(id);
       record.revision += 1;
       record.updatedAt = Date.now();
       record.error = null;
@@ -1108,7 +1225,7 @@ class ScriptRuntimeEngine {
       }
 
       if (!options.skipDependents) {
-        this.reapplyDependents(id, scene);
+        await this.reapplyDependents(id, scene, !!options.startup);
       }
 
       this.notify();
@@ -1179,6 +1296,12 @@ class ScriptRuntimeEngine {
       };
     }
 
+    // `import.meta` is not valid inside the Function-based module sandbox.
+    // AudioSystem (and user scripts) may use it, so route it to real values.
+    compiledJs = compiledJs
+      .replace(/\bimport\.meta\.env\b/g, '__runtimeImportMetaEnv')
+      .replace(/\bimport\.meta\.url\b/g, '__runtimeImportMetaUrl');
+
     const dependencyError = this.validateDependencies(compiledJs);
     if (dependencyError) {
       return {
@@ -1219,6 +1342,8 @@ class ScriptRuntimeEngine {
         '__liveConfigManager',
         '__settingsManager',
         '__gameplayRestrictions',
+        '__runtimeImportMetaEnv',
+        '__runtimeImportMetaUrl',
         compiledJs
       );
       factory(
@@ -1230,7 +1355,9 @@ class ScriptRuntimeEngine {
         audioSystem,
         liveConfigManager,
         settingsManager,
-        gameplayRestrictions
+        gameplayRestrictions,
+        RUNTIME_IMPORT_META_ENV,
+        RUNTIME_IMPORT_META_URL
       );
       const exported = moduleObj.exports;
       const expected = EXPECTED_EXPORTS[id];
@@ -1339,23 +1466,18 @@ class ScriptRuntimeEngine {
     if (targetId === 'agatha-config' || base === 'agathaconfig') return this.agathaConfigFacade();
     if (targetId === 'ironman-config' || base === 'ironmanconfig') return this.ironManConfigFacade();
 
-    if (targetId && this.compiledModules.has(targetId)) {
-      return this.compiledModules.get(targetId)!;
-    }
-
+    // Singletons/facades must stay live: compiled copies of these modules export
+    // their own instance, which would silently detach from the running game.
     if (norm.includes('audiosystem') || targetId === 'audio-system') {
       return { audioSystem, default: audioSystem };
     }
-    if (norm.includes('soundsystem') || targetId === 'sound-system') {
-      return { soundSystem, audioSystem, default: soundSystem };
-    }
-    if (norm.includes('settingsmanager')) {
+    if (norm.includes('settingsmanager') || targetId === 'settings-manager') {
       return { settingsManager, DEFAULT_SETTINGS, default: settingsManager };
     }
-    if (norm.includes('liveconfigmanager')) {
-      return { liveConfigManager, default: liveConfigManager };
+    if (norm.includes('liveconfigmanager') || targetId === 'live-config-manager') {
+      return { liveConfigManager, DEFAULT_LIVE_CONFIG, default: liveConfigManager };
     }
-    if (norm.includes('buildmodemanager')) {
+    if (norm.includes('buildmodemanager') || targetId === 'build-mode-manager') {
       return { BuildModeManager, default: BuildModeManager };
     }
     if (norm.includes('scriptruntimeengine')) {
@@ -1363,6 +1485,21 @@ class ScriptRuntimeEngine {
     }
     if (norm.includes('gameplayrestrictions') || targetId === 'gameplay-restrictions') {
       return { gameplayRestrictions, GameplayRestrictionsManager, default: gameplayRestrictions };
+    }
+    if (norm.includes('worldcollision') || targetId === 'world-collision') {
+      return {
+        WorldCollision: this.effectiveWorldCollisionClass,
+        worldCollision,
+        default: worldCollision,
+      };
+    }
+
+    if (targetId && this.compiledModules.has(targetId)) {
+      return this.compiledModules.get(targetId)!;
+    }
+
+    if (norm.includes('soundsystem') || targetId === 'sound-system') {
+      return { soundSystem, audioSystem, default: soundSystem };
     }
 
     const defaults: Record<string, unknown> = {
@@ -1378,6 +1515,23 @@ class ScriptRuntimeEngine {
       ironmanmicromissiles: { IronManMicroMissiles, default: IronManMicroMissiles },
       ironmanunibeam: { IronManUnibeam, default: IronManUnibeam },
       ironmandualbeams: { IronManDualBeams, default: IronManDualBeams },
+      ironmanbeamfx: { IronManBeamVisual, BeamClashDisk, default: IronManBeamVisual },
+      worldcollision: {
+        WorldCollision: this.effectiveWorldCollisionClass,
+        worldCollision,
+        default: worldCollision,
+      },
+      abilitybuttonsystem: {
+        COMBAT_BUTTON_PROFILES,
+        getCombatButtonProfile,
+        default: getCombatButtonProfile,
+      },
+      audiomanifest: {
+        AUDIO_MANIFEST: audioSystem.getAudioManifest(),
+        LOOP_AUDIO_KEYS,
+        default: AUDIO_MANIFEST,
+      },
+      buildmodedefaults: { BUILD_MODE_SCENE, default: BUILD_MODE_SCENE },
       ironmanspinninglasers: { IronManSpinningLasers, default: IronManSpinningLasers },
       ironmanabilities: { IronManAbilities, default: IronManAbilities },
       dealdamagesystem: { DealDamageSystem, default: DealDamageSystem },
@@ -1391,7 +1545,6 @@ class ScriptRuntimeEngine {
       combatbuttons: { CombatButtons, default: CombatButtons },
       virtualjoystick: { VirtualJoystick, default: VirtualJoystick },
       aimreticle: { AimReticle, default: AimReticle },
-      beamclashbanner: { BeamClashBanner, default: BeamClashBanner },
       powerselectmodal: { PowerSelectModal, default: PowerSelectModal },
       settingsmodal: { SettingsModal, default: SettingsModal },
     };
@@ -1429,31 +1582,35 @@ class ScriptRuntimeEngine {
       }
       return { pos: scene.currentAimPoint.clone(), target: null };
     };
-    const onDamage = (dummy: any, dmg: number, hitPos: any, kb: any) => {
-      const res = dummy.takeDamage(dmg, hitPos, kb);
-      if (res.actualDamage > 0) scene.triggerHitConfirm?.();
-      if (scene.projectileSystem?.damageNumbers && typeof scene.projectileSystem.nextDamageId === 'number') {
-        scene.projectileSystem.damageNumbers.push({
-          id: scene.projectileSystem.nextDamageId++,
-          value: res.actualDamage,
-          worldPos: hitPos.clone().add(new THREE.Vector3(0, 0.4, 0)),
-          age: 0,
-          maxAge: 0.95,
-        });
-      }
-    };
+      const onDamage = (dummy: any, dmg: number, hitPos: any, kb: any) => {
+        const intDmg = Math.round(dmg);
+        const res = dummy.takeDamage(intDmg, hitPos, kb);
+        if (res.actualDamage > 0) scene.triggerHitConfirm?.();
+        const sink = scene.projectileSystem;
+        if (typeof sink?.spawnDamageNumber === 'function') {
+          sink.spawnDamageNumber(res.actualDamage, hitPos);
+        } else if (sink?.damageNumbers && typeof sink.nextDamageId === 'number') {
+          sink.damageNumbers.push({
+            id: sink.nextDamageId++,
+            value: Math.max(0, Math.round(Number.isFinite(res.actualDamage) ? res.actualDamage : 0)),
+            worldPos: hitPos.clone().add(new THREE.Vector3(0, 0.4, 0)),
+            age: 0,
+            maxAge: 0.95,
+          });
+        }
+      };
     const onShake = (amt: number) => {
       if (scene.settings?.cameraShake) scene.addCameraShake?.(amt);
     };
     return { getAim, onDamage, onShake };
   }
 
-  private integrate(
+  private async integrate(
     id: string,
     moduleExports: Record<string, unknown>,
     scene: unknown,
     options: ApplyOptions
-  ): { note: string; runningSource?: string } {
+  ): Promise<{ note: string; runningSource?: string }> {
     const typedScene = scene as any;
 
     switch (id) {
@@ -1636,7 +1793,6 @@ class ScriptRuntimeEngine {
       case 'combat-buttons':
       case 'virtual-joystick':
       case 'aim-reticle':
-      case 'beam-clash-banner':
       case 'power-select-modal':
       case 'settings-modal':
       case 'orientation-guard': {
@@ -1644,7 +1800,6 @@ class ScriptRuntimeEngine {
           'combat-buttons': ['CombatButtons'],
           'virtual-joystick': ['VirtualJoystick'],
           'aim-reticle': ['AimReticle'],
-          'beam-clash-banner': ['BeamClashBanner'],
           'power-select-modal': ['PowerSelectModal'],
           'settings-modal': ['SettingsModal'],
           'orientation-guard': ['OrientationGuard'],
@@ -1654,9 +1809,125 @@ class ScriptRuntimeEngine {
         this.notifyUi();
         return { note: 'Componente React substituído no HUD ativo.' };
       }
+      case 'flight-system': {
+        if (!typedScene) throw new Error('Cena do jogo indisponível.');
+        if (typeof typedScene.installFlightSystem !== 'function') {
+          throw new Error('A cena não expõe installFlightSystem.');
+        }
+        const FlightClass = this.pickClass(moduleExports, ['FlightSystem', 'default']);
+        typedScene.installFlightSystem(FlightClass);
+        return { note: 'Sistema de voo substituído; perfis e propulsores agora usam o código aplicado.' };
+      }
+      case 'movement-system': {
+        if (!typedScene) throw new Error('Cena do jogo indisponível.');
+        if (typeof typedScene.installMovementSystem !== 'function') {
+          throw new Error('A cena não expõe installMovementSystem.');
+        }
+        const MovementClass = this.pickClass(moduleExports, ['MovementSystem', 'default']);
+        typedScene.installMovementSystem(MovementClass);
+        return { note: 'Sistema de movimento substituído no loop ativo.' };
+      }
+      case 'agatha-flight-config':
+      case 'ironman-flight-config': {
+        const agent = id === 'agatha-flight-config' ? 'Agatha' : 'Homem de Ferro';
+        const profile = this.pickObject(moduleExports, [
+          id === 'agatha-flight-config' ? 'AGATHA_FLIGHT_PROFILE' : 'IRONMAN_FLIGHT_PROFILE',
+          'default',
+        ]);
+        if (!profile) throw new Error(`O perfil de voo do ${agent} não exporta um objeto válido.`);
+        for (const field of ['hoverHeight', 'bankLimit']) {
+          if (typeof (profile as any)[field] !== 'number' || !Number.isFinite((profile as any)[field])) {
+            throw new Error(`O perfil de voo do ${agent} não define "${field}" como número.`);
+          }
+        }
+        return {
+          note: `Perfil de voo do ${agent} atualizado; o sistema de voo ativo o consome imediatamente.`,
+        };
+      }
+      case 'cooldown-system':
+        return {
+          note: 'Módulo recompilado. Componentes de combate foram reinstalados para consumir o código aplicado.',
+        };
+      case 'ability-button-system': {
+        const provider = moduleExports.getCombatButtonProfile;
+        if (typeof provider !== 'function') {
+          throw new Error('AbilityButtonSystem editado não exporta getCombatButtonProfile.');
+        }
+        installCombatButtonProfileProvider(provider as any);
+        typedScene?.installCombatButtonProfileProvider?.(getCombatButtonProfile);
+        return {
+          note: 'Perfis de botões atualizados no HUD e na lógica de cooldown do jogo.',
+        };
+      }
+      case 'sound-system': {
+        const exported = this.pickObject(moduleExports, ['soundSystem', 'default']);
+        if (exported) this.graftSingletonMethods(audioSystem, exported);
+        return { note: 'Sistema de som recompilado e consumido pelo áudio ativo.' };
+      }
+      case 'audio-manifest': {
+        const manifest = this.pickObject(moduleExports, ['AUDIO_MANIFEST', 'default']);
+        if (!manifest) throw new Error('O manifesto de áudio não exporta AUDIO_MANIFEST.');
+        const loopKeys = Array.isArray(moduleExports.LOOP_AUDIO_KEYS)
+          ? (moduleExports.LOOP_AUDIO_KEYS as unknown[]).filter((key): key is string => typeof key === 'string')
+          : undefined;
+        audioSystem.applyAudioManifest(manifest as any, loopKeys);
+        return { note: 'Manifesto de áudio aplicado; buffers alterados foram recarregados.' };
+      }
+      case 'world-collision': {
+        const CollisionClass = this.pickClass(moduleExports, ['WorldCollision', 'default']);
+        const candidate = new CollisionClass();
+        installWorldCollisionInstance(candidate);
+        this.effectiveWorldCollisionClass = CollisionClass;
+        return { note: 'Sistema de colisão substituído mantendo estrutura e ward ativos.' };
+      }
+      case 'settings-manager':
+      case 'live-config-manager': {
+        const isSettings = id === 'settings-manager';
+        const source = this.pickObject(moduleExports, [isSettings ? 'settingsManager' : 'liveConfigManager', 'default']);
+        if (!source) throw new Error('O módulo não exporta o singleton esperado.');
+        const target = isSettings ? settingsManager : liveConfigManager;
+        this.graftSingletonMethods(target, source);
+        return {
+          note: isSettings
+            ? 'SettingsManager atualizado preservando listeners e configurações ativas.'
+            : 'LiveConfigManager atualizado preservando estado e listeners ativos.',
+        };
+      }
+      case 'build-mode-manager': {
+        if (!typedScene) throw new Error('Cena do jogo indisponível.');
+        if (typeof typedScene.installBuildModeManager !== 'function') {
+          throw new Error('A cena não expõe installBuildModeManager.');
+        }
+        const ManagerClass = this.pickClass(moduleExports, ['BuildModeManager', 'default']);
+        typedScene.installBuildModeManager(ManagerClass);
+        return { note: 'Editor de cenário substituído preservando objetos, callbacks e persistência.' };
+      }
+      case 'ironman-beam-fx':
+        return {
+          note: 'Efeitos de feixe atualizados; feixes e discos de clash ativos foram reinstalados.',
+        };
+      case 'stickman-rig': {
+        if (!typedScene) throw new Error('Cena do jogo indisponível.');
+        if (typeof typedScene.updateStickmanRig !== 'function') {
+          throw new Error('A cena não expõe updateStickmanRig.');
+        }
+        const rigFactory = this.pickClass(moduleExports, ['createStickmanRig', 'default']);
+        typedScene.updateStickmanRig(rigFactory);
+        await this.rebindCharacterToRig(typedScene);
+        return {
+          note: 'Estrutura do personagem reconstruída; controladores e habilidades foram religados sem trocar o herói ativo.',
+        };
+      }
+      case 'audio-system': {
+        const exported = this.pickObject(moduleExports, ['audioSystem', 'default']);
+        if (!exported) throw new Error('AudioSystem editado não exporta o singleton audioSystem.');
+        this.graftSingletonMethods(audioSystem, exported);
+        audioSystem.setVolume(settingsManager.get().volume / 100);
+        return {
+          note: 'Sistema de áudio substituído preservando contexto, buffers, loops e configurações.',
+        };
+      }
       case 'game-scene':
-      case 'stickman-rig':
-      case 'audio-system':
         throw new Error('Módulo estrutural: reinicialização completa necessária.');
       default: {
         // User-created scripts are supported as per-frame runtime modules.
@@ -1672,38 +1943,147 @@ class ScriptRuntimeEngine {
   }
 
   /**
-   * Controllers rebuild their sub-modules. Re-install any individually edited
-   * abilities so a controller update does not silently undo them.
+   * Re-installs every already-applied module that depends on the module that
+   * just changed. Uses the reverse dependency graph built from the catalog and
+   * semantic edges, with `skipDependents` to avoid cycles.
    */
-  private reapplyDependents(controllerId: string, scene: unknown): void {
-    const dependentIds: Record<string, string[]> = {
-      'agatha-abilities': [
-        'agatha-arcane-blast',
-        'agatha-dark-drain',
-        'agatha-chaos-orb',
-        'agatha-runic-ward',
-        'agatha-choke',
-        'agatha-shadow-step',
-      ],
-      'ironman-abilities': [
-        'ironman-repulsor',
-        'ironman-micro-missiles',
-        'ironman-unibeam',
-        'ironman-dual-beams',
-        'ironman-spinning-lasers',
-      ],
-    };
-    const ids = dependentIds[controllerId];
-    if (!ids) return;
-    for (const id of ids) {
-      const record = this.records.get(id);
-      const exports = this.compiledModules.get(id);
-      if (!record?.applied || !exports) continue;
-      if (record.applied === this.getScriptById(id)?.originalSource) continue;
+  private async reapplyDependents(
+    moduleId: string,
+    scene: unknown,
+    startup = false
+  ): Promise<void> {
+    const forced = FORCE_DEPENDENT_REINSTALL[moduleId] ?? [];
+    const ids = this.dependentGraph.get(moduleId) ?? [];
+    for (const dependentId of ids) {
+      if (dependentId === moduleId) continue;
+      const script = this.getScriptById(dependentId);
+      if (!script || getCapability(script) !== 'hot-swap') continue;
+      const record = this.getRecord(dependentId);
+      const customCode = !!record.applied && record.applied !== script.originalSource;
+      // Some HUD modules consume a system through a static import; to make an
+      // edited system actually visible they must be reinstalled even if the
+      // user never edited the HUD component itself.
+      const mustForce = !startup && forced.includes(dependentId);
+      if (!customCode && !mustForce) continue;
       try {
-        this.integrate(id, exports, scene, { startup: true, skipDependents: true });
+        await this.applyScript(
+          dependentId,
+          customCode ? (record.applied as string) : script.originalSource,
+          scene,
+          {
+            startup: true,
+            skipDependents: true,
+            skipServerSync: true,
+          }
+        );
       } catch (err) {
-        console.warn(`[ScriptRuntimeEngine] Could not re-install dependent module ${id}:`, err);
+        console.warn(
+          `[ScriptRuntimeEngine] Could not re-install dependent module ${dependentId}:`,
+          err
+        );
+      }
+    }
+  }
+
+  private effectiveClass(
+    id: string,
+    names: string[],
+    fallback: any
+  ): any {
+    const exports = this.compiledModules.get(id);
+    if (exports) {
+      for (const name of names) {
+        if (typeof exports[name] === 'function') return exports[name];
+      }
+    }
+    return fallback;
+  }
+
+  private graftSingletonMethods(target: any, source: Record<string, unknown>): void {
+    const prototype = Object.getPrototypeOf(source);
+    if (prototype && prototype !== Object.prototype) {
+      for (const name of Object.getOwnPropertyNames(prototype)) {
+        if (name === 'constructor') continue;
+        const descriptor = Object.getOwnPropertyDescriptor(prototype, name);
+        if (!descriptor) continue;
+        try {
+          Object.defineProperty(target, name, descriptor);
+        } catch {
+          // Non-configurable members keep the live implementation.
+        }
+      }
+    }
+    for (const [key, value] of Object.entries(source)) {
+      if (typeof value === 'function') {
+        try {
+          (target as Record<string, unknown>)[key] = value;
+        } catch {
+          // Keep the running method when it cannot be replaced.
+        }
+        continue;
+      }
+      // Newly added fields are copied; existing state (context, buffers,
+      // settings, listeners) is preserved to keep the running singleton alive.
+      if (!(key in (target as object))) {
+        try {
+          (target as Record<string, unknown>)[key] = value;
+        } catch {
+          // Read-only additions cannot be applied.
+        }
+      }
+    }
+  }
+
+  /**
+   * Rebuilds the character rig wiring after a StickmanRig swap: controllers,
+   * animation controller and every independently applied ability module are
+   * rebound to the new nodes without changing the active hero.
+   */
+  private async rebindCharacterToRig(scene: any): Promise<void> {
+    const powerSet: 'agatha' | 'ironman' =
+      scene.currentPowerSet === 'agatha' ? 'agatha' : 'ironman';
+
+    const agathaClass = this.effectiveClass(
+      'agatha-abilities',
+      ['AgathaAbilities', 'default'],
+      AgathaAbilities
+    );
+    const ironManClass = this.effectiveClass(
+      'ironman-abilities',
+      ['IronManAbilities', 'default'],
+      IronManAbilities
+    );
+    const animClass = this.effectiveClass(
+      'animation-controller',
+      ['AnimationController', 'default'],
+      AnimationController
+    );
+
+    scene.updateAgathaAbilities?.(agathaClass, { selectCharacter: false });
+    scene.updateIronManAbilities?.(ironManClass);
+    scene.updateAnimationController?.(animClass);
+
+    await this.reapplyAppliedModules([...AGATHA_ABILITY_IDS, ...IRONMAN_ABILITY_IDS], scene);
+
+    scene.currentPowerSet = powerSet;
+    if (scene.animController) scene.animController.isAgatha = powerSet === 'agatha';
+  }
+
+  /** Re-installs the given hot-swapped modules using their already-applied code. */
+  private async reapplyAppliedModules(ids: string[], scene: unknown): Promise<void> {
+    for (const id of ids) {
+      const script = this.getScriptById(id);
+      if (!script || getCapability(script) !== 'hot-swap') continue;
+      const record = this.getRecord(id);
+      if (!record.applied || record.applied === script.originalSource) continue;
+      try {
+        await this.applyScript(id, record.applied, scene, {
+          startup: true,
+          skipDependents: true,
+          skipServerSync: true,
+        });
+      } catch (err) {
+        console.warn(`[ScriptRuntimeEngine] Could not re-install module ${id}:`, err);
       }
     }
   }
@@ -1840,6 +2220,7 @@ class ScriptRuntimeEngine {
         if (result.success) appliedCount += 1;
       } else {
         void removeAppliedScript(script.id, { force: true });
+        this.runningNow.delete(script.id);
         record.draft = script.originalSource;
         record.saved = script.originalSource;
         record.revision += 1;
@@ -1866,6 +2247,7 @@ class ScriptRuntimeEngine {
     record.running = null;
     record.runningHash = null;
     record.updatedAt = Date.now();
+    this.runningNow.delete(id);
     this.persistRecord(record);
     this.notify();
   }

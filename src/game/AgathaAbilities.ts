@@ -136,6 +136,11 @@ export class AgathaAbilities {
     this.chokeElevationOffset = 0;
   }
 
+  public cancelDarkDrain(): void {
+    this.darkDrainModule.cancel();
+    this.isDarkDrainActive = false;
+  }
+
   public triggerShadowStep(
     currentPos: THREE.Vector3,
     inputDir: THREE.Vector3,

@@ -7,11 +7,12 @@ import { getCombatButtonProfile } from '../game/systems/AbilityButtonSystem';
 export interface CombatButtonsProps {
   onAttack: () => boolean;
   onAbility?: (id: number) => boolean;
+  onCancelAbility?: (id: number) => boolean;
   onDash?: () => boolean;
   onToggleFlight?: () => boolean;
   isFlying?: boolean;
-  powerSet?: 'classic' | 'ironman' | 'agatha';
-  isClashActive?: boolean;
+  powerSet?: 'ironman' | 'agatha';
+  gameScene?: any;
 }
 
 interface AbilityState {
@@ -20,9 +21,13 @@ interface AbilityState {
   icon: React.ReactNode;
   cooldownTotal: number;
   cooldownRemaining: number;
+  isToggle: boolean;
+  cancelDelay: number;
+  active: boolean;
+  lockRemaining: number;
 }
 
-const getAbilityIcon = (powerSet: 'classic' | 'ironman' | 'agatha', id: number): React.ReactNode => {
+const getAbilityIcon = (powerSet: 'ironman' | 'agatha', id: number): React.ReactNode => {
   if (powerSet === 'agatha') {
     if (id === 1) return <Zap size={19} className="text-purple-300" />;
     if (id === 2) return <Orbit size={19} className="text-violet-300" />;
@@ -41,23 +46,28 @@ const getAbilityIcon = (powerSet: 'classic' | 'ironman' | 'agatha', id: number):
   return <Sparkles size={19} className="text-purple-400" />;
 };
 
-const getInitialAbilities = (powerSet: 'classic' | 'ironman' | 'agatha'): AbilityState[] =>
+const getInitialAbilities = (powerSet: 'ironman' | 'agatha'): AbilityState[] =>
   getCombatButtonProfile(powerSet).abilities.map((ability) => ({
     id: ability.id,
     name: ability.name,
     icon: getAbilityIcon(powerSet, ability.id),
     cooldownTotal: ability.cooldown,
     cooldownRemaining: 0,
+    isToggle: ability.toggle ?? false,
+    cancelDelay: ability.cancelDelay ?? 0.5,
+    active: false,
+    lockRemaining: 0,
   }));
 
 export const CombatButtons: React.FC<CombatButtonsProps> = ({
   onAttack,
   onAbility,
+  onCancelAbility,
   onDash,
   onToggleFlight,
   isFlying = false,
   powerSet = 'ironman',
-  isClashActive = false,
+  gameScene,
 }) => {
   const cooldownSystem = useRef(new CooldownSystem()).current;
   const [attackCooldown, setAttackCooldown] = useState(0);
@@ -85,31 +95,59 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
       setAttackCooldown(cooldownSystem.getRemaining('attack'));
       setDashCooldown(cooldownSystem.getRemaining('dash'));
       setAbilities((prev) =>
-        prev.map((ab) => ({
-          ...ab,
-          cooldownRemaining: cooldownSystem.getRemaining(`ability-${ab.id}`),
-        }))
+        prev.map((ab) => {
+          let isToggle = ab.isToggle;
+          let cancelDelay = ab.cancelDelay;
+          if (gameScene) {
+            if (typeof gameScene.isAbilityToggle === 'function') {
+              isToggle = gameScene.isAbilityToggle(ab.id);
+            }
+            if (typeof gameScene.getAbilityCancelDelay === 'function') {
+              cancelDelay = gameScene.getAbilityCancelDelay(ab.id);
+            }
+          }
+          const lockRemaining = Math.max(0, ab.lockRemaining - dt);
+          let active = ab.active;
+          let cooldownRemaining = cooldownSystem.getRemaining(`ability-${ab.id}`);
+          // Detect natural end of toggle ability
+          if (active && gameScene && typeof gameScene.isAbilityActive === 'function') {
+            if (!gameScene.isAbilityActive(ab.id)) {
+              active = false;
+              if (cooldownRemaining <= 0) {
+                cooldownSystem.start(`ability-${ab.id}`, ab.cooldownTotal);
+                cooldownRemaining = ab.cooldownTotal;
+              }
+            }
+          }
+          return {
+            ...ab,
+            isToggle,
+            cancelDelay,
+            lockRemaining,
+            active,
+            cooldownRemaining,
+          };
+        })
       );
     }, 30);
 
     return () => clearInterval(interval);
-  }, [cooldownSystem]);
+  }, [cooldownSystem, gameScene]);
 
   const handleAttackPress = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Beam Clash bypasses cooldown to allow rapid tapping!
-    if (!isClashActive && !cooldownSystem.isReady('attack')) return;
+    if (!cooldownSystem.isReady('attack')) return;
 
     setIsAttackPressed(true);
     const launched = onAttack();
-    if (launched && !isClashActive) {
+    if (launched) {
       const attackSeconds = getCombatButtonProfile(powerSet).attackCooldown;
       cooldownSystem.start('attack', attackSeconds);
       setAttackCooldown(attackSeconds);
     }
-  }, [cooldownSystem, isClashActive, onAttack, powerSet]);
+  }, [cooldownSystem, onAttack, powerSet]);
 
   const handleAttackRelease = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
@@ -122,17 +160,54 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
     e.stopPropagation();
 
     const ab = abilities.find((a) => a.id === id);
-    if (!ab || !cooldownSystem.isReady(`ability-${id}`)) return;
+    if (!ab) return;
+
+    // Toggle ability already active -> cancel (only after lock expires)
+    if (ab.isToggle && ab.active) {
+      if (ab.lockRemaining > 0) return; // locked (dark) for 0.5s
+      audioSystem.playUiClick();
+      const cancelled = onCancelAbility ? onCancelAbility(id) : (onAbility ? onAbility(id) : false);
+      if (cancelled) {
+        setAbilities((prev) =>
+          prev.map((a) =>
+            a.id === id
+              ? { ...a, active: false, lockRemaining: 0, cooldownRemaining: a.cooldownTotal }
+              : a
+          )
+        );
+        cooldownSystem.start(`ability-${id}`, ab.cooldownTotal);
+      }
+      return;
+    }
+
+    if (!cooldownSystem.isReady(`ability-${id}`)) return;
 
     audioSystem.playUiClick();
     const launched = onAbility ? onAbility(id) : true;
     if (launched) {
-      cooldownSystem.start(`ability-${id}`, ab.cooldownTotal);
-      setAbilities((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, cooldownRemaining: a.cooldownTotal } : a))
-      );
+      if (ab.isToggle) {
+        // Activate toggle: lock button dark for cancelDelay, no cooldown
+        cooldownSystem.clear(`ability-${id}`);
+        setAbilities((prev) =>
+          prev.map((a) =>
+            a.id === id
+              ? {
+                  ...a,
+                  active: true,
+                  lockRemaining: a.cancelDelay ?? 0.5,
+                  cooldownRemaining: 0,
+                }
+              : a
+          )
+        );
+      } else {
+        cooldownSystem.start(`ability-${id}`, ab.cooldownTotal);
+        setAbilities((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, cooldownRemaining: a.cooldownTotal } : a))
+        );
+      }
     }
-  }, [abilities, cooldownSystem, onAbility]);
+  }, [abilities, cooldownSystem, onAbility, onCancelAbility]);
 
   const handleDashPress = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
@@ -290,6 +365,10 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
         const x = ATTACK_CX - ORBIT_RADIUS * Math.cos(rad);
         const y = ATTACK_CY - ORBIT_RADIUS * Math.sin(rad);
         const onCd = ab.cooldownRemaining > 0;
+        const isActive = ab.active;
+        const isLocked = isActive && ab.lockRemaining > 0;
+        // Dark while on cooldown OR while toggle ability is still active
+        const isDark = onCd || (ab.isToggle && isActive);
         const cdPct = onCd ? (ab.cooldownRemaining / ab.cooldownTotal) * 100 : 0;
 
         return (
@@ -303,21 +382,21 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
               width: '38px',
               height: '38px',
               borderRadius: '50%',
-              background: onCd
+              background: isDark
                 ? 'radial-gradient(circle at 35% 35%, #2a2d33, #16181b)'
                 : powerSet === 'agatha'
                 ? 'radial-gradient(circle at 35% 35%, #4c1d95, #1e0933)'
                 : powerSet === 'ironman'
                 ? 'radial-gradient(circle at 35% 35%, #3d2a1d, #1a1412)'
                 : 'radial-gradient(circle at 35% 35%, #343a46, #1b1e24)',
-              border: onCd
+              border: isDark
                 ? '1.5px solid rgba(255, 255, 255, 0.15)'
                 : powerSet === 'agatha'
                 ? '1.5px solid rgba(192, 132, 252, 0.75)'
                 : powerSet === 'ironman'
                 ? '1.5px solid rgba(245, 158, 11, 0.55)'
                 : '1.5px solid rgba(255, 255, 255, 0.45)',
-              boxShadow: onCd
+              boxShadow: isDark
                 ? '0 2px 6px rgba(0, 0, 0, 0.4)'
                 : powerSet === 'agatha'
                 ? '0 3px 10px rgba(0, 0, 0, 0.35), 0 0 10px rgba(168, 85, 247, 0.4)'
@@ -328,7 +407,7 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               pointerEvents: 'auto',
-              cursor: onCd ? 'not-allowed' : 'pointer',
+              cursor: isDark ? 'not-allowed' : 'pointer',
               overflow: 'hidden',
               transition: 'transform 0.1s ease, filter 0.15s ease',
             }}
@@ -348,7 +427,7 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
               />
             )}
 
-            <div style={{ position: 'relative', zIndex: 2, opacity: onCd ? 0.4 : 1 }}>
+            <div style={{ position: 'relative', zIndex: 2, opacity: isDark ? 0.4 : 1 }}>
               {ab.icon}
             </div>
 
@@ -383,27 +462,21 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
           width: '80px',
           height: '80px',
           borderRadius: '50%',
-          background: isClashActive
-            ? 'radial-gradient(circle at 35% 35%, #991b1b, #450a0a)'
-            : isAttackPressed
+          background: isAttackPressed
             ? 'radial-gradient(circle at 35% 35%, #1f2b38, #0e1620)'
             : powerSet === 'agatha'
             ? 'radial-gradient(circle at 35% 35%, #581c87, #1e0933)'
             : powerSet === 'ironman'
             ? 'radial-gradient(circle at 35% 35%, #7f1d1d, #2b0b0b)'
             : 'radial-gradient(circle at 35% 35%, #2c3e50, #16202c)',
-          border: isClashActive
-            ? '3px solid #f59e0b'
-            : attackCooldown > 0
+          border: attackCooldown > 0
             ? '2.5px solid rgba(255, 255, 255, 0.25)'
             : powerSet === 'agatha'
             ? '2.5px solid rgba(192, 132, 252, 0.95)'
             : powerSet === 'ironman'
             ? '2.5px solid rgba(239, 68, 68, 0.9)'
             : '2.5px solid rgba(72, 202, 228, 0.85)',
-          boxShadow: isClashActive
-            ? '0 0 24px rgba(245, 158, 11, 0.7), 0 0 8px #ef4444'
-            : isAttackPressed
+          boxShadow: isAttackPressed
             ? powerSet === 'agatha'
               ? '0 2px 8px rgba(0, 0, 0, 0.5), 0 0 16px rgba(168, 85, 247, 0.55)'
               : '0 2px 8px rgba(0, 0, 0, 0.5), 0 0 16px rgba(239, 68, 68, 0.45)'
@@ -424,7 +497,7 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
         }}
       >
         {/* Radial Cooldown sweep */}
-        {!isClashActive && attackCooldown > 0 && (
+        {attackCooldown > 0 && (
           <div
             style={{
               position: 'absolute',
@@ -437,9 +510,7 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
         )}
 
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {isClashActive ? (
-            <Zap size={28} className="text-amber-300 animate-pulse drop-shadow-sm" />
-          ) : powerSet === 'agatha' ? (
+          {powerSet === 'agatha' ? (
             <Sparkles size={28} className="text-purple-300 drop-shadow-sm" />
           ) : powerSet === 'ironman' ? (
             <Zap size={28} className="text-red-300 drop-shadow-sm" />
@@ -448,14 +519,14 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
           )}
           <span
             style={{
-              fontSize: isClashActive ? '11px' : '9px',
+              fontSize: '9px',
               fontWeight: 800,
               letterSpacing: '0.08em',
-              color: isClashActive ? '#fef08a' : powerSet === 'agatha' ? '#f3e8ff' : '#fecaca',
+              color: powerSet === 'agatha' ? '#f3e8ff' : '#fecaca',
               marginTop: '2px',
             }}
           >
-            {isClashActive ? 'PUSH!' : powerSet === 'agatha' ? 'RAJADA' : 'ATTACK'}
+            {powerSet === 'agatha' ? 'RAJADA' : 'ATTACK'}
           </span>
         </div>
       </div>

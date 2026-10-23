@@ -8,6 +8,8 @@ import {
   BeamClashState,
 } from './abilities/ironman/IronManDualBeams';
 import { IronManSpinningLasers } from './abilities/ironman/IronManSpinningLasers';
+import { WorldCollision, worldCollision } from './systems/WorldCollision';
+import { IronManBeamVisual, BeamClashDisk } from './abilities/ironman/IronManBeamFx';
 
 export interface ExplosionFx {
   pos: THREE.Vector3;
@@ -76,14 +78,11 @@ export class IronManAbilities {
   private dualBeamTimer: number = 0;
   private dualBeamMaxDuration: number = 4.0;
   private dualBeamDamageTimer: number = 0;
-  private leftBeamMesh: THREE.Line | null = null;
-  private rightBeamMesh: THREE.Line | null = null;
-  private leftBeamGlow: THREE.Mesh | null = null;
-  private rightBeamGlow: THREE.Mesh | null = null;
-  private rivalBeamMesh: THREE.Line | null = null;
-  private rivalBeamGlow: THREE.Mesh | null = null;
-  private clashSphere: THREE.Mesh | null = null;
-  private clashLight: THREE.PointLight | null = null;
+  private leftBeamFx: IronManBeamVisual | null = null;
+  private rightBeamFx: IronManBeamVisual | null = null;
+  private rivalBeamFx: IronManBeamVisual | null = null;
+  private clashFx: BeamClashDisk | null = null;
+  private beamTime: number = 0;
 
   // Beam Clash
   public clashState: BeamClashState = {
@@ -93,7 +92,6 @@ export class IronManAbilities {
     clashPoint: new THREE.Vector3(),
     duration: 0,
     maxDuration: 6.0,
-    lastTapTime: 0,
   };
 
   // Spinning Lasers state
@@ -226,10 +224,8 @@ export class IronManAbilities {
     this.clashState.rival = null;
     this.clashState.progress = 0.5;
     this.clashState.duration = 0;
-    if (this.clashSphere) this.clashSphere.visible = false;
-    if (this.clashLight) this.clashLight.intensity = 0;
-    if (this.rivalBeamMesh) this.rivalBeamMesh.visible = false;
-    if (this.rivalBeamGlow) this.rivalBeamGlow.visible = false;
+    this.rivalBeamFx?.setVisible(false);
+    this.clashFx?.setVisible(false);
   }
 
   private initChargeMeshes(): void {
@@ -250,61 +246,23 @@ export class IronManAbilities {
   }
 
   private initBeamMeshes(): void {
-    // Dual Beam line geometries
-    const beamMat = new THREE.LineBasicMaterial({ color: 0xffea00, linewidth: 3 });
-    const geomL = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
-    const geomR = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
-    this.leftBeamMesh = new THREE.Line(geomL, beamMat);
-    this.rightBeamMesh = new THREE.Line(geomR, beamMat);
-    this.leftBeamMesh.visible = false;
-    this.rightBeamMesh.visible = false;
-    this.scene.add(this.leftBeamMesh);
-    this.scene.add(this.rightBeamMesh);
-
-    // Glowing beam envelopes (Cylinder)
-    const glowMat = new THREE.MeshBasicMaterial({
-      color: 0xff2200,
-      transparent: true,
-      opacity: 0.6,
-      depthWrite: false,
-    });
-    const glowGeo = new THREE.CylinderGeometry(0.12, 0.12, 1, 12, 1, true);
-    this.leftBeamGlow = new THREE.Mesh(glowGeo, glowMat);
-    this.rightBeamGlow = new THREE.Mesh(glowGeo, glowMat);
-    this.leftBeamGlow.visible = false;
-    this.rightBeamGlow.visible = false;
-    this.scene.add(this.leftBeamGlow);
-    this.scene.add(this.rightBeamGlow);
-
-    // Rival Opposing Beam (Cyan/Magenta plasma)
-    const rivalMat = new THREE.LineBasicMaterial({ color: 0x00f0ff, linewidth: 3 });
-    const rivalGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
-    this.rivalBeamMesh = new THREE.Line(rivalGeom, rivalMat);
-    this.rivalBeamMesh.visible = false;
-    this.scene.add(this.rivalBeamMesh);
-
-    const rivalGlowMat = new THREE.MeshBasicMaterial({
-      color: 0xaa00ff,
-      transparent: true,
-      opacity: 0.65,
-      depthWrite: false,
-    });
-    this.rivalBeamGlow = new THREE.Mesh(glowGeo, rivalGlowMat);
-    this.rivalBeamGlow.visible = false;
-    this.scene.add(this.rivalBeamGlow);
-
-    // Beam Clash Sphere
-    const clashGeo = new THREE.SphereGeometry(0.55, 16, 16);
-    const clashMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.85,
-    });
-    this.clashSphere = new THREE.Mesh(clashGeo, clashMat);
-    this.clashSphere.visible = false;
-    this.clashLight = new THREE.PointLight(0xffaa00, 3, 8);
-    this.clashSphere.add(this.clashLight);
-    this.scene.add(this.clashSphere);
+    const config = activeIronManConfig.dualBeams;
+    const playerPalette = {
+      core: config.beamCoreColor ?? 0xfff7b0,
+      inner: config.beamGlowColor ?? 0xffb300,
+      outer: config.beamOuterColor ?? 0xff3b00,
+      light: config.beamGlowColor ?? 0xffb300,
+    };
+    const rivalPalette = {
+      core: config.rivalBeamCoreColor ?? 0x66f0ff,
+      inner: config.rivalBeamGlowColor ?? 0x00a8ff,
+      outer: config.rivalBeamOuterColor ?? 0x7a00ff,
+      light: config.rivalBeamGlowColor ?? 0x00a8ff,
+    };
+    this.leftBeamFx = new IronManBeamVisual(this.scene, playerPalette, 0.24, 5);
+    this.rightBeamFx = new IronManBeamVisual(this.scene, playerPalette, 0.24, 5);
+    this.rivalBeamFx = new IronManBeamVisual(this.scene, rivalPalette, 0.3, 6);
+    this.clashFx = new BeamClashDisk(this.scene, playerPalette.inner, rivalPalette.inner);
   }
 
   private initLaserMeshes(): void {
@@ -469,7 +427,9 @@ export class IronManAbilities {
       this.isDualBeamActive = true;
       this.dualBeamTimer = 0;
       this.dualBeamDamageTimer = 0;
+      this.beamTime = 0;
       audioSystem.playBeamBurst();
+      audioSystem.startBeamLoop?.();
       return true; // activated
     }
   }
@@ -481,52 +441,32 @@ export class IronManAbilities {
       return;
     }
     this.isDualBeamActive = false;
-    this.leftBeamMesh!.visible = false;
-    this.rightBeamMesh!.visible = false;
-    this.leftBeamGlow!.visible = false;
-    this.rightBeamGlow!.visible = false;
+    this.leftBeamFx?.setVisible(false);
+    this.rightBeamFx?.setVisible(false);
+    this.rivalBeamFx?.setVisible(false);
+    this.clashFx?.setVisible(false);
+    audioSystem.stopBeamLoop?.();
     this.resolveClash(false);
   }
 
-  // Tap button during active beam clash to push beam forward!
-  public onClashTap(): void {
-    if (this.dualBeamsModule) {
-      this.dualBeamsModule.onClashTap();
-      return;
-    }
-    if (!this.clashState.active) return;
-    this.clashState.progress = Math.min(1.0, this.clashState.progress + 0.15);
-    this.clashState.lastTapTime = performance.now();
-    audioSystem.playBeamClash();
-    this.onShake(0.1);
-
-    if (this.clashState.progress >= 1.0) {
-      this.resolveClash(true);
-    }
-  }
-
-  private resolveClash(playerWon: boolean): void {
+  private resolveClash(impact: boolean): void {
     if (!this.clashState.active) return;
     const rival = this.clashState.rival;
 
-    if (playerWon && rival && !rival.isDead) {
-      // Massive victory burst at target position! (80 bonus damage as requested)
-      const finishPos = rival.getCenter();
-      this.createExplosion(finishPos, 5.0, 0xffaa00);
-      const fling = new THREE.Vector3(0, 4.0, -18);
-      this.onDamageDealt(rival, 80, finishPos, fling);
-      audioSystem.playExplosion();
-      this.onShake(0.42);
-      rival.rivalCooldown = 10.0; // 10s recovery
+    if (impact && rival && !rival.isDead) {
+      const finishPos = this.clashState.clashPoint.clone();
+      this.createExplosion(finishPos, 1.4, 0xffd36a);
+      audioSystem.playBeamClash();
+      this.onShake(0.2);
+      rival.rivalCooldown = Math.max(rival.rivalCooldown, 1.2);
     }
 
     this.clashState.active = false;
-    this.clashSphere!.visible = false;
-    this.rivalBeamMesh!.visible = false;
-    this.rivalBeamGlow!.visible = false;
-    if (rival) {
-      rival.rivalBeamActive = false;
-    }
+    this.clashState.progress = 0.5;
+    this.clashState.duration = 0;
+    this.rivalBeamFx?.setVisible(false);
+    this.clashFx?.setVisible(false);
+    if (rival) rival.rivalBeamActive = false;
   }
 
   // ==========================================
@@ -587,7 +527,7 @@ export class IronManAbilities {
       isHeavy: true,
     });
 
-    audioSystem.playMissileLaunch();
+    audioSystem.playUnibeamFire?.();
     this.onShake(0.12);
   }
 
@@ -658,6 +598,7 @@ export class IronManAbilities {
     this.isSpinningLasersActive = false;
     if (this.leftLaserMesh) this.leftLaserMesh.visible = false;
     if (this.rightLaserMesh) this.rightLaserMesh.visible = false;
+    audioSystem.stopLaserSpin?.();
   }
 
   private createMissileModel(scale: number, color: number): THREE.Group {
@@ -795,10 +736,9 @@ export class IronManAbilities {
 
     const activeColor = this.customPowerColor ? new THREE.Color(this.customPowerColor) : null;
     if (activeColor) {
-      if (this.leftBeamMesh) (this.leftBeamMesh.material as THREE.LineBasicMaterial).color.copy(activeColor);
-      if (this.rightBeamMesh) (this.rightBeamMesh.material as THREE.LineBasicMaterial).color.copy(activeColor);
-      if (this.leftBeamGlow) (this.leftBeamGlow.material as THREE.MeshBasicMaterial).color.copy(activeColor);
-      if (this.rightBeamGlow) (this.rightBeamGlow.material as THREE.MeshBasicMaterial).color.copy(activeColor);
+      const color = activeColor.getHex();
+      this.leftBeamFx?.setColor(color);
+      this.rightBeamFx?.setColor(color);
       if (this.leftLaserMesh) (this.leftLaserMesh.material as THREE.MeshBasicMaterial).color.copy(activeColor);
       if (this.rightLaserMesh) (this.rightLaserMesh.material as THREE.MeshBasicMaterial).color.copy(activeColor);
     }
@@ -839,27 +779,58 @@ export class IronManAbilities {
         r.vel.lerp(dir.multiplyScalar(activeIronManConfig.repulsor.speed), dt * r.homingStrength);
       }
 
+      const prevPos = r.pos.clone();
       r.pos.addScaledVector(r.vel, dt);
       r.mesh.position.copy(r.pos);
       r.mesh.lookAt(r.pos.clone().add(r.vel));
 
-      // Hit check against dummies
+      // Segment test so repulsors die on the first surface they cross.
+      const repulsorSegment = prevPos.distanceTo(r.pos);
+      const repulsorHit = activeIronManConfig.repulsor.collideWithWorld !== false
+        ? worldCollision.segmentHit(prevPos, r.pos, 0.2)
+        : null;
+      const repulsorSolidDistance = repulsorHit
+        ? repulsorHit.distance
+        : Number.POSITIVE_INFINITY;
+
+      // Nearest dummy along the travelled segment.
       let hit = false;
+      let hitPos = r.pos.clone();
+      let hitDummy: TargetDummy | null = null;
+      let dummyDistance = Number.POSITIVE_INFINITY;
+
       for (const d of dummies) {
         if (d.isDead) continue;
-        if (r.pos.distanceTo(d.getCenter()) <= d.radius + 0.3) {
-          hit = true;
-          this.onDamageDealt(d, activeIronManConfig.repulsor.damage, r.pos.clone());
-          this.createExplosion(r.pos, 1.2, 0xff2233);
-          audioSystem.playImpact();
-          break;
+        const center = d.getCenter();
+        if (
+          WorldCollision.distanceToSegment(prevPos, r.pos, center) >
+          d.radius + 0.3
+        ) {
+          continue;
         }
+        const t = WorldCollision.closestTOnSegment(prevPos, r.pos, center);
+        const along = t * repulsorSegment;
+        if (along >= dummyDistance || along >= repulsorSolidDistance) continue;
+        dummyDistance = along;
+        hitDummy = d;
+        hitPos = new THREE.Vector3().lerpVectors(prevPos, r.pos, t);
       }
 
-      if (!hit && (r.pos.y <= 0.05 || r.pos.distanceTo(r.startPos) > r.maxRange)) {
+      if (hitDummy && dummyDistance <= repulsorSolidDistance) {
+        hit = true;
+        this.onDamageDealt(hitDummy, activeIronManConfig.repulsor.damage, hitPos);
+        this.createExplosion(hitPos, 1.2, 0xff2233);
+        audioSystem.playImpact(hitPos);
+      } else if (repulsorHit) {
+        // Structure wall, ward face or ground: splash on the surface.
+        hit = true;
+        const impactPos = repulsorHit.point.clone();
+        this.createExplosion(impactPos, 0.8, 0xff3344);
+        audioSystem.playImpact(impactPos);
+      } else if (r.pos.distanceTo(r.startPos) > r.maxRange) {
         hit = true;
         this.createExplosion(r.pos, 0.8, 0xff3344);
-        audioSystem.playImpact();
+        audioSystem.playImpact(r.pos);
       }
 
       if (hit) {
@@ -871,66 +842,45 @@ export class IronManAbilities {
     // 2. Update Bézier Missiles
     for (let i = this.missiles.length - 1; i >= 0; i--) {
       const m = this.missiles[i];
+      const previousT = m.t;
       m.t += dt / m.duration;
 
       if (m.t < 0) continue; // Waiting start delay
 
-      if (m.t >= 1.0) {
-        // Impact!
-        const hitPos = m.p3.clone();
-        hitPos.y = Math.max(0.2, hitPos.y);
-
-        if (m.isHeavy) {
-          // Bunker-Buster / Smart Heavy Missile: 55 AoE damage in 5m blast radius (compact & proportional)
-          const aoeRadius = 5.0;
-          this.createExplosion(hitPos, aoeRadius, 0xff4500);
-          audioSystem.playExplosion();
-          this.onShake(0.18);
-          this.hitStopTimer = 0.055; // 55ms impact hit-stop
-
-          const damagedSet = new Set<number>();
-          for (const d of dummies) {
-            if (d.isDead || damagedSet.has(d.id)) continue;
-            const dist = d.getCenter().distanceTo(hitPos);
-            if (dist <= aoeRadius) {
-              damagedSet.add(d.id);
-              const kbDir = d.getCenter().sub(hitPos).normalize().multiplyScalar(10);
-              kbDir.y = 2.5;
-              this.onDamageDealt(d, activeIronManConfig.unibeam.damage, d.getCenter(), kbDir);
-            }
-          }
-        } else {
-          // Curved Volley Missile: 12 damage in 4 radius AoE
-          const aoeRadius = 4.0;
-          this.createExplosion(hitPos, aoeRadius, 0xff7700);
-          audioSystem.playExplosion();
-          this.onShake(0.12);
-
-          const hitDummies = new Set<number>();
-          for (const d of dummies) {
-            if (d.isDead || hitDummies.has(d.id)) continue;
-            if (d.getCenter().distanceTo(hitPos) <= aoeRadius) {
-              hitDummies.add(d.id);
-              const kbDir = d.getCenter().sub(hitPos).normalize().multiplyScalar(6);
-              kbDir.y = 1.5;
-              this.onDamageDealt(d, activeIronManConfig.microMissiles.damagePerMissile, d.getCenter(), kbDir);
-            }
-          }
-        }
-
-        this.scene.remove(m.mesh);
-        this.missiles.splice(i, 1);
-        continue;
-      }
-
       // Cubic Bézier curve evaluation: B(t) = (1-t)³ P0 + 3(1-t)²t P1 + 3(1-t)t² P2 + t³ P3
-      const u = m.t;
+      const u = Math.min(m.t, 1);
       const invU = 1 - u;
       const pos = new THREE.Vector3()
         .addScaledVector(m.p0, invU * invU * invU)
         .addScaledVector(m.p1, 3 * invU * invU * u)
         .addScaledVector(m.p2, 3 * invU * u * u)
         .addScaledVector(m.p3, u * u * u);
+
+      // Path travelled since the previous frame: explode on the first surface
+      // crossed (structure, ward face or ground) instead of flying through it.
+      const prevU = THREE.MathUtils.clamp(previousT, 0, 1);
+      const prevInvU = 1 - prevU;
+      const prevPos =
+        previousT <= 0
+          ? m.p0.clone()
+          : new THREE.Vector3()
+              .addScaledVector(m.p0, prevInvU * prevInvU * prevInvU)
+              .addScaledVector(m.p1, 3 * prevInvU * prevInvU * prevU)
+              .addScaledVector(m.p2, 3 * prevInvU * prevU * prevU)
+              .addScaledVector(m.p3, prevU * prevU * prevU);
+
+      const missileHit = activeIronManConfig.microMissiles.collideWithWorld !== false
+        ? worldCollision.segmentHit(prevPos, pos, 0.35)
+        : null;
+
+      if (m.t >= 1.0 || missileHit) {
+        // Impact! Surface point when a solid was crossed, destination otherwise.
+        const hitPos = missileHit ? missileHit.point.clone() : m.p3.clone();
+        this.detonateMissile(m, hitPos, dummies);
+        this.scene.remove(m.mesh);
+        this.missiles.splice(i, 1);
+        continue;
+      }
 
       // Tangent direction for orientation
       const tangent = new THREE.Vector3()
@@ -959,113 +909,133 @@ export class IronManAbilities {
     // 3. Update Dual Beam & Beam Clash
     if (this.isDualBeamActive && !this.dualBeamsModule) {
       this.dualBeamTimer += dt;
+      this.beamTime += dt;
       if (this.dualBeamTimer >= this.dualBeamMaxDuration) {
         this.stopDualBeam();
       } else {
+        const config = activeIronManConfig.dualBeams;
         const leftHandPos = new THREE.Vector3();
         const rightHandPos = new THREE.Vector3();
         this.stickman.leftHand.getWorldPosition(leftHandPos);
         this.stickman.rightHand.getWorldPosition(rightHandPos);
 
         const aim = this.getAimDestination();
-        const maxRange = activeIronManConfig.dualBeams.range;
-
-        let endPoint = aim.pos.clone();
+        const maxRange = config.range;
         const midHand = leftHandPos.clone().add(rightHandPos).multiplyScalar(0.5);
-        if (midHand.distanceTo(endPoint) > maxRange) {
-          const dir = endPoint.clone().sub(midHand).normalize();
-          endPoint = midHand.clone().addScaledVector(dir, maxRange);
+        let aimEnd = aim.pos.clone();
+        if (midHand.distanceTo(aimEnd) > maxRange) {
+          const dir = aimEnd.clone().sub(midHand).normalize();
+          aimEnd = midHand.clone().addScaledVector(dir, maxRange);
         }
 
-        // Check if aiming at any target dummy / enemy to initiate Beam Clash!
+        const collide = config.collideWithWorld !== false;
+        const leftLimit = this.beamLimit(leftHandPos, aimEnd, collide);
+        const rightLimit = this.beamLimit(rightHandPos, aimEnd, collide);
+        const midLimit = this.beamLimit(midHand, aimEnd, collide);
+
         let clashTarget: TargetDummy | null = null;
-        for (const d of dummies) {
-          if (!d.isDead && d.rivalCooldown <= 0) {
+        if (config.beamClash !== false) {
+          for (const d of dummies) {
+            if (!d.isRival || d.isDead || d.rivalCooldown > 0) continue;
             const dCenter = d.getCenter();
-            if (midHand.distanceTo(dCenter) <= maxRange) {
-              const segDist = this.distPointToSegment(dCenter, midHand, endPoint);
-              if (segDist <= d.radius + 1.2 || (aim.target && aim.target.id === d.id)) {
-                clashTarget = d;
-                break;
-              }
-            }
+            const segDist = this.distPointToSegment(dCenter, midHand, aimEnd);
+            if (segDist > d.radius + 1.2) continue;
+            const t = WorldCollision.closestTOnSegment(midHand, aimEnd, dCenter);
+            const along = t * midHand.distanceTo(aimEnd);
+            const clearLimit = Math.min(leftLimit, rightLimit, midLimit);
+            if (along > clearLimit + d.radius + 0.6) continue;
+            clashTarget = d;
+            break;
           }
         }
 
+        let beamEnd = aimEnd;
+        let playerClashEnd = beamEnd;
         if (clashTarget) {
+          const rivalPos = clashTarget.getCenter();
           if (!this.clashState.active) {
-            // Initiate BEAM CLASH!
             this.clashState.active = true;
             this.clashState.rival = clashTarget;
             this.clashState.progress = 0.5;
             this.clashState.duration = 0;
+            this.clashState.maxDuration = Math.max(0.5, this.dualBeamMaxDuration - 0.12);
             clashTarget.rivalBeamActive = true;
-            this.clashSphere!.visible = true;
-            this.rivalBeamMesh!.visible = true;
-            this.rivalBeamGlow!.visible = true;
             audioSystem.playBeamClash();
+            this.onShake(0.14);
           }
 
-          // Beam Clash active update
           this.clashState.duration += dt;
-          // Target pushes back steadily
-          this.clashState.progress = Math.max(0, this.clashState.progress - dt * 0.09);
+          this.clashState.progress = 0.5;
+          this.clashState.clashPoint.lerpVectors(midHand, rivalPos, 0.5);
+          beamEnd = this.clashState.clashPoint;
 
-          // Shared clash point interpolated along the distance
-          const rivalHandPos = clashTarget.getCenter();
-          this.clashState.clashPoint.lerpVectors(midHand, rivalHandPos, 1 - this.clashState.progress);
-
-          endPoint.copy(this.clashState.clashPoint);
-
-          // Update Rival Beam
-          this.updateBeamMesh(this.rivalBeamMesh!, this.rivalBeamGlow!, rivalHandPos, this.clashState.clashPoint, 0.18);
-
-          // Update Clash sphere
-          this.clashSphere!.position.copy(this.clashState.clashPoint);
-          const pulse = 0.55 + Math.sin(performance.now() * 0.02) * 0.15;
-          this.clashSphere!.scale.set(pulse, pulse, pulse);
-          this.onShake(0.04);
+          const axis = rivalPos.clone().sub(midHand);
+          const axisDirection = axis.clone().normalize();
+          playerClashEnd = beamEnd.clone().addScaledVector(axisDirection, -1.05);
+          const rivalClashEnd = beamEnd.clone().addScaledVector(axisDirection, 1.05);
+          const intensity = 0.8 + Math.sin(this.beamTime * 18) * 0.12;
+          this.rivalBeamFx?.update(rivalPos, rivalClashEnd, this.beamTime, 1);
+          this.clashFx?.update(beamEnd, axis, this.beamTime, intensity);
+          this.onShake(0.025 + intensity * 0.012);
 
           if (this.clashState.duration >= this.clashState.maxDuration) {
-            this.resolveClash(this.clashState.progress > 0.5);
+            this.resolveClash(true);
           }
         } else if (this.clashState.active) {
           this.resolveClash(false);
         }
 
-        // Render player dual beams
-        this.leftBeamMesh!.visible = true;
-        this.rightBeamMesh!.visible = true;
-        this.leftBeamGlow!.visible = true;
-        this.rightBeamGlow!.visible = true;
+        if (!this.clashState.active) {
+          this.rivalBeamFx?.setVisible(false);
+          this.clashFx?.setVisible(false);
+          beamEnd = aimEnd;
+        }
 
-        this.updateBeamMesh(this.leftBeamMesh!, this.leftBeamGlow!, leftHandPos, endPoint, 0.12);
-        this.updateBeamMesh(this.rightBeamMesh!, this.rightBeamGlow!, rightHandPos, endPoint, 0.12);
+        const leftEnd = this.clashState.active
+          ? playerClashEnd
+          : this.collideBeam(leftHandPos, beamEnd, collide);
+        const rightEnd = this.clashState.active
+          ? playerClashEnd
+          : this.collideBeam(rightHandPos, beamEnd, collide);
 
-        // Apply sustained tick damage: 5 damage every 0.25 seconds to target/closest dummy only (others do not react)
+        this.leftBeamFx?.update(leftHandPos, leftEnd, this.beamTime, 1);
+        this.rightBeamFx?.update(rightHandPos, rightEnd, this.beamTime, 1);
+
         this.dualBeamDamageTimer += dt;
         if (this.dualBeamDamageTimer >= 0.25) {
           this.dualBeamDamageTimer = 0;
-          let targetDummy: TargetDummy | null = null;
-          if (aim.target && !aim.target.isDead) {
-            const dist = this.distPointToSegment(aim.target.getCenter(), midHand, endPoint);
-            if (dist <= aim.target.radius + 0.6) {
-              targetDummy = aim.target;
+          if (this.clashState.active && this.clashState.rival && !this.clashState.rival.isDead) {
+            this.onDamageDealt(
+              this.clashState.rival,
+              config.dps * 0.25,
+              this.clashState.clashPoint
+            );
+          } else {
+            let targetDummy: TargetDummy | null = null;
+            if (aim.target && !aim.target.isDead) {
+              const dist = this.distPointToSegment(aim.target.getCenter(), midHand, beamEnd);
+              if (
+                dist <= aim.target.radius + 0.6 &&
+                (!collide || !worldCollision.isSegmentBlocked(midHand, aim.target.getCenter(), 0.1))
+              ) {
+                targetDummy = aim.target;
+              }
             }
-          }
-          if (!targetDummy) {
-            let minDist = Infinity;
-            for (const d of dummies) {
-              if (d.isDead) continue;
-              const dist = this.distPointToSegment(d.getCenter(), midHand, endPoint);
-              if (dist <= d.radius + 0.5 && dist < minDist) {
+            if (!targetDummy) {
+              let minDist = Infinity;
+              for (const d of dummies) {
+                if (d.isDead) continue;
+                const dCenter = d.getCenter();
+                const dist = this.distPointToSegment(dCenter, midHand, beamEnd);
+                if (dist > d.radius + 0.5 || dist >= minDist) continue;
+                if (collide && worldCollision.isSegmentBlocked(midHand, dCenter, 0.1)) continue;
                 minDist = dist;
                 targetDummy = d;
               }
             }
-          }
-          if (targetDummy) {
-            this.onDamageDealt(targetDummy, activeIronManConfig.dualBeams.dps * 0.25, targetDummy.getCenter());
+            if (targetDummy) {
+              this.onDamageDealt(targetDummy, config.dps * 0.25, targetDummy.getCenter());
+            }
           }
         }
       }
@@ -1078,6 +1048,7 @@ export class IronManAbilities {
         this.isSpinningLasersActive = false;
         this.leftLaserMesh!.visible = false;
         this.rightLaserMesh!.visible = false;
+        audioSystem.stopLaserSpin?.();
       } else {
         // Continuous character spin rotation (independent of movement vector, duration 1.5s)
         const spinSpeed = (Math.PI * 4.0) / this.spinningLaserDuration;
@@ -1099,8 +1070,16 @@ export class IronManAbilities {
         const rightStart = rightHandPos.clone().addScaledVector(rightDir, laserStartOffset);
 
         const laserLength = activeIronManConfig.spinningLasers.radius;
-        const leftEnd = leftStart.clone().addScaledVector(leftDir, laserLength);
-        const rightEnd = rightStart.clone().addScaledVector(rightDir, laserLength);
+        let leftEnd = leftStart.clone().addScaledVector(leftDir, laserLength);
+        let rightEnd = rightStart.clone().addScaledVector(rightDir, laserLength);
+
+        // Cut the lasers at the first surface they touch.
+        if (activeIronManConfig.spinningLasers.collideWithWorld !== false) {
+          const leftLaserHit = worldCollision.segmentHit(leftStart, leftEnd, 0.15);
+          if (leftLaserHit) leftEnd = leftLaserHit.point.clone();
+          const rightLaserHit = worldCollision.segmentHit(rightStart, rightEnd, 0.15);
+          if (rightLaserHit) rightEnd = rightLaserHit.point.clone();
+        }
 
         // Align laser cylinders
         this.orientLaser(this.leftLaserMesh!, leftStart, leftEnd);
@@ -1121,7 +1100,7 @@ export class IronManAbilities {
             kb.y = 1.2;
             this.onDamageDealt(d, activeIronManConfig.spinningLasers.damage, dCenter, kb);
             this.createExplosion(dCenter, 1.2, 0xff0044);
-            audioSystem.playImpact();
+            audioSystem.playImpact(dCenter);
             this.onShake(0.04);
           }
         }
@@ -1177,26 +1156,86 @@ export class IronManAbilities {
     }
   }
 
-  private updateBeamMesh(
-    line: THREE.Line,
-    glow: THREE.Mesh,
+  /**
+   * Shared detonation for volley and heavy missiles. AoE damage is gated by
+   * line of sight so blasts never reach through structures, ward faces or the
+   * ground surface.
+   */
+  private detonateMissile(
+    m: BezierMissile,
+    hitPos: THREE.Vector3,
+    dummies: TargetDummy[]
+  ): void {
+    const impactPos = hitPos.clone();
+    impactPos.y = Math.max(0.2, impactPos.y);
+
+    if (m.isHeavy) {
+      // Bunker-Buster / Smart Heavy Missile: 55 AoE damage in 5m blast radius.
+      const aoeRadius = 5.0;
+      this.createExplosion(impactPos, aoeRadius, 0xff4500);
+      audioSystem.playExplosion(impactPos);
+      this.onShake(0.18);
+      this.hitStopTimer = 0.055; // 55ms impact hit-stop
+
+      const damagedSet = new Set<number>();
+      for (const d of dummies) {
+        if (d.isDead || damagedSet.has(d.id)) continue;
+        const center = d.getCenter();
+        if (center.distanceTo(impactPos) > aoeRadius) continue;
+        if (worldCollision.isSegmentBlocked(impactPos, center)) continue;
+        damagedSet.add(d.id);
+        const kbDir = center.clone().sub(impactPos).normalize().multiplyScalar(10);
+        kbDir.y = 2.5;
+        this.onDamageDealt(d, activeIronManConfig.unibeam.damage, center, kbDir);
+      }
+      return;
+    }
+
+    // Curved Volley Missile: 12 damage in 4 radius AoE.
+    const aoeRadius = 4.0;
+    this.createExplosion(impactPos, aoeRadius, 0xff7700);
+    audioSystem.playExplosion(impactPos);
+    this.onShake(0.12);
+
+    const hitDummies = new Set<number>();
+    for (const d of dummies) {
+      if (d.isDead || hitDummies.has(d.id)) continue;
+      const center = d.getCenter();
+      if (center.distanceTo(impactPos) > aoeRadius) continue;
+      if (worldCollision.isSegmentBlocked(impactPos, center)) continue;
+      hitDummies.add(d.id);
+      const kbDir = center.clone().sub(impactPos).normalize().multiplyScalar(6);
+      kbDir.y = 1.5;
+      this.onDamageDealt(d, activeIronManConfig.microMissiles.damagePerMissile, center, kbDir);
+    }
+  }
+
+  private collideBeam(
     start: THREE.Vector3,
     end: THREE.Vector3,
-    thickness: number
-  ): void {
-    const geom = line.geometry as THREE.BufferGeometry;
-    geom.setFromPoints([start, end]);
+    collide: boolean
+  ): THREE.Vector3 {
+    if (!collide) return end.clone();
+    const hit = worldCollision.segmentHit(start, end, 0.08);
+    return hit ? hit.point.clone() : end.clone();
+  }
 
-    const dist = start.distanceTo(end);
-    const mid = start.clone().add(end).multiplyScalar(0.5);
-
-    glow.position.copy(mid);
-    glow.scale.set(thickness, dist, thickness);
-    glow.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), end.clone().sub(start).normalize());
+  private beamLimit(
+    start: THREE.Vector3,
+    end: THREE.Vector3,
+    collide: boolean
+  ): number {
+    if (!collide) return Number.POSITIVE_INFINITY;
+    const hit = worldCollision.segmentHit(start, end, 0.08);
+    return hit ? hit.distance : Number.POSITIVE_INFINITY;
   }
 
   private orientLaser(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3): void {
     const dist = start.distanceTo(end);
+    if (dist < 1e-4) {
+      mesh.scale.set(0, 0, 0);
+      return;
+    }
     const mid = start.clone().add(end).multiplyScalar(0.5);
     mesh.position.copy(mid);
     mesh.scale.set(1, dist / 14, 1);
@@ -1205,8 +1244,10 @@ export class IronManAbilities {
 
   private distPointToSegment(p: THREE.Vector3, a: THREE.Vector3, b: THREE.Vector3): number {
     const ab = b.clone().sub(a);
+    const lengthSq = ab.lengthSq();
+    if (lengthSq < 1e-9) return a.distanceTo(p);
     const ap = p.clone().sub(a);
-    const t = THREE.MathUtils.clamp(ap.dot(ab) / ab.lengthSq(), 0, 1);
+    const t = THREE.MathUtils.clamp(ap.dot(ab) / lengthSq, 0, 1);
     const closest = a.clone().addScaledVector(ab, t);
     return closest.distanceTo(p);
   }
@@ -1230,13 +1271,10 @@ export class IronManAbilities {
     this.smokeParticles = [];
     if (this.chargeMesh) this.scene.remove(this.chargeMesh);
     if (this.chargeLight) this.scene.remove(this.chargeLight);
-    if (this.leftBeamMesh) this.scene.remove(this.leftBeamMesh);
-    if (this.rightBeamMesh) this.scene.remove(this.rightBeamMesh);
-    if (this.leftBeamGlow) this.scene.remove(this.leftBeamGlow);
-    if (this.rightBeamGlow) this.scene.remove(this.rightBeamGlow);
-    if (this.rivalBeamMesh) this.scene.remove(this.rivalBeamMesh);
-    if (this.rivalBeamGlow) this.scene.remove(this.rivalBeamGlow);
-    if (this.clashSphere) this.scene.remove(this.clashSphere);
+    this.leftBeamFx?.dispose();
+    this.rightBeamFx?.dispose();
+    this.rivalBeamFx?.dispose();
+    this.clashFx?.dispose();
     if (this.leftLaserMesh) this.scene.remove(this.leftLaserMesh);
     if (this.rightLaserMesh) this.scene.remove(this.rightLaserMesh);
     this.scene.remove(this.smokeInstancedMesh);
@@ -1244,5 +1282,7 @@ export class IronManAbilities {
     this.isDualBeamActive = false;
     this.isSpinningLasersActive = false;
     this.isChargingHeavyBlast = false;
+    audioSystem.stopBeamLoop?.();
+    audioSystem.stopLaserSpin?.();
   }
 }

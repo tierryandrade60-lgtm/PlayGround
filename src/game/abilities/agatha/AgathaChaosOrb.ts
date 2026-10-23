@@ -19,6 +19,7 @@ import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { audioSystem } from '../../AudioSystem';
 import { activeAgathaConfig } from './AgathaConfig';
+import { worldCollision } from '../../systems/WorldCollision';
 
 type AimResult = {
   pos: THREE.Vector3;
@@ -427,7 +428,7 @@ export class AgathaChaosOrb {
     };
 
     this.cooldownRemaining = cfg.cooldown;
-    audioSystem.playAttackCast?.();
+    audioSystem.playChaosOrbCast?.();
 
     return true;
   }
@@ -492,7 +493,7 @@ export class AgathaChaosOrb {
           (mesh.material as THREE.MeshBasicMaterial).opacity = 0;
         }
 
-        audioSystem.playImpact?.();
+        audioSystem.playChaosOrbImpact?.();
 
         this.onShake(
           Math.max(
@@ -713,6 +714,12 @@ export class AgathaChaosOrb {
 
       const targetPos = this.getDummyPosition(dummy);
       if (!targetPos) continue;
+      if (
+        cfg.collideWithWorld !== false &&
+        worldCollision.isSegmentBlocked(effect.origin, targetPos, 0.12)
+      ) {
+        continue;
+      }
 
       const dx = targetPos.x - effect.origin.x;
       const dz = targetPos.z - effect.origin.z;
