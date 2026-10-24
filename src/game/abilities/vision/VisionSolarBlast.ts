@@ -1,8 +1,8 @@
 /**
  * VisionSolarBlast.ts
- * Vision's basic attack: compact yellow solar energy bolts fired from the
- * right palm. Projectiles are real fast-moving objects with segment collision
- * against the world and training dummies.
+ * Vision's basic attack: a short Mind Stone charge at the forehead, then a
+ * compact yellow solar bolt. Projectiles are real fast-moving objects with
+ * segment collision against the world and training dummies.
  */
 
 import * as THREE from 'three';
@@ -43,6 +43,12 @@ export class VisionSolarBlast {
   private cooldownRemaining = 0;
   private elapsed = 0;
 
+  private chargeRemaining = 0;
+  private chargeGroup = new THREE.Group();
+  private chargeCore: THREE.Mesh;
+  private chargeGlow: THREE.Mesh;
+  private chargeLight: THREE.PointLight;
+
   constructor(
     scene: THREE.Scene,
     stickman: StickmanNodes,
@@ -57,19 +63,62 @@ export class VisionSolarBlast {
     this.onDamage = onDamage;
     this.onImpact = onImpact;
     this.onShake = onShake;
+
+    const config = activeVisionConfig.solarBlast;
+    this.chargeCore = new THREE.Mesh(
+      new THREE.SphereGeometry(config.radius * 1.4, 14, 12),
+      new THREE.MeshBasicMaterial({
+        color: config.coreColor,
+        transparent: true,
+        opacity: 0.95,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        toneMapped: false,
+      })
+    );
+    this.chargeGlow = new THREE.Mesh(
+      new THREE.SphereGeometry(config.radius * 3.2, 16, 14),
+      new THREE.MeshBasicMaterial({
+        color: config.glowColor,
+        transparent: true,
+        opacity: 0.38,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        toneMapped: false,
+      })
+    );
+    this.chargeLight = new THREE.PointLight(config.glowColor, 1.4, 3.4, 2);
+    this.chargeGroup.add(this.chargeGlow, this.chargeCore, this.chargeLight);
+    this.chargeGroup.visible = false;
+    this.scene.add(this.chargeGroup);
   }
 
   public get isReady(): boolean {
     return this.cooldownRemaining <= 0;
   }
 
+  public get isCharging(): boolean {
+    return this.chargeRemaining > 0;
+  }
+
   public fire(): boolean {
     if (this.cooldownRemaining > 0) return false;
     const config = activeVisionConfig.solarBlast;
     this.cooldownRemaining = Math.max(0.05, config.cooldown);
+    this.chargeRemaining = Math.max(0.02, config.chargeTime);
+    this.positionCharge();
+    this.chargeGroup.visible = true;
+    return true;
+  }
 
-    const origin = new THREE.Vector3();
-    this.stickman.rightHand.getWorldPosition(origin);
+  public cancelCharge(): void {
+    this.chargeRemaining = 0;
+    this.chargeGroup.visible = false;
+  }
+
+  private launchProjectile(): void {
+    const config = activeVisionConfig.solarBlast;
+    const origin = this.getMindStonePosition();
     const aim = this.getAim();
     let direction = aim.pos.clone().sub(origin);
     if (direction.lengthSq() < 0.0001) {
@@ -125,7 +174,6 @@ export class VisionSolarBlast {
       velocity: direction.multiplyScalar(Math.max(1, config.speed)),
       travelled: 0,
     });
-    return true;
   }
 
   public update(dt: number, dummies: TargetDummy[]): void {
@@ -133,6 +181,21 @@ export class VisionSolarBlast {
     this.cooldownRemaining = Math.max(0, this.cooldownRemaining - dt);
     this.elapsed += dt;
     const config = activeVisionConfig.solarBlast;
+
+    if (this.chargeRemaining > 0) {
+      this.chargeRemaining = Math.max(0, this.chargeRemaining - dt);
+      this.positionCharge();
+      const chargeProgress = 1 - this.chargeRemaining / Math.max(0.02, config.chargeTime);
+      const pulse = 0.75 + chargeProgress * 0.7 + Math.sin(this.elapsed * 40) * 0.12;
+      this.chargeCore.scale.setScalar(pulse);
+      this.chargeGlow.scale.setScalar(0.9 + chargeProgress * 0.35);
+      this.chargeLight.intensity = 1.0 + chargeProgress * 1.8;
+      if (this.chargeRemaining <= 0) {
+        this.chargeGroup.visible = false;
+        this.launchProjectile();
+      }
+    }
+
     const active: SolarProjectile[] = [];
 
     for (const projectile of this.projectiles) {
@@ -200,6 +263,23 @@ export class VisionSolarBlast {
 
   private dummies: TargetDummy[] = [];
 
+  private getMindStonePosition(): THREE.Vector3 {
+    const stone = (this.stickman as StickmanNodes & { mindStone?: THREE.Object3D }).mindStone;
+    if (stone) {
+      const position = new THREE.Vector3();
+      stone.getWorldPosition(position);
+      return position;
+    }
+    const headPosition = new THREE.Vector3();
+    this.stickman.head.getWorldPosition(headPosition);
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.stickman.root.quaternion);
+    return headPosition.addScaledVector(forward, 0.25);
+  }
+
+  private positionCharge(): void {
+    this.chargeGroup.position.copy(this.getMindStonePosition());
+  }
+
   private disposeProjectile(projectile: SolarProjectile): void {
     this.scene.remove(projectile.group);
     projectile.core.geometry.dispose();
@@ -209,6 +289,12 @@ export class VisionSolarBlast {
   }
 
   public dispose(): void {
+    this.cancelCharge();
+    this.scene.remove(this.chargeGroup);
+    this.chargeCore.geometry.dispose();
+    (this.chargeCore.material as THREE.Material).dispose();
+    this.chargeGlow.geometry.dispose();
+    (this.chargeGlow.material as THREE.Material).dispose();
     for (const projectile of this.projectiles) {
       this.disposeProjectile(projectile);
     }

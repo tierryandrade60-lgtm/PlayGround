@@ -115,6 +115,8 @@ export const BuildModeContainer: React.FC<BuildModeContainerProps> = ({
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Toasts
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -265,12 +267,23 @@ export const BuildModeContainer: React.FC<BuildModeContainerProps> = ({
   const handleSaveDraft = async () => {
     if (!activeScript) return;
     audioSystem.playUiClick?.();
-    const res = scriptRuntimeEngine.saveScriptDraft(activeScript.id, code);
-    if (res.success) {
-      setSavedAt(Date.now());
-      showToast('Rascunho salvo no armazenamento persistente.', 'success');
-    } else {
-      showToast(res.message, 'warn');
+    setSaveStatus('saving');
+    setSaveError(null);
+    try {
+      const res = await scriptRuntimeEngine.saveScriptDraft(activeScript.id, code);
+      if (res.success) {
+        setSavedAt(Date.now());
+        setSaveStatus('saved');
+        showToast('Rascunho salvo no armazenamento persistente.', 'success');
+      } else {
+        setSaveStatus('error');
+        setSaveError(res.message);
+        showToast(res.message, 'warn');
+      }
+    } catch (err) {
+      setSaveStatus('error');
+      setSaveError((err as Error).message);
+      showToast(`Falha ao salvar: ${(err as Error).message}`, 'warn');
     }
   };
 
@@ -1020,6 +1033,18 @@ export const BuildModeContainer: React.FC<BuildModeContainerProps> = ({
                       Rascunho salvo às {new Date(savedAt).toLocaleTimeString('pt-BR')}
                     </div>
                   )}
+                  {saveStatus !== 'idle' && (
+                    <div className={`text-[10px] ${saveStatus === 'error' ? 'text-rose-400' : saveStatus === 'saving' ? 'text-amber-400' : 'text-emerald-400'}`}>
+                      Status de salvamento: {saveStatus === 'saving' ? 'salvando…' : saveStatus === 'saved' ? 'salvo' : 'erro ao salvar'}
+                      {saveError ? ` — ${saveError}` : ''}
+                    </div>
+                  )}
+                  <div className="text-[10px] text-[#a1a1aa]">
+                    Runtime confirmado:{' '}
+                    <b className={scriptState?.runningSource && scriptState?.runningHash === scriptState?.appliedHash ? 'text-emerald-400' : 'text-zinc-500'}>
+                      {scriptState?.runningSource && scriptState?.runningHash === scriptState?.appliedHash ? 'sim' : 'não'}
+                    </b>
+                  </div>
 
                   <p className="text-[#a1a1aa] text-[11px] leading-relaxed">
                     {scriptState?.capability === 'restart-required'

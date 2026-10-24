@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createStickmanRig, StickmanNodes } from './StickmanRig';
 import { AnimationController } from './AnimationController';
 import { TargetDummy } from './TargetDummy';
+import { roundDamage } from './DamageMath';
 import { ProjectileSystem } from './ProjectileSystem';
 import { IronManAbilities } from './IronManAbilities';
 import { AgathaAbilities } from './AgathaAbilities';
@@ -621,7 +622,10 @@ export class GameScene {
   }
 
   public isPlayerPhasing(): boolean {
-    return this.currentPowerSet === 'vision' && !!this.visionAbilities?.isPhasing;
+    return this.currentPowerSet === 'vision' && (
+      !!this.visionAbilities?.isPhasing ||
+      !!this.visionAbilities?.isPhasingDashActive
+    );
   }
 
   /**
@@ -632,7 +636,7 @@ export class GameScene {
     if (this.isPlayerPhasing() || gameplayRestrictions.hasRestriction('Invulnerable')) {
       return 0;
     }
-    const damage = Math.max(0, Math.round(Number.isFinite(amount) ? amount : 0));
+    const damage = roundDamage(amount);
     if (damage <= 0) return 0;
     this.playerHealth = Math.max(0, this.playerHealth - damage);
     if (this.playerHealth <= 0) {
@@ -704,6 +708,8 @@ export class GameScene {
     this.animController.arcaneChokeActive = false;
     this.animController.mindBeamActive = false;
     this.animController.phasingActive = false;
+    this.animController.headGripActive = false;
+    this.animController.isPhasingDash = false;
 
     if (this.stickman.mindStone) {
       this.stickman.mindStone.visible = this.currentPowerSet === 'vision';
@@ -731,6 +737,12 @@ export class GameScene {
       gameplayRestrictions.hasRestriction('NoPowers') ||
       gameplayRestrictions.hasRestriction('Stunned')
     ) {
+      return false;
+    }
+    if (this.currentPowerSet === 'vision' && (
+      this.visionAbilities?.isHeadGripActive ||
+      this.visionAbilities?.isPhasingDashActive
+    )) {
       return false;
     }
 
@@ -780,12 +792,12 @@ export class GameScene {
       const aim = this.settings.aimAssist && this.activeTarget && !this.activeTarget.isDead
         ? { pos: this.activeTarget.getCenter() }
         : { pos: this.currentAimPoint.clone() };
-      const handPos = new THREE.Vector3();
-      this.stickman.rightHand.getWorldPosition(handPos);
-      const toAim = aim.pos.clone().sub(handPos).normalize();
+      const stonePos = new THREE.Vector3();
+      this.stickman.mindStone.getWorldPosition(stonePos);
+      const toAim = aim.pos.clone().sub(stonePos).normalize();
       const aimPitch = Math.asin(THREE.MathUtils.clamp(toAim.y, -0.99, 0.99));
       if (this.visionAbilities.triggerAttack()) {
-        this.animController.triggerRepulsor('right', aimPitch);
+        this.animController.triggerAttack(aimPitch, () => {});
         return true;
       }
       return false;
@@ -802,6 +814,10 @@ export class GameScene {
       gameplayRestrictions.hasRestriction('Stunned')
     ) {
       return false;
+    }
+    if (this.currentPowerSet === 'vision' && this.visionAbilities) {
+      if (this.visionAbilities.isPhasingDashActive) return false;
+      if (this.visionAbilities.isHeadGripActive && id !== 4) return false;
     }
 
     if (this.currentPowerSet === 'agatha' && this.agathaAbilities) {
@@ -863,6 +879,14 @@ export class GameScene {
       if (id === 1) return this.visionAbilities.triggerAbility(1);
       if (id === 2) return this.visionAbilities.triggerAbility(2);
       if (id === 3) return this.toggleFlight();
+      if (id === 4) {
+        const triggered = this.visionAbilities.triggerAbility(4, this.playerPos, this.dummies);
+        if (triggered) {
+          this.camera.fov = Math.max(30, this.cameraBaseFov - 4);
+          this.camera.updateProjectionMatrix();
+        }
+        return triggered;
+      }
       return false;
     }
     return false;
@@ -886,6 +910,7 @@ export class GameScene {
       if (id === 1) return this.visionAbilities.isMindBeamActive;
       if (id === 2) return this.visionAbilities.isPhasing;
       if (id === 3) return this.isFlying;
+      if (id === 4) return this.visionAbilities.isHeadGripActive;
     }
     return false;
   }
@@ -943,6 +968,7 @@ export class GameScene {
         1: activeVisionConfig.mindBeam,
         2: activeVisionConfig.phasing,
         3: { toggle: true, cancelDelay: 0.2, cooldownStart: 'activation' },
+        4: activeVisionConfig.headGrip,
       };
       const section = map[id];
       if (section) {
@@ -1001,6 +1027,7 @@ export class GameScene {
         this.toggleFlight();
         return true;
       }
+      if (id === 4) return this.visionAbilities.cancelAbility(4);
     }
     return false;
   }
@@ -1015,6 +1042,23 @@ export class GameScene {
       gameplayRestrictions.hasRestriction('Anchored')
     ) {
       return false;
+    }
+
+    if (this.currentPowerSet === 'vision' && this.visionAbilities) {
+      if (this.visionAbilities.isHeadGripActive) return false;
+      if (!this.visionAbilities.triggerPhasingDash(this.playerPos)) return false;
+      const dir = this.visionAbilities.phasingDash.dashDirection;
+      this.dashDir.copy(dir);
+      this.isDashing = true;
+      this.dashTimer = 0;
+      this.dashCooldownRemaining = activeVisionConfig.phasingDash.cooldown;
+      this.playerRotationY = Math.atan2(-dir.x, -dir.z);
+      this.targetRotationY = this.playerRotationY;
+      audioSystem.playThrusterDash();
+      this.camera.fov = this.cameraBaseFov + 8;
+      this.camera.updateProjectionMatrix();
+      if (this.settings.cameraShake) this.addCameraShake(0.08);
+      return true;
     }
 
     // Agatha Harkness uses Passo das Sombras for dash / evade
@@ -1478,7 +1522,28 @@ export class GameScene {
 
     let blockedBox: THREE.Box3 | null = null;
     const movementBoxes = this.isPlayerPhasing() ? [] : worldCollision.getMovementBoxes();
-    if (this.isDashing) {
+    if (this.currentPowerSet === 'vision' && this.visionAbilities?.isPhasingDashActive) {
+      const dashStep = this.visionAbilities.advancePhasingDash(dt, this.playerPos);
+      const dir = this.visionAbilities.phasingDash.dashDirection;
+      const step = this.movementSystem.moveWithCollision(
+        this.playerPos,
+        dir,
+        dashStep.distanceDelta,
+        [],
+        this.playerCollisionRadius,
+        bodyProfile
+      );
+      this.playerPos.x = step.position.x;
+      this.playerPos.z = step.position.z;
+      const limit = Math.max(1, activeVisionConfig.phasingDash.arenaLimit);
+      this.playerPos.x = THREE.MathUtils.clamp(this.playerPos.x, -limit, limit);
+      this.playerPos.z = THREE.MathUtils.clamp(this.playerPos.z, -limit, limit);
+      blockedBox = null;
+
+      if (dashStep.done) {
+        this.finishVisionPhasingDash();
+      }
+    } else if (this.isDashing) {
       this.dashTimer += dt;
       const step = this.movementSystem.moveWithCollision(
         this.playerPos,
@@ -1583,6 +1648,7 @@ export class GameScene {
     // 4. Update animation controller
     this.animController.isFlying = this.isFlying;
     this.animController.isDashing = this.isDashing;
+    this.animController.isPhasingDash = !!this.visionAbilities?.isPhasingDashActive;
     this.animController.flightRoll = this.flightBankRoll;
     try {
       this.animController.update(dt * this.animationSpeed, this.currentSpeed / effectiveMaxSpeed);
@@ -1643,6 +1709,7 @@ export class GameScene {
       this.animController.mindBeamActive = this.visionAbilities.isMindBeamActive;
       this.animController.mindBeamPitch = this.camPitch;
       this.animController.phasingActive = this.visionAbilities.isPhasing;
+      this.animController.headGripActive = this.visionAbilities.isHeadGripActive;
       if (this.visionAbilities.isMindBeamActive) {
         this.orientCharacterToAim();
       }
@@ -1651,6 +1718,9 @@ export class GameScene {
         this.dummies,
         this.isFlying && this.currentPowerSet === 'vision'
       );
+      if (this.currentPowerSet === 'vision' && this.visionAbilities.isHeadGripActive) {
+        this.playerRotationY = this.stickman.root.rotation.y;
+      }
     }
 
     // 6d. Handle Build Mode Camera (Free-Fly navigation & Orbit around focus point)
@@ -1827,7 +1897,7 @@ export class GameScene {
 
       return {
         id: dn.id,
-        value: Math.round(dn.value),
+        value: dn.value,
         x: screenX,
         y: screenY,
         opacity,
@@ -1842,9 +1912,8 @@ export class GameScene {
     hitPosition: THREE.Vector3,
     knockback?: THREE.Vector3
   ): number {
-    const intDamage = Math.max(0, Math.round(Number.isFinite(damage) ? damage : 0));
-    const result = this.dealDamageSystem.deal(dummy, intDamage, hitPosition, knockback);
-    return Math.max(0, Math.round(Number.isFinite(result.actualDamage) ? result.actualDamage : 0));
+    const result = this.dealDamageSystem.deal(dummy, roundDamage(damage), hitPosition, knockback);
+    return roundDamage(result.actualDamage);
   }
 
   public updateDealDamageSystem(NewClass: any): void {
@@ -2027,6 +2096,17 @@ export class GameScene {
         if (!active) this.resolveVisionPhasingExit();
       }
     );
+  }
+
+  private finishVisionPhasingDash(): void {
+    if (!this.visionAbilities) return;
+    this.visionAbilities.finishPhasingDash();
+    this.isDashing = false;
+    this.dashTimer = 0;
+    this.animController.isPhasingDash = false;
+    if (!this.visionAbilities.isPhasing) {
+      this.resolveVisionPhasingExit();
+    }
   }
 
   private resolveVisionPhasingExit(): void {

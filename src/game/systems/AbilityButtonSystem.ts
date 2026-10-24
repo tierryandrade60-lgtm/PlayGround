@@ -48,11 +48,12 @@ export const COMBAT_BUTTON_PROFILES: Record<PowerSet, CombatButtonProfile> = {
   vision: {
     powerSet: 'vision',
     attackCooldown: 0.22,
-    dashCooldown: 2.2,
+    dashCooldown: 4.0,
     abilities: [
       { id: 1, name: 'Raio da Mind Stone', cooldown: 9.0, toggle: true, cancelDelay: 0.45, cooldownStart: 'cancelOrNaturalEnd' },
       { id: 2, name: 'Fase / Intangibilidade', cooldown: 10.0, toggle: true, cancelDelay: 0.35, cooldownStart: 'cancelOrNaturalEnd' },
       { id: 3, name: 'Voo Psiónico', cooldown: 0, toggle: true, cancelDelay: 0.2, cooldownStart: 'activation' },
+      { id: 4, name: 'Pegada da Mind Stone', cooldown: 9.0, toggle: true, cancelDelay: 0.45, cooldownStart: 'cancelOrNaturalEnd' },
     ],
   },
 };

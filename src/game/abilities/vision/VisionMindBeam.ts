@@ -10,7 +10,8 @@ import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { soundSystem } from '../../systems/SoundSystem';
 import { worldCollision, WorldCollision } from '../../systems/WorldCollision';
-import { IronManBeamVisual } from '../ironman/IronManBeamFx';
+import { BeamClashDisk, IronManBeamVisual } from '../ironman/IronManBeamFx';
+import { beamClashSystem } from '../../systems/BeamClashSystem';
 import { activeVisionConfig } from './VisionConfig';
 
 type AimProvider = () => { pos: THREE.Vector3; target: TargetDummy | null };
@@ -34,6 +35,12 @@ export class VisionMindBeam {
   private onShake: (amount: number) => void;
 
   private beam: IronManBeamVisual;
+  private rivalBeam: IronManBeamVisual;
+  private clashDisk: BeamClashDisk;
+  private clashTarget: TargetDummy | null = null;
+  private clashPoint = new THREE.Vector3();
+  private clashTimer = 0;
+  private readonly beamClashId = 'vision-mind-beam';
   private impactGroup = new THREE.Group();
   private impactSphere: THREE.Mesh;
   private impactRing: THREE.Mesh;
@@ -71,6 +78,14 @@ export class VisionMindBeam {
       config.width,
       5
     );
+    const rivalPalette = {
+      core: 0x66f0ff,
+      inner: 0x00a8ff,
+      outer: 0x7a00ff,
+      light: 0x00e5ff,
+    };
+    this.rivalBeam = new IronManBeamVisual(scene, rivalPalette, config.width * 0.9, 6);
+    this.clashDisk = new BeamClashDisk(scene, config.innerColor, rivalPalette.inner);
 
     this.impactSphere = new THREE.Mesh(
       new THREE.SphereGeometry(0.2, 18, 14),
@@ -123,6 +138,8 @@ export class VisionMindBeam {
   public stop(): void {
     if (!this.active) return;
     this.active = false;
+    this.resolveClash(false);
+    beamClashSystem.removeBeam(this.beamClashId);
     this.beam.setVisible(false);
     this.impactGroup.visible = false;
     this.impactLight.intensity = 0;
@@ -149,7 +166,65 @@ export class VisionMindBeam {
 
     const collide = config.collideWithWorld !== false;
     const hit = collide ? worldCollision.segmentHit(origin, end, 0.06) : null;
-    const beamEnd = hit ? hit.point.clone() : end;
+    const clippedEnd = hit ? hit.point.clone() : end;
+
+    beamClashSystem.setBeam({
+      id: this.beamClashId,
+      ownerId: 'player',
+      character: 'vision',
+      origin,
+      end: clippedEnd,
+      radius: config.width * 0.5,
+      active: true,
+      canClash: true,
+    });
+    beamClashSystem.syncRivalOpponents(dummies, 'vision');
+    const intersection = beamClashSystem.findIntersection(this.beamClashId);
+    let beamEnd = clippedEnd;
+    let clashActive = false;
+
+    if (intersection && intersection.target && !intersection.target.isDead) {
+      clashActive = true;
+      const target = intersection.target;
+      const newSession = beamClashSystem.beginSession(intersection);
+      this.clashTarget = target;
+      this.clashPoint.copy(intersection.point);
+      beamEnd = this.clashPoint.clone();
+      if (newSession) {
+        this.clashTimer = 0;
+        target.rivalBeamActive = true;
+        soundSystem.playBeamClash();
+        this.onShake(0.14);
+      } else {
+        this.clashTimer += dt;
+        beamClashSystem.updateSession(this.beamClashId, this.clashPoint, dt);
+      }
+
+      const rivalPosition = target.getCenter();
+      const axis = rivalPosition.clone().sub(beamEnd);
+      const rivalEnd = rivalPosition.clone().addScaledVector(
+        axis.clone().normalize(),
+        -Math.max(0.2, axis.length())
+      );
+      const intensity = 0.8 + Math.sin(this.elapsed * 18) * 0.12;
+      this.rivalBeam.update(rivalPosition, rivalEnd, this.elapsed, 1);
+      this.clashDisk.update(beamEnd, axis, this.elapsed, intensity);
+      this.onShake(0.02 + intensity * 0.01);
+
+      if (this.clashTimer >= 1.6) {
+        this.resolveClash(true);
+        clashActive = false;
+        beamEnd = clippedEnd;
+      }
+    } else if (beamClashSystem.hasSession(this.beamClashId)) {
+      this.resolveClash(false);
+    }
+
+    if (!clashActive) {
+      this.rivalBeam.setVisible(false);
+      this.clashDisk.setVisible(false);
+    }
+
     this.beam.update(origin, beamEnd, this.elapsed, 1);
 
     this.impactGroup.visible = true;
@@ -175,6 +250,11 @@ export class VisionMindBeam {
     if (this.damageTimer < TICK) return;
     this.damageTimer = 0;
 
+    if (clashActive && this.clashTarget && !this.clashTarget.isDead) {
+      this.onDamage(this.clashTarget, config.dps * TICK, this.clashTarget.getCenter());
+      return;
+    }
+
     let target: TargetDummy | null = null;
     let bestDistance = Number.POSITIVE_INFINITY;
     for (const dummy of dummies) {
@@ -190,6 +270,22 @@ export class VisionMindBeam {
     if (target) {
       this.onDamage(target, config.dps * TICK, target.getCenter());
     }
+  }
+
+  private resolveClash(impact: boolean): void {
+    const session = beamClashSystem.endSession(this.beamClashId);
+    const target = this.clashTarget;
+    if (impact && target && !target.isDead) {
+      this.onImpact(this.clashPoint.clone(), activeVisionConfig.mindBeam.innerColor);
+      this.onShake(0.2);
+      target.rivalCooldown = Math.max(target.rivalCooldown, 1.2);
+    }
+    if (target) target.rivalBeamActive = false;
+    this.clashTarget = null;
+    this.clashTimer = 0;
+    this.rivalBeam.setVisible(false);
+    this.clashDisk.setVisible(false);
+    if (session) session.point.copy(this.clashPoint);
   }
 
   private getOrigin(): THREE.Vector3 {
@@ -208,6 +304,8 @@ export class VisionMindBeam {
   public dispose(): void {
     this.stop();
     this.beam.dispose();
+    this.rivalBeam.dispose();
+    this.clashDisk.dispose();
     this.scene.remove(this.impactGroup);
     this.impactSphere.geometry.dispose();
     (this.impactSphere.material as THREE.Material).dispose();

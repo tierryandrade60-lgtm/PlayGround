@@ -334,9 +334,17 @@ export const PowerSelectModal: React.FC<PowerSelectModalProps> = ({
                 <Plane size={13} className="text-amber-200 shrink-0" />
                 <span>Voo Psiónico (Energia Dourada)</span>
               </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#fef9c3' }}>
+                <Crosshair size={13} className="text-amber-300 shrink-0" />
+                <span>Pegada da Mind Stone (Curta Distância)</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#fef9c3' }}>
+                <Wind size={13} className="text-yellow-300 shrink-0" />
+                <span>Phasing Dash (Dash do botão)</span>
+              </div>
             </div>
             <p style={{ fontSize: '11px', color: '#fde68a', margin: '2px 0 0 0' }}>
-              ✦ Fase atravessa paredes e estruturas, mas nunca o chão da arena.
+              ✦ Fase e Phasing Dash atravessam paredes e estruturas, mas nunca o chão da arena.
             </p>
           </div>
 

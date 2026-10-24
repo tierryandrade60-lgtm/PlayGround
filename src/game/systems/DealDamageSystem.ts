@@ -9,6 +9,7 @@
 
 import * as THREE from 'three';
 import { TargetDummy } from '../TargetDummy';
+import { roundDamage } from '../DamageMath';
 
 export interface DamageResult {
   requestedDamage: number;
@@ -34,18 +35,18 @@ export class DealDamageSystem {
     hitPosition: THREE.Vector3,
     knockback?: THREE.Vector3
   ): DamageResult {
-    const intDamage = Math.max(0, Math.round(Number.isFinite(damage) ? damage : 0));
-    const result = dummy.takeDamage(intDamage, hitPosition, knockback);
+    const requestedDamage = roundDamage(damage);
+    const result = dummy.takeDamage(requestedDamage, hitPosition, knockback);
 
     if (result.actualDamage > 0) {
       this.onHitConfirmed();
     }
 
-    const actualDamage = Math.max(0, Math.round(Number.isFinite(result.actualDamage) ? result.actualDamage : 0));
+    const actualDamage = roundDamage(result.actualDamage);
     this.projectileSystem.spawnDamageNumber(actualDamage, hitPosition);
 
     return {
-      requestedDamage: intDamage,
+      requestedDamage,
       actualDamage,
     };
   }

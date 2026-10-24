@@ -43,7 +43,8 @@ const getAbilityIcon = (powerSet: 'ironman' | 'agatha' | 'vision', id: number): 
   if (powerSet === 'vision') {
     if (id === 1) return <Sparkles size={19} className="text-yellow-200" />;
     if (id === 2) return <Wind size={19} className="text-amber-200" />;
-    return <Plane size={19} className="text-yellow-300" />;
+    if (id === 3) return <Plane size={19} className="text-yellow-300" />;
+    return <Crosshair size={19} className="text-amber-300" />;
   }
   if (id === 1) return <Flame size={19} className="text-amber-400" />;
   if (id === 2) return <Shield size={19} className="text-cyan-400" />;
@@ -241,6 +242,7 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
   const angles = abilities.length >= 4 ? [-6, 28, 62, 96] : abilities.length === 3 ? [-6, 28, 62] : [-6, 28];
 
   const maxAttackCd = getCombatButtonProfile(powerSet).attackCooldown;
+  const dashCooldownTotal = getCombatButtonProfile(powerSet).dashCooldown;
 
   return (
     <div
@@ -336,7 +338,7 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
           transition: 'all 0.12s ease',
         }}
         className="active:scale-90"
-        title={powerSet === 'agatha' ? 'Passo das Sombras (Teleporte)' : 'Thruster Dash / Evade'}
+        title={powerSet === 'agatha' ? 'Passo das Sombras (Teleporte)' : powerSet === 'vision' ? 'Phasing Dash (Atravessa Estruturas)' : 'Thruster Dash / Evade'}
       >
         {/* Radial Cooldown */}
         {dashCooldown > 0 && (
@@ -345,7 +347,7 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
               position: 'absolute',
               inset: 0,
               borderRadius: '50%',
-              background: `conic-gradient(rgba(0, 0, 0, 0.65) ${(dashCooldown / 2.2) * 100}%, transparent ${(dashCooldown / 2.2) * 100}%)`,
+              background: `conic-gradient(rgba(0, 0, 0, 0.65) ${(dashCooldown / Math.max(0.1, dashCooldownTotal)) * 100}%, transparent ${(dashCooldown / Math.max(0.1, dashCooldownTotal)) * 100}%)`,
               pointerEvents: 'none',
             }}
           />
@@ -360,7 +362,7 @@ export const CombatButtons: React.FC<CombatButtonsProps> = ({
             zIndex: 2,
           }}
         >
-          {dashCooldown > 0 ? dashCooldown.toFixed(1) : powerSet === 'agatha' ? 'PASSO' : 'DASH'}
+          {dashCooldown > 0 ? dashCooldown.toFixed(1) : powerSet === 'agatha' ? 'PASSO' : powerSet === 'vision' ? 'FASE' : 'DASH'}
         </span>
       </div>
 

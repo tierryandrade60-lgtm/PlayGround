@@ -11,6 +11,7 @@
  */
 
 import * as THREE from 'three';
+import { roundDamage } from '../../DamageMath';
 import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { audioSystem } from '../../AudioSystem';
@@ -402,9 +403,8 @@ export class AgathaDarkDrain {
     ) {
       this.tickTimer -= cfg.tickInterval;
 
-      const tickDmg = Math.max(
-        1,
-        Math.round(cfg.dps * cfg.tickInterval)
+      const tickDmg = roundDamage(
+        Math.max(0.1, cfg.dps * cfg.tickInterval)
       );
 
       for (const [id, tendril] of [

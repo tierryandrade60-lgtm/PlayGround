@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { audioSystem } from './AudioSystem';
 import { gameplayRestrictions } from './GameplayRestrictions';
+import { roundDamage } from './DamageMath';
 
 export interface FloatingDamageText {
   id: number;
@@ -55,9 +56,15 @@ export class TargetDummy {
   // Agatha Harkness Arcane Choke state
   public isChoked: boolean = false;
   public chokeElevation: number = 0;
+  public isGripped: boolean = false;
+  public gripProtected: boolean = false;
 
   public applyImpulse(impulse: THREE.Vector3): void {
     this.knockbackVel.add(impulse);
+  }
+
+  public setHealthBarVisible(visible: boolean): void {
+    this.healthSprite.visible = visible;
   }
 
   // Respawn state
@@ -277,18 +284,18 @@ export class TargetDummy {
     if (this.isDead) return { killed: false, actualDamage: 0 };
 
     // Invulnerability check
-    if (gameplayRestrictions.hasRestriction('Invulnerable')) {
+    if (gameplayRestrictions.hasRestriction('Invulnerable') || this.gripProtected) {
       return { killed: false, actualDamage: 0 };
     }
 
-    const intAmount = Math.max(0, Math.round(Number.isFinite(amount) ? amount : 0));
-    let actualDamage = intAmount;
+    const roundedAmount = roundDamage(amount);
+    let actualDamage = roundedAmount;
     // Shield check (mitigates 50% damage)
     if (gameplayRestrictions.hasRestriction('IsShield')) {
-      actualDamage = Math.max(1, Math.round(intAmount * 0.5));
+      actualDamage = roundDamage(Math.max(0.1, roundedAmount * 0.5));
     }
 
-    this.health = Math.max(0, this.health - actualDamage);
+    this.health = Math.max(0, roundDamage(this.health - actualDamage));
     this.updateHealthBar();
 
     // Hit flash
@@ -342,10 +349,13 @@ export class TargetDummy {
     this.recoilAngle = 0;
     this.recoilVel = 0;
     this.isHitFlashing = false;
+    this.isGripped = false;
+    this.gripProtected = false;
     this.bodyMesh.material = this.normalMaterial;
     this.headMesh.material = this.normalMaterial;
     this.updateHealthBar();
     this.group.visible = true;
+    this.healthSprite.visible = true;
   }
 
   public update(dt: number): void {
@@ -377,7 +387,7 @@ export class TargetDummy {
     this.recoilAngle += this.recoilVel * dt;
 
     // Apply knockback movement
-    if (this.knockbackVel.lengthSq() > 0.001) {
+    if (!this.isGripped && this.knockbackVel.lengthSq() > 0.001) {
       this.group.position.addScaledVector(this.knockbackVel, dt);
       this.group.position.y = 0; // maintain on floor
       this.knockbackVel.multiplyScalar(Math.max(0, 1 - dt * 6.0));
@@ -389,7 +399,9 @@ export class TargetDummy {
 
     const dummyUpper = this.group.getObjectByName('DummyUpper');
     if (dummyUpper) {
-      if (this.isChoked) {
+      if (this.isGripped) {
+        // The head-grip module drives the upper body pose directly.
+      } else if (this.isChoked) {
         // Frantic choking struggle wobble and strain backward without breaking the rig
         const chokeWobble = Math.sin(performance.now() * 0.03) * 0.12 - 0.22;
         dummyUpper.rotation.x = chokeWobble;

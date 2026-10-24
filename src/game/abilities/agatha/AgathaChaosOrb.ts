@@ -15,6 +15,7 @@
  */
 
 import * as THREE from 'three';
+import { roundDamage } from '../../DamageMath';
 import { TargetDummy } from '../../TargetDummy';
 import { StickmanNodes } from '../../StickmanRig';
 import { audioSystem } from '../../AudioSystem';
@@ -752,7 +753,7 @@ export class AgathaChaosOrb {
         1 - (distance / effect.maxRadius) * 0.3
       );
 
-      const damage = Math.round(cfg.splashDamage * falloff);
+      const damage = roundDamage(cfg.splashDamage * falloff);
 
       const knockback = direction.multiplyScalar(10);
       knockback.y = 2.8;

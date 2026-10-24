@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { GameScene, TargetBracketInfo, ProjectedDamageNumber } from '../game/GameScene';
+import { formatDamage } from '../game/DamageMath';
 import { ReticleStyle } from '../game/SettingsManager';
 
 interface AimReticleProps {
@@ -324,7 +325,7 @@ export const AimReticle: React.FC<AimReticleProps> = ({
             fontFamily: 'system-ui, -apple-system, sans-serif',
           }}
         >
-          {Math.round(dn.value)}
+          {formatDamage(dn.value)}
         </div>
       ))}
     </div>

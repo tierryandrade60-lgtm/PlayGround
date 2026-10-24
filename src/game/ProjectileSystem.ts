@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { TargetDummy } from './TargetDummy';
 import { audioSystem } from './AudioSystem';
 import { WorldCollision, worldCollision } from './systems/WorldCollision';
+import { roundDamage } from './DamageMath';
 
 export interface DamageNumber {
   id: number;
@@ -125,10 +126,9 @@ export class ProjectileSystem {
   private nextDamageId: number = 1;
 
   public spawnDamageNumber(value: number, worldPos: THREE.Vector3): void {
-    const intValue = Math.max(0, Math.round(Number.isFinite(value) ? value : 0));
     this.damageNumbers.push({
       id: this.nextDamageId++,
-      value: intValue,
+      value: roundDamage(value),
       worldPos: worldPos.clone().add(new THREE.Vector3(0, 0.4, 0)),
       age: 0,
       maxAge: 0.95,

@@ -39,12 +39,14 @@ export class AnimationController {
   public mindBeamActive: boolean = false;
   public mindBeamPitch: number = 0;
   public phasingActive: boolean = false;
+  public headGripActive: boolean = false;
 
   // Flight & Dash locomotion states
   public isFlying: boolean = false;
   public flightBlend: number = 0; // 0 = ground, 1 = flying
   public flightRoll: number = 0; // banking into turns
   public isDashing: boolean = false;
+  public isPhasingDash: boolean = false;
 
   // Base pelvis height when standing
   private readonly basePelvisY: number = 1.15;
@@ -134,7 +136,7 @@ export class AnimationController {
     const blendSpeed = targetWalkBlend > this.walkBlend ? 9.0 : 7.0;
     this.walkBlend = THREE.MathUtils.damp(this.walkBlend, targetWalkBlend, blendSpeed, dt);
 
-    const targetFlightBlend = this.isFlying ? 1.0 : 0.0;
+    const targetFlightBlend = (this.isFlying || this.isPhasingDash) ? 1.0 : 0.0;
     this.flightBlend = THREE.MathUtils.damp(this.flightBlend, targetFlightBlend, 8.5, dt);
 
     // Advance walk cycle phase proportional to actual movement speed with organic foot cadence
@@ -296,9 +298,10 @@ export class AnimationController {
       n.leftAnkle.rotation.x = THREE.MathUtils.lerp(n.leftAnkle.rotation.x, 0.45, fb);
       n.rightAnkle.rotation.x = THREE.MathUtils.lerp(n.rightAnkle.rotation.x, 0.45, fb);
 
-      if (!this.isAttacking && !this.isRepulsorActive && !this.dualBeamActive && !this.spinningLasersActive && !this.chaosOrbActive && !this.runicWardActive && !this.mindBeamActive && !this.phasingActive) {
+      if (!this.isAttacking && !this.isRepulsorActive && !this.dualBeamActive && !this.spinningLasersActive && !this.chaosOrbActive && !this.runicWardActive && !this.mindBeamActive && !this.phasingActive && !this.headGripActive) {
+        const dashArm = this.isPhasingDash ? 0.9 : (this.isDashing ? 0.5 : this.smoothedSpeed * 0.22);
         const armFlightX = this.isVision
-          ? -0.52 - (this.isDashing ? 0.5 : this.smoothedSpeed * 0.22)
+          ? -0.52 - dashArm
           : -0.36 - (this.isDashing ? 0.55 : this.smoothedSpeed * 0.32);
         targetLeftShoulderRotX = THREE.MathUtils.lerp(targetLeftShoulderRotX, armFlightX, fb);
         targetLeftShoulderRotZ = THREE.MathUtils.lerp(targetLeftShoulderRotZ, this.isVision ? -0.38 : -0.24, fb);
@@ -311,7 +314,7 @@ export class AnimationController {
         targetRightWristRotX = THREE.MathUtils.lerp(targetRightWristRotX, -0.24, fb);
       }
 
-      const forwardLean = -0.36 * (this.isDashing ? 1.6 : Math.max(0.22, this.smoothedSpeed));
+      const forwardLean = -0.36 * (this.isPhasingDash ? 2.4 : (this.isDashing ? 1.6 : Math.max(0.22, this.smoothedSpeed)));
       targetWaistRotX = THREE.MathUtils.lerp(targetWaistRotX, forwardLean, fb);
       targetHeadRotX = THREE.MathUtils.lerp(targetHeadRotX, -forwardLean * 0.8, fb);
 
@@ -333,7 +336,32 @@ export class AnimationController {
         }
       }
 
-      if (progress < 0.28) {
+      if (this.isVision) {
+        // Mind Stone basic: brief forehead charge, forward lean, then release.
+        const charge = Math.min(1, progress / 0.3);
+        const release = progress < 0.3 ? 0 : Math.min(1, (progress - 0.3) / 0.25);
+        const recover = progress > 0.55 ? Math.min(1, (progress - 0.55) / 0.45) : 0;
+        const power = release * (1 - recover);
+        const chargeEase = Math.sin(charge * Math.PI * 0.5);
+
+        targetHeadRotX = 0.18 + this.attackAimPitch * 0.65 - power * 0.12;
+        targetWaistRotX = -0.05 - chargeEase * 0.06 - power * 0.2;
+        targetLeftShoulderRotX = 0.12 - power * 0.32;
+        targetLeftShoulderRotY = 0;
+        targetLeftShoulderRotZ = -0.2 - power * 0.2;
+        targetLeftElbowRotX = 0.5 + power * 0.12;
+        targetLeftWristRotX = -0.18;
+        targetRightShoulderRotX = 0.12 - power * 0.32;
+        targetRightShoulderRotY = 0;
+        targetRightShoulderRotZ = 0.2 + power * 0.2;
+        targetRightElbowRotX = 0.5 + power * 0.12;
+        targetRightWristRotX = -0.18;
+        targetHeadRotY = 0;
+
+        if (progress >= 1) {
+          this.isAttacking = false;
+        }
+      } else if (progress < 0.28) {
         // Anticipation windup
         const p = progress / 0.28;
         const w = Math.sin(p * Math.PI * 0.5);
@@ -402,7 +430,21 @@ export class AnimationController {
     // ==========================================
     // 5. ABILITY POSES (Dual Beam, Lasers, Chaos Orb, Runic Ward, Choke)
     // ==========================================
-    if (this.mindBeamActive) {
+    if (this.headGripActive) {
+      const strain = Math.sin(t * 11) * 0.03;
+      targetHeadRotX = 0.2;
+      targetWaistRotX = -0.12;
+      targetLeftShoulderRotX = 1.38 + strain;
+      targetLeftShoulderRotY = -0.1;
+      targetLeftShoulderRotZ = -0.3;
+      targetLeftElbowRotX = 0.58;
+      targetLeftWristRotX = 0.12;
+      targetRightShoulderRotX = 1.38 - strain;
+      targetRightShoulderRotY = 0.1;
+      targetRightShoulderRotZ = 0.3;
+      targetRightElbowRotX = 0.58;
+      targetRightWristRotX = 0.12;
+    } else if (this.mindBeamActive) {
       const beamElev = THREE.MathUtils.clamp(this.mindBeamPitch, -0.45, 0.45);
       targetHeadRotX = 0.22 + beamElev * 0.5;
       targetWaistRotX = -0.06;
@@ -527,6 +569,10 @@ export class AnimationController {
     if (this.isVision) {
       leftFingerCurl = this.phasingActive ? 0.08 : 0.14;
       rightFingerCurl = this.phasingActive ? 0.08 : 0.14;
+    }
+    if (this.headGripActive) {
+      leftFingerCurl = 0.62;
+      rightFingerCurl = 0.62;
     }
     if (this.mindBeamActive) {
       leftFingerCurl = 0.02;

@@ -4,7 +4,9 @@
  * 1. Solar Blast (basic attack)
  * 2. Mind Stone Beam
  * 3. Phasing / intangibility
- * 4. Psionic Flight (handled by the shared flight system + golden aura here)
+ * 4. Head Grip (close-range cinematic control)
+ * 5. Psionic Flight (shared flight system + golden aura here)
+ * Dash button: Phasing Dash (temporary intangibility burst)
  */
 
 import * as THREE from 'three';
@@ -14,6 +16,8 @@ import { activeVisionConfig } from './abilities/vision/VisionConfig';
 import { VisionSolarBlast } from './abilities/vision/VisionSolarBlast';
 import { VisionMindBeam } from './abilities/vision/VisionMindBeam';
 import { VisionPhasing } from './abilities/vision/VisionPhasing';
+import { VisionHeadGrip } from './abilities/vision/VisionHeadGrip';
+import { VisionPhasingDash } from './abilities/vision/VisionPhasingDash';
 
 type AimProvider = () => { pos: THREE.Vector3; target: TargetDummy | null };
 type DamageHandler = (
@@ -28,6 +32,8 @@ export class VisionAbilities {
   public readonly solarBlast: VisionSolarBlast;
   public readonly mindBeam: VisionMindBeam;
   public readonly phasing: VisionPhasing;
+  public readonly headGrip: VisionHeadGrip;
+  public readonly phasingDash: VisionPhasingDash;
 
   private stickman: StickmanNodes;
   private onShake: (amount: number) => void;
@@ -64,6 +70,8 @@ export class VisionAbilities {
       onShake
     );
     this.phasing = new VisionPhasing(stickman, onPhasingChange);
+    this.headGrip = new VisionHeadGrip(stickman, getAim, onShake);
+    this.phasingDash = new VisionPhasingDash(scene, stickman, getAim);
 
     const config = activeVisionConfig.flight;
     const ringMaterial = new THREE.MeshBasicMaterial({
@@ -127,11 +135,31 @@ export class VisionAbilities {
     return this.phasing.remainingSeconds;
   }
 
+  public get isHeadGripActive(): boolean {
+    return this.headGrip.isActive;
+  }
+
+  public get headGripTarget(): TargetDummy | null {
+    return this.headGrip.grabbedTarget;
+  }
+
+  public get isPhasingDashActive(): boolean {
+    return this.phasingDash.isActive;
+  }
+
+  public get phasingDashCooldown(): number {
+    return this.phasingDash.cooldown;
+  }
+
   public triggerAttack(): boolean {
     return this.solarBlast.fire();
   }
 
-  public triggerAbility(id: number): boolean {
+  public triggerAbility(
+    id: number,
+    playerPos?: THREE.Vector3,
+    dummies?: TargetDummy[]
+  ): boolean {
     if (id === 1) return this.mindBeam.toggle();
     if (id === 2) {
       if (this.phasing.isActive) {
@@ -140,7 +168,35 @@ export class VisionAbilities {
       }
       return this.phasing.activate();
     }
+    if (id === 4) {
+      if (this.headGrip.isActive) {
+        this.headGrip.cancel();
+        return false;
+      }
+      if (!playerPos || !dummies) return false;
+      return this.headGrip.trigger(playerPos, dummies);
+    }
     return false;
+  }
+
+  public triggerPhasingDash(playerPos: THREE.Vector3): boolean {
+    return this.phasingDash.trigger(playerPos);
+  }
+
+  public advancePhasingDash(dt: number, playerPos: THREE.Vector3) {
+    return this.phasingDash.advance(dt, playerPos);
+  }
+
+  public finishPhasingDash(): void {
+    this.phasingDash.complete();
+  }
+
+  public cancelPhasingDash(): void {
+    this.phasingDash.complete();
+  }
+
+  public cancelHeadGrip(): boolean {
+    return this.headGrip.cancel();
   }
 
   public cancelAbility(id: number): boolean {
@@ -151,6 +207,9 @@ export class VisionAbilities {
     if (id === 2 && this.phasing.isActive) {
       return this.phasing.cancel();
     }
+    if (id === 4 && this.headGrip.isActive) {
+      return this.headGrip.cancel();
+    }
     return false;
   }
 
@@ -159,6 +218,8 @@ export class VisionAbilities {
     this.solarBlast.update(dt, dummies);
     this.mindBeam.update(dt, dummies);
     this.phasing.update(dt);
+    this.phasingDash.updateCooldown(dt);
+    this.headGrip.update(dt, dummies);
 
     this.flightAura.visible = isFlying;
     if (isFlying) {
@@ -173,8 +234,12 @@ export class VisionAbilities {
   }
 
   public stopAll(): void {
+    this.solarBlast.cancelCharge();
     this.mindBeam.stop();
     this.phasing.cancel();
+    this.headGrip.cancel();
+    this.phasingDash.complete();
+    this.phasingDash.resetCooldown();
     this.flightAura.visible = false;
   }
 
@@ -183,6 +248,8 @@ export class VisionAbilities {
     this.solarBlast.dispose();
     this.mindBeam.dispose();
     this.phasing.dispose();
+    this.headGrip.dispose();
+    this.phasingDash.dispose();
     this.stickman.root.remove(this.flightAura);
     for (const ring of this.flightRings) {
       ring.geometry.dispose();

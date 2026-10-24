@@ -11,6 +11,7 @@ export interface VisionAbilitySettings {
     speed: number;
     maxRange: number;
     cooldown: number;
+    chargeTime: number;
     coreColor: number;
     glowColor: number;
     radius: number;
@@ -40,6 +41,29 @@ export interface VisionAbilitySettings {
     cancelDelay: number;
     cooldownStart: VisionAbilityToggleMode;
   };
+  phasingDash: {
+    distance: number;
+    duration: number;
+    cooldown: number;
+    minSpeed: number;
+    maxSpeed: number;
+    arenaLimit: number;
+    streakColor: number;
+    streakCount: number;
+  };
+  headGrip: {
+    range: number;
+    duration: number;
+    cooldown: number;
+    forwardOffset: number;
+    facingAngle: number;
+    targetLift: number;
+    targetProtection: boolean;
+    playerProtection: boolean;
+    toggle: boolean;
+    cancelDelay: number;
+    cooldownStart: VisionAbilityToggleMode;
+  };
   flight: {
     hoverHeight: number;
     bankLimit: number;
@@ -54,6 +78,7 @@ export const DEFAULT_VISION_CONFIG: VisionAbilitySettings = {
     speed: 36,
     maxRange: 38,
     cooldown: 0.22,
+    chargeTime: 0.12,
     coreColor: 0xfff8d0,
     glowColor: 0xffd54a,
     radius: 0.075,
@@ -81,6 +106,29 @@ export const DEFAULT_VISION_CONFIG: VisionAbilitySettings = {
     glowColor: 0xffc107,
     toggle: true,
     cancelDelay: 0.35,
+    cooldownStart: 'cancelOrNaturalEnd',
+  },
+  phasingDash: {
+    distance: 9.0,
+    duration: 0.36,
+    cooldown: 4.0,
+    minSpeed: 16.0,
+    maxSpeed: 34.0,
+    arenaLimit: 380.0,
+    streakColor: 0xffe066,
+    streakCount: 14,
+  },
+  headGrip: {
+    range: 3.4,
+    duration: 2.4,
+    cooldown: 9.0,
+    forwardOffset: 1.35,
+    facingAngle: 55,
+    targetLift: 0.0,
+    targetProtection: true,
+    playerProtection: true,
+    toggle: true,
+    cancelDelay: 0.45,
     cooldownStart: 'cancelOrNaturalEnd',
   },
   flight: {

@@ -29,6 +29,8 @@ import visionConfigSource from './abilities/vision/VisionConfig.ts?raw';
 import visionSolarBlastSource from './abilities/vision/VisionSolarBlast.ts?raw';
 import visionMindBeamSource from './abilities/vision/VisionMindBeam.ts?raw';
 import visionPhasingSource from './abilities/vision/VisionPhasing.ts?raw';
+import visionHeadGripSource from './abilities/vision/VisionHeadGrip.ts?raw';
+import visionPhasingDashSource from './abilities/vision/VisionPhasingDash.ts?raw';
 import visionAbilitiesSource from './VisionAbilities.ts?raw';
 import visionFlightConfigSource from './systems/flight/VisionFlightConfig.ts?raw';
 
@@ -65,6 +67,8 @@ import worldCollisionSource from './systems/WorldCollision.ts?raw';
 import cooldownSystemSource from './systems/CooldownSystem.ts?raw';
 import abilityButtonSystemSource from './systems/AbilityButtonSystem.ts?raw';
 import soundSystemSource from './systems/SoundSystem.ts?raw';
+import beamClashSystemSource from './systems/BeamClashSystem.ts?raw';
+import damageMathSource from './DamageMath.ts?raw';
 
 export type ScriptCategory =
   | 'Configurações'
@@ -146,7 +150,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
       'Canalização de tentáculos de sifão de vida com duração de 3 segundos. Aplica restrições autênticas Anchored e NoFlight e drena alvos próximos.',
     originalSource: agathaDarkDrainSource,
     fileExtension: 'ts',
-    dependencies: ['AgathaConfig', 'TargetDummy', 'GameplayRestrictions', 'AudioSystem'],
+    dependencies: ['AgathaConfig', 'TargetDummy', 'GameplayRestrictions', 'AudioSystem', 'DamageMath'],
     keywords: ['agatha', 'dreno', 'sombrio', 'drain', 'sifao', 'vida', 'dark'],
   },
   {
@@ -159,7 +163,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
       'Esfera mágica lenta e massiva que detona em impacto ou alcance máximo, gerando uma onda de choque radial com dano em área (AoE).',
     originalSource: agathaChaosOrbSource,
     fileExtension: 'ts',
-    dependencies: ['AgathaConfig', 'TargetDummy', 'AudioSystem'],
+    dependencies: ['AgathaConfig', 'TargetDummy', 'AudioSystem', 'DamageMath'],
     keywords: ['agatha', 'orbe', 'caos', 'chaos', 'orb', 'aoe', 'explosao'],
   },
   {
@@ -295,7 +299,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     category: 'Habilidades',
     character: 'vision',
     summary:
-      'Projéteis solares amarelos disparados da palma direita, com colisão real contra estruturas, alvos e o chão da arena.',
+      'Carregamento breve na Mind Stone e projéteis solares alongados e translúcidos disparados da testa, com colisão real contra estruturas, alvos e o chão da arena.',
     originalSource: visionSolarBlastSource,
     fileExtension: 'ts',
     dependencies: ['VisionConfig', 'TargetDummy', 'WorldCollision'],
@@ -309,10 +313,10 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     category: 'Habilidades',
     character: 'vision',
     summary:
-      'Feixe contínuo e amarelo disparado da gema da Mind Stone na testa, cortado por paredes e com dano sustentado no primeiro alvo válido.',
+      'Feixe contínuo e amarelo disparado da gema da Mind Stone na testa, registrado no Beam Clash compartilhado, cortado por paredes e com dano sustentado no primeiro alvo válido.',
     originalSource: visionMindBeamSource,
     fileExtension: 'ts',
-    dependencies: ['VisionConfig', 'IronManBeamFx', 'WorldCollision', 'TargetDummy', 'SoundSystem'],
+    dependencies: ['VisionConfig', 'IronManBeamFx', 'BeamClashSystem', 'WorldCollision', 'TargetDummy', 'SoundSystem'],
     runtimeIntegration: 'restart-required',
     keywords: ['vision', 'visao', 'mind stone', 'raio', 'feixe', 'beam', 'testa'],
   },
@@ -331,16 +335,44 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     keywords: ['vision', 'visao', 'fase', 'phasing', 'intangivel', 'atravessar', 'parede'],
   },
   {
+    id: 'vision-head-grip',
+    name: 'Pegada da Mind Stone (Habilidade 4)',
+    filePath: '/src/game/abilities/vision/VisionHeadGrip.ts',
+    category: 'Habilidades',
+    character: 'vision',
+    summary:
+      'Agarrão cinematográfico de curta distância: valida o alvo à frente, ancora o corpo, prende a cabeça com as duas mãos, imobiliza e protege os dois durante a duração.',
+    originalSource: visionHeadGripSource,
+    fileExtension: 'ts',
+    dependencies: ['VisionConfig', 'TargetDummy', 'StickmanRig', 'GameplayRestrictions', 'WorldCollision'],
+    runtimeIntegration: 'restart-required',
+    keywords: ['vision', 'visao', 'agarrar', 'grab', 'cabeca', 'head', 'mind stone', 'controle'],
+  },
+  {
+    id: 'vision-phasing-dash',
+    name: 'Phasing Dash (Dash)',
+    filePath: '/src/game/abilities/vision/VisionPhasingDash.ts',
+    category: 'Habilidades',
+    character: 'vision',
+    summary:
+      'Dash horizontal com postura de voo, aceleração/desaceleração, rastros amarelos e intangibilidade temporária para atravessar estruturas sem sair da arena.',
+    originalSource: visionPhasingDashSource,
+    fileExtension: 'ts',
+    dependencies: ['VisionConfig', 'StickmanRig'],
+    runtimeIntegration: 'restart-required',
+    keywords: ['vision', 'visao', 'dash', 'phasing', 'fase', 'intangivel', 'atravessar'],
+  },
+  {
     id: 'vision-abilities',
     name: 'Controlador da Visão',
     filePath: '/src/game/VisionAbilities.ts',
     category: 'Controladores',
     character: 'vision',
     summary:
-      'Coordena Rajada Solar, Raio da Mind Stone, Fase e o Voo Psiónico com aura dourada no controlador ativo do jogo.',
+      'Coordena Rajada Solar, Raio da Mind Stone, Fase, Pegada da Mind Stone, Phasing Dash e o Voo Psiónico com aura dourada no controlador ativo do jogo.',
     originalSource: visionAbilitiesSource,
     fileExtension: 'ts',
-    dependencies: ['VisionConfig', 'VisionSolarBlast', 'VisionMindBeam', 'VisionPhasing', 'StickmanRig', 'TargetDummy'],
+    dependencies: ['VisionConfig', 'VisionSolarBlast', 'VisionMindBeam', 'VisionPhasing', 'VisionHeadGrip', 'VisionPhasingDash', 'StickmanRig', 'TargetDummy'],
     runtimeIntegration: 'restart-required',
     keywords: ['vision', 'visao', 'controlador', 'controller', 'habilidades', 'poderes'],
   },
@@ -459,7 +491,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
       'Alvos de argila com física de mola para recuo, barras de vida billboarded, suporte a Beam Clash rival e aplicação de restrições de invulnerabilidade e escudo.',
     originalSource: targetDummySource,
     fileExtension: 'ts',
-    dependencies: ['AudioSystem', 'GameplayRestrictions'],
+    dependencies: ['AudioSystem', 'GameplayRestrictions', 'DamageMath'],
     keywords: ['alvo', 'target', 'boneco', 'dummy', 'vida', 'dano', 'colisao'],
   },
   {
@@ -471,7 +503,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
       'Trajetórias balísticas clássicas, teleguiamento, projeção de números de dano 3D flutuantes e partículas InstancedMesh.',
     originalSource: projectileSource,
     fileExtension: 'ts',
-    dependencies: ['TargetDummy', 'AudioSystem'],
+    dependencies: ['TargetDummy', 'AudioSystem', 'DamageMath'],
     keywords: ['projetil', 'projectile', 'colisao', 'particulas', 'dano'],
   },
 
@@ -499,7 +531,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
       'Retículo central com colchetes de assistência de mira sobre alvos válidos e confirmação de acerto em X estilo Marvel Rivals.',
     originalSource: aimReticleSource,
     fileExtension: 'tsx',
-    dependencies: ['GameScene', 'SettingsManager'],
+    dependencies: ['GameScene', 'SettingsManager', 'DamageMath'],
     keywords: ['mira', 'reticle', 'aim', 'assistencia', 'hud'],
   },
   {
@@ -563,7 +595,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
       'Pipeline único de aplicação de dano, confirmação de acerto e números flutuantes usado por personagens, habilidades e projéteis.',
     originalSource: dealDamageSystemSource,
     fileExtension: 'ts',
-    dependencies: ['TargetDummy', 'ProjectileSystem'],
+    dependencies: ['TargetDummy', 'ProjectileSystem', 'DamageMath'],
     keywords: ['dano', 'damage', 'deal', 'hit', 'feedback', 'numeros'],
   },
   {
@@ -674,6 +706,34 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
     keywords: ['botao', 'button', 'habilidades', 'hud', 'combate', 'recarga'],
   },
   {
+    id: 'beam-clash-system',
+    name: 'Sistema de Beam Clash Compartilhado',
+    filePath: '/src/game/systems/BeamClashSystem.ts',
+    category: 'Sistemas',
+    character: 'shared',
+    summary:
+      'Registro compartilhado de feixes e emissores opostos, interseção em mundo real, sessão ativa e encerramento de clash para Visão e Homem de Ferro.',
+    originalSource: beamClashSystemSource,
+    fileExtension: 'ts',
+    dependencies: ['TargetDummy', 'WorldCollision'],
+    runtimeIntegration: 'restart-required',
+    keywords: ['beam', 'clash', 'feixe', 'colisao', 'sistema', 'compartilhado'],
+  },
+  {
+    id: 'damage-math',
+    name: 'Matemática de Dano Decimal',
+    filePath: '/src/game/DamageMath.ts',
+    category: 'Combate',
+    character: 'shared',
+    summary:
+      'Arredondamento compartilhado de dano com exatamente uma casa decimal e formatação dos números flutuantes.',
+    originalSource: damageMathSource,
+    fileExtension: 'ts',
+    dependencies: [],
+    runtimeIntegration: 'restart-required',
+    keywords: ['dano', 'damage', 'decimal', 'arredondamento', 'combate'],
+  },
+  {
     id: 'sound-system',
     name: 'SoundSystem — Áudio Central',
     filePath: '/src/game/systems/SoundSystem.ts',
@@ -734,7 +794,7 @@ export const PROJECT_SCRIPTS: ProjectScriptInfo[] = [
       'Cena 3D completa com loop de renderização a 60 FPS, física, colisão de caixas, iluminação solar sombreada e integração com o motor de scripts.',
     originalSource: gameSceneSource,
     fileExtension: 'ts',
-    dependencies: ['AudioSystem', 'SettingsManager', 'GameplayRestrictions'],
+    dependencies: ['AudioSystem', 'SettingsManager', 'GameplayRestrictions', 'DamageMath'],
     runtimeIntegration: 'restart-required',
     keywords: ['cena', 'scene', 'threejs', 'render', 'fisica', 'camera', 'loop'],
   },

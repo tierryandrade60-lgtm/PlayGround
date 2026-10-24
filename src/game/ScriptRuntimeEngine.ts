@@ -11,6 +11,7 @@
  */
 
 import * as THREE from 'three';
+import { roundDamage } from './DamageMath';
 import React from 'react';
 import * as LucideIcons from 'lucide-react';
 import { transform } from 'sucrase';
@@ -719,7 +720,7 @@ class ScriptRuntimeEngine {
   /**
    * Explicit "Salvar" action. Persists the draft but does not execute it.
    */
-  public saveScriptDraft(id: string, code: string): CompileResult {
+  public async saveScriptDraft(id: string, code: string): Promise<CompileResult> {
     const script = this.getScriptById(id);
     if (!script) return { success: false, message: 'Script não encontrado.' };
     const record = this.getRecord(id);
@@ -728,7 +729,7 @@ class ScriptRuntimeEngine {
     record.saved = code;
     record.revision += 1;
     record.updatedAt = Date.now();
-    this.persistRecord(record);
+    await this.persistRecord(record);
     if (changed) {
       this.addVersion(
         id,
@@ -739,9 +740,11 @@ class ScriptRuntimeEngine {
     }
     try {
       localStorage.setItem(`script_draft_${id}`, code);
+      localStorage.setItem(`script_saved_${id}`, code);
     } catch {
       // Mirror only.
     }
+    scriptPersistence.flushSync();
     this.notify();
     return {
       success: true,
@@ -750,9 +753,14 @@ class ScriptRuntimeEngine {
     };
   }
 
-  private persistRecord(record: ScriptRecordData): void {
+  private async persistRecord(record: ScriptRecordData): Promise<void> {
     this.records.set(record.id, record);
-    void scriptPersistence.saveRecord(record);
+    try {
+      await scriptPersistence.saveRecord(record);
+      scriptPersistence.flushSync();
+    } catch {
+      // Keep in-memory state; mirror may still be available.
+    }
   }
 
   private recordError(id: string, type: ScriptErrorType, message: string, line?: number, column?: number, hint?: string): ScriptDiagnostic {
@@ -896,7 +904,7 @@ class ScriptRuntimeEngine {
     record.revision += 1;
     record.updatedAt = Date.now();
     this.clearError(id);
-    this.persistRecord(record);
+    await this.persistRecord(record);
     if (changed) {
       this.addVersion(
         id,
@@ -1041,7 +1049,7 @@ class ScriptRuntimeEngine {
       record.error = null;
       this.runningNow.delete(id);
       this.statusErrors.delete(id);
-      this.persistRecord(record);
+      await this.persistRecord(record);
       try {
         localStorage.setItem(`script_applied_${id}`, code);
         localStorage.setItem(`script_source_${id}`, code);
@@ -1188,11 +1196,23 @@ class ScriptRuntimeEngine {
       this.compiledModules.set(id, compiled.moduleExports);
       const record = this.getRecord(id);
       const hash = sourceHash(code);
-      record.draft = code;
-      record.saved = code;
-      record.validated = code;
-      record.validatedHash = hash;
-      record.validatedAt = Date.now();
+      // Startup rehydration must never clobber a saved/unapplied draft with the
+      // applied version; only an explicit apply upgrades draft/saved.
+      if (options.startup) {
+        if (!record.draft) record.draft = code;
+        if (!record.saved) record.saved = code;
+        if (!record.validated) {
+          record.validated = code;
+          record.validatedHash = hash;
+          record.validatedAt = Date.now();
+        }
+      } else {
+        record.draft = code;
+        record.saved = code;
+        record.validated = code;
+        record.validatedHash = hash;
+        record.validatedAt = Date.now();
+      }
       record.applied = code;
       record.appliedHash = hash;
       record.appliedAt = Date.now();
@@ -1206,7 +1226,7 @@ class ScriptRuntimeEngine {
       record.updatedAt = Date.now();
       record.error = null;
       this.statusErrors.delete(id);
-      this.persistRecord(record);
+      await this.persistRecord(record);
 
       const sync = options.skipServerSync
         ? { ok: true, conflict: false as const, message: undefined }
@@ -1583,8 +1603,8 @@ class ScriptRuntimeEngine {
       return { pos: scene.currentAimPoint.clone(), target: null };
     };
       const onDamage = (dummy: any, dmg: number, hitPos: any, kb: any) => {
-        const intDmg = Math.round(dmg);
-        const res = dummy.takeDamage(intDmg, hitPos, kb);
+        const roundedDmg = roundDamage(dmg);
+        const res = dummy.takeDamage(roundedDmg, hitPos, kb);
         if (res.actualDamage > 0) scene.triggerHitConfirm?.();
         const sink = scene.projectileSystem;
         if (typeof sink?.spawnDamageNumber === 'function') {
@@ -1592,7 +1612,7 @@ class ScriptRuntimeEngine {
         } else if (sink?.damageNumbers && typeof sink.nextDamageId === 'number') {
           sink.damageNumbers.push({
             id: sink.nextDamageId++,
-            value: Math.max(0, Math.round(Number.isFinite(res.actualDamage) ? res.actualDamage : 0)),
+            value: roundDamage(res.actualDamage),
             worldPos: hitPos.clone().add(new THREE.Vector3(0, 0.4, 0)),
             age: 0,
             maxAge: 0.95,

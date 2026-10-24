@@ -374,7 +374,7 @@ class ScriptPersistence {
   public async saveRecord(record: ScriptRecordData): Promise<void> {
     const normalized = normalizeRecord(record, record.id);
     this.memoryRecords.set(normalized.id, normalized);
-    this.scheduleMirror();
+    this.flushMirror();
     await this.enqueueWrite(async () => {
       const db = await this.openDb();
       if (!db) return;
@@ -396,7 +396,7 @@ class ScriptPersistence {
       this.memoryVersions = this.memoryVersions.filter((v) => !drop.has(v.id));
     }
     this.memoryVersions = this.memoryVersions.slice(0, 500);
-    this.scheduleMirror();
+    this.flushMirror();
     await this.enqueueWrite(async () => {
       const db = await this.openDb();
       if (!db) return;
@@ -412,7 +412,7 @@ class ScriptPersistence {
 
   public async deleteVersion(versionId: string): Promise<void> {
     this.memoryVersions = this.memoryVersions.filter((v) => v.id !== versionId);
-    this.scheduleMirror();
+    this.flushMirror();
     await this.enqueueWrite(async () => {
       const db = await this.openDb();
       if (!db) return;
