@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#04070b" />
+    <meta name="description" content="Nightfall Protocol — a cinematic night-ops first-person shooter built with Three.js." />
+    <title>Nightfall Protocol</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="stage" aria-hidden="true"></div>
+
+      <div id="hud" class="hud is-hidden">
+        <div class="hud-top">
+          <div class="compass-wrap">
+            <div class="compass-ticks" id="compass-strip"></div>
+            <div class="compass-notch"></div>
+            <div class="compass-deg" id="compass-deg">000</div>
+          </div>
+        </div>
+
+        <div class="mission-panel">
+          <div class="mission-kicker">OPERATION NIGHTFALL</div>
+          <div class="mission-wave"><span id="wave-num">01</span><span class="mission-sub">/ 06</span></div>
+          <div class="mission-objective" id="objective">ELIMINATE HOSTILES</div>
+        </div>
+
+        <div class="score-panel">
+          <div class="score-label">SCORE</div>
+          <div class="score-value" id="score">000000</div>
+          <div class="score-streak" id="streak"></div>
+        </div>
+
+        <div class="minimap-panel">
+          <div class="minimap-head"><span>SECTOR 07</span><span id="hostiles">0 HOSTILES</span></div>
+          <div class="minimap-frame"><canvas id="minimap" width="320" height="320"></canvas></div>
+        </div>
+
+        <div class="killfeed" id="killfeed"></div>
+
+        <div class="vitals-panel">
+          <div class="vitals-label">OPERATOR</div>
+          <div class="vitals-row">
+            <span class="vitals-value" id="health-value">100</span>
+            <div class="vitals-bars" id="health-bars"></div>
+          </div>
+          <div class="vitals-status" id="vitals-status">COMBAT READY</div>
+        </div>
+
+        <div class="weapon-panel">
+          <div class="weapon-mode" id="fire-mode">AUTO</div>
+          <div class="ammo-row">
+            <span class="ammo-mag" id="ammo-mag">30</span>
+            <span class="ammo-sep">/</span>
+            <span class="ammo-reserve" id="ammo-reserve">180</span>
+          </div>
+          <div class="weapon-name" id="weapon-name">VK-9 CARBINE</div>
+          <div class="reload-hint" id="reload-hint">R — RELOAD</div>
+        </div>
+
+        <div class="crosshair" id="crosshair">
+          <span class="ch ch-t"></span>
+          <span class="ch ch-r"></span>
+          <span class="ch ch-b"></span>
+          <span class="ch ch-l"></span>
+          <span class="ch-dot"></span>
+          <span class="hitmarker" id="hitmarker"><i></i><i></i><i></i><i></i></span>
+        </div>
+
+        <div class="grenade-panel">
+          <div class="grenade-icon"></div>
+          <div class="grenade-count" id="grenade-count">2</div>
+        </div>
+
+        <div class="wave-banner" id="wave-banner">
+          <div class="wave-banner-kicker" id="banner-kicker">WAVE 02</div>
+          <div class="wave-banner-title" id="banner-title">INCOMING</div>
+          <div class="wave-banner-rule"></div>
+          <div class="wave-banner-sub" id="banner-sub">HOSTILE FORCES APPROACHING</div>
+        </div>
+
+        <div class="hint-bar" id="hint-bar">
+          <span><b>WASD</b> MOVE</span>
+          <span><b>SHIFT</b> SPRINT</span>
+          <span><b>RMB</b> AIM</span>
+          <span><b>R</b> RELOAD</span>
+          <span><b>ESC</b> PAUSE</span>
+        </div>
+
+        <div class="prompt" id="prompt"></div>
+      </div>
+
+      <div class="fx-vignette"></div>
+      <div class="fx-damage" id="damage-flash"></div>
+      <div class="fx-low" id="low-health"></div>
+
+      <div class="menu" id="menu">
+        <div class="menu-grain"></div>
+        <div class="menu-edge menu-edge-left">BLACKSITE 07 // NIGHT OPS</div>
+        <div class="menu-edge menu-edge-right">LAT 34.0522 / LON -118.2437</div>
+
+        <header class="menu-brand">
+          <span class="brand-mark"></span>
+          <span class="brand-text">OMGITHUB PLAYGROUND</span>
+          <span class="brand-tag">BUILD 1.0.0</span>
+        </header>
+
+        <main class="menu-main">
+          <div class="menu-kicker"><span class="kicker-line"></span> TACTICAL SURVIVAL // THREE.JS</div>
+          <h1 class="menu-title">
+            <span>NIGHTFALL</span>
+            <span class="menu-title-sub">PROTOCOL</span>
+          </h1>
+          <p class="menu-desc">Rain-slick killzone. Zero backup. Hold the port against six escalating assault waves with a prototype VK-9 carbine.</p>
+
+          <div class="menu-actions">
+            <button id="btn-play" class="btn btn-primary" type="button"><span class="btn-sheen"></span><span class="btn-label">Play</span></button>
+            <button id="btn-brief" class="btn btn-ghost" type="button">Briefing</button>
+            <button id="btn-mute" class="btn btn-ghost btn-icon" type="button" aria-label="Toggle sound">Sound</button>
+            <button id="btn-quality" class="btn btn-ghost btn-icon" type="button" aria-label="Toggle quality">Quality</button>
+          </div>
+
+          <div class="menu-specs">
+            <div class="spec"><span class="spec-key">MODE</span><span class="spec-val">WAVE SURVIVAL</span></div>
+            <div class="spec"><span class="spec-key">LOADOUT</span><span class="spec-val">VK-9 / FRAG</span></div>
+            <div class="spec"><span class="spec-key">ENVIRONMENT</span><span class="spec-val">NIGHT / RAIN</span></div>
+            <div class="spec"><span class="spec-key">INPUT</span><span class="spec-val">M+KB / TOUCH</span></div>
+          </div>
+        </main>
+
+        <footer class="menu-footer">
+          <div class="footer-controls">
+            <span><b>WASD</b> MOVE</span>
+            <span><b>MOUSE</b> LOOK</span>
+            <span><b>LMB</b> FIRE</span>
+            <span><b>RMB</b> AIM</span>
+            <span><b>R</b> RELOAD</span>
+            <span><b>SPACE</b> JUMP</span>
+          </div>
+          <div class="footer-note">HEADPHONES RECOMMENDED <span class="blink"></span></div>
+        </footer>
+      </div>
+
+      <div class="modal" id="briefing" aria-hidden="true">
+        <div class="modal-card">
+          <div class="modal-kicker">MISSION BRIEF</div>
+          <h2>HOLD THE PORT</h2>
+          <p>Six waves of hostile operators are pushing through the container yard. Use cover, control the central lane, and keep the VK-9 fed. Headshots drop them fastest.</p>
+          <ul>
+            <li><b>Desktop</b> — WASD move, mouse look, LMB fire, RMB aim, R reload, Space jump, Shift sprint, Esc pause.</li>
+            <li><b>Touch</b> — left stick moves, drag the right side to look, FIRE and AIM buttons engage, RELOAD and JUMP flank them.</li>
+            <li><b>Survival</b> — health regenerates after five seconds out of fire. Chain eliminations for a score multiplier.</li>
+          </ul>
+          <button id="btn-close-brief" class="btn btn-primary" type="button">Understood</button>
+        </div>
+      </div>
+
+      <div class="end-screen" id="end-screen">
+        <div class="end-inner">
+          <div class="end-kicker" id="end-kicker">SIGNAL LOST</div>
+          <h2 class="end-title" id="end-title">OPERATOR DOWN</h2>
+          <p class="end-sub" id="end-sub">The port is overrun.</p>
+          <div class="end-stats">
+            <div><span>SCORE</span><b id="end-score">0</b></div>
+            <div><span>ELIMINATIONS</span><b id="end-kills">0</b></div>
+            <div><span>ACCURACY</span><b id="end-acc">0%</b></div>
+            <div><span>WAVE</span><b id="end-wave">1</b></div>
+          </div>
+          <button id="btn-restart" class="btn btn-primary" type="button"><span class="btn-sheen"></span><span class="btn-label">Redeploy</span></button>
+          <button id="btn-menu" class="btn btn-ghost" type="button">Return to menu</button>
+        </div>
+      </div>
+
+      <div class="pause-screen" id="pause-screen">
+        <div class="pause-card">
+          <div class="pause-kicker">OPERATION SUSPENDED</div>
+          <h2>PAUSED</h2>
+          <button id="btn-resume" class="btn btn-primary" type="button">Resume</button>
+          <button id="btn-quit" class="btn btn-ghost" type="button">Abort mission</button>
+        </div>
+      </div>
+
+      <div class="mobile-controls" id="mobile-controls">
+        <div class="stick-zone" id="stick-zone">
+          <div class="stick-base"><div class="stick-knob" id="stick-knob"></div></div>
+        </div>
+        <button class="touch-btn touch-fire" id="btn-fire" type="button" aria-label="Fire"><span>FIRE</span></button>
+        <button class="touch-btn touch-aim" id="btn-aim" type="button" aria-label="Aim">AIM</button>
+        <button class="touch-btn touch-reload" id="btn-touch-reload" type="button" aria-label="Reload">RELOAD</button>
+        <button class="touch-btn touch-jump" id="btn-touch-jump" type="button" aria-label="Jump">JUMP</button>
+        <div class="touch-look-hint" id="look-hint">DRAG TO LOOK</div>
+      </div>
+
+      <div class="rotate-hint" id="rotate-hint"><span>ROTATE FOR BEST EXPERIENCE</span></div>
+      <div class="boot-error" id="boot-error"></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
