@@ -1,0 +1,6523 @@
+{
+  "schemaVersion": 3,
+  "exportedAt": "2026-10-25T15:25:29.956Z",
+  "filename": "MeuJogo-Source.zip",
+  "projectSource": "bundled",
+  "discoveredFileCount": 128,
+  "exportedFileCount": 131,
+  "manifestFileExcludedFromSelfHash": true,
+  "manifestSelfHashNote": "O manifesto não pode conter o hash de si mesmo; todos os outros arquivos exportados são listados em files.",
+  "archiveValidation": {
+    "status": "passed",
+    "checkedAt": "2026-10-25T15:25:30.582Z",
+    "checkedFiles": 131,
+    "checkedDiscoveredFiles": 128,
+    "byteForByte": true
+  },
+  "sceneIncluded": true,
+  "scripts": [
+    {
+      "id": "agatha-arcane-blast",
+      "name": "Rajada Arcana (Ataque Básico)",
+      "filePath": "src/game/abilities/agatha/AgathaArcaneBlast.ts",
+      "capability": "hot-swap",
+      "lifecycle": "running",
+      "exportedSource": "running",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+      },
+      "hasRunningSource": true,
+      "hasAppliedSource": true,
+      "hasSavedSource": true,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "runtime-confirmed",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "validated": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "applied": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "running": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 4,
+      "updatedAt": 1792941921955
+    },
+    {
+      "id": "agatha-dark-drain",
+      "name": "Dreno Sombrio (Habilidade 1)",
+      "filePath": "src/game/abilities/agatha/AgathaDarkDrain.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "9d96cdffdf1a18fce9bda4ea745fbab35d7e61134660bdc590d3f2405bcc7b0d"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9d96cdffdf1a18fce9bda4ea745fbab35d7e61134660bdc590d3f2405bcc7b0d"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9d96cdffdf1a18fce9bda4ea745fbab35d7e61134660bdc590d3f2405bcc7b0d"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921530
+    },
+    {
+      "id": "agatha-chaos-orb",
+      "name": "Orbe do Caos (Habilidade 2)",
+      "filePath": "src/game/abilities/agatha/AgathaChaosOrb.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "87fbbd3cdaa7316935c0091d651415ebc3381a580c8d5b56518639bcf454c1e5"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "87fbbd3cdaa7316935c0091d651415ebc3381a580c8d5b56518639bcf454c1e5"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "87fbbd3cdaa7316935c0091d651415ebc3381a580c8d5b56518639bcf454c1e5"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921530
+    },
+    {
+      "id": "agatha-runic-ward",
+      "name": "Escudo Rúnico (Habilidade 3)",
+      "filePath": "src/game/abilities/agatha/AgathaRunicWard.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "8cacd7831995b182eaf63aae7bbcbefb037a5e0f1c3c569007e82cfa1b0a8dd8"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "8cacd7831995b182eaf63aae7bbcbefb037a5e0f1c3c569007e82cfa1b0a8dd8"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "8cacd7831995b182eaf63aae7bbcbefb037a5e0f1c3c569007e82cfa1b0a8dd8"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921530
+    },
+    {
+      "id": "agatha-choke",
+      "name": "Estrangulamento Telecinético (Habilidade 4)",
+      "filePath": "src/game/abilities/agatha/AgathaTelekineticChoke.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "e8b2011ed824c8bf60858c6d055994ae4f86db5be30d13098c3c6fe6ad913398"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "e8b2011ed824c8bf60858c6d055994ae4f86db5be30d13098c3c6fe6ad913398"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "e8b2011ed824c8bf60858c6d055994ae4f86db5be30d13098c3c6fe6ad913398"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921530
+    },
+    {
+      "id": "agatha-shadow-step",
+      "name": "Passo das Sombras (Esquiva / Dash)",
+      "filePath": "src/game/abilities/agatha/AgathaShadowStep.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "dc1943e791c1d0c5ebb32735ebbaa5931279a849c5b1ae79fd5058b3d9dbc6e8"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "dc1943e791c1d0c5ebb32735ebbaa5931279a849c5b1ae79fd5058b3d9dbc6e8"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "dc1943e791c1d0c5ebb32735ebbaa5931279a849c5b1ae79fd5058b3d9dbc6e8"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921530
+    },
+    {
+      "id": "ironman-repulsor",
+      "name": "Disparo de Repulsor (Ataque Básico)",
+      "filePath": "src/game/abilities/ironman/IronManRepulsor.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "33b29edcae545f5676e3fcc9ee130f721a2e41211984b6706de7bd2827e82a82"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "33b29edcae545f5676e3fcc9ee130f721a2e41211984b6706de7bd2827e82a82"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "33b29edcae545f5676e3fcc9ee130f721a2e41211984b6706de7bd2827e82a82"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921530
+    },
+    {
+      "id": "ironman-micro-missiles",
+      "name": "Salva de Micro-mísseis (Habilidade 1)",
+      "filePath": "src/game/abilities/ironman/IronManMicroMissiles.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "16cb147447b83517809e180380dca040963108c8261ece5d9250c91a5a1268c1"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "16cb147447b83517809e180380dca040963108c8261ece5d9250c91a5a1268c1"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "16cb147447b83517809e180380dca040963108c8261ece5d9250c91a5a1268c1"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "ironman-unibeam",
+      "name": "Canhão Unibeam (Habilidade 3)",
+      "filePath": "src/game/abilities/ironman/IronManUnibeam.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "81c25a708e6088ecfcdff66d99dd045f8c9edb897f75620e0e22b3bd14a21fd7"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "81c25a708e6088ecfcdff66d99dd045f8c9edb897f75620e0e22b3bd14a21fd7"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "81c25a708e6088ecfcdff66d99dd045f8c9edb897f75620e0e22b3bd14a21fd7"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "ironman-dual-beams",
+      "name": "Feixes Duplos & Beam Clash (Habilidade 2)",
+      "filePath": "src/game/abilities/ironman/IronManDualBeams.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "ironman-beam-fx",
+      "name": "Efeitos de Beam & Disco de Clash",
+      "filePath": "src/game/abilities/ironman/IronManBeamFx.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "aa3819849cbd39daf9a385d77357e43eb12eb51209f31b3cbe950606706233a4"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "aa3819849cbd39daf9a385d77357e43eb12eb51209f31b3cbe950606706233a4"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "aa3819849cbd39daf9a385d77357e43eb12eb51209f31b3cbe950606706233a4"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "ironman-spinning-lasers",
+      "name": "Lasers Giratórios (Habilidade 4)",
+      "filePath": "src/game/abilities/ironman/IronManSpinningLasers.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "f1d64ae1498da75cdfb03b0d91027f57d1a98140c7a239cbae6b52037d4e3030"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f1d64ae1498da75cdfb03b0d91027f57d1a98140c7a239cbae6b52037d4e3030"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f1d64ae1498da75cdfb03b0d91027f57d1a98140c7a239cbae6b52037d4e3030"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "vision-solar-blast",
+      "name": "Rajada Solar (Ataque Básico)",
+      "filePath": "src/game/abilities/vision/VisionSolarBlast.ts",
+      "capability": "restart-required",
+      "lifecycle": "applied",
+      "exportedSource": "applied",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": true,
+      "hasSavedSource": true,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": true,
+      "validation": "applied-not-confirmed-running",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9a6c90f152f9a0bdfd92f6dc575e71d8e1c4ab585993ba8c636a3cf780ac1947"
+          }
+        },
+        "draft": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "saved": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "validated": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "applied": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "catalogOriginalArchived": "build-script/catalog/original/src/game/abilities/vision/VisionSolarBlast.ts",
+      "divergenceReasons": [
+        "Rajada Solar (Ataque Básico): versão aplicada exportada para o próximo build/reinício; ela ainda não está em execução nesta sessão."
+      ],
+      "revision": 1,
+      "updatedAt": 1792910921530
+    },
+    {
+      "id": "vision-mind-beam",
+      "name": "Raio da Mind Stone (Habilidade 1)",
+      "filePath": "src/game/abilities/vision/VisionMindBeam.ts",
+      "capability": "restart-required",
+      "lifecycle": "draft",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "c5a4050519f134e15292777098240dce2ebb1c9de414f2aa2341e73cf267118e"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": true,
+      "notApplied": false,
+      "requiresRestart": true,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c5a4050519f134e15292777098240dce2ebb1c9de414f2aa2341e73cf267118e"
+          }
+        },
+        "draft": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+          }
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c5a4050519f134e15292777098240dce2ebb1c9de414f2aa2341e73cf267118e"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [
+        "Raio da Mind Stone (Habilidade 1): rascunho não aplicado foi preservado em build-script/pending; somente versões aplicadas entram no código executável."
+      ],
+      "revision": 1,
+      "updatedAt": 1792911762961
+    },
+    {
+      "id": "vision-phasing",
+      "name": "Fase / Intangibilidade (Habilidade 2)",
+      "filePath": "src/game/abilities/vision/VisionPhasing.ts",
+      "capability": "restart-required",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "eb3a6acd96b61d55365bae015a753a8b2e1c8a3f5f04f945cdc231efb9773d73"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": true,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "eb3a6acd96b61d55365bae015a753a8b2e1c8a3f5f04f945cdc231efb9773d73"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "eb3a6acd96b61d55365bae015a753a8b2e1c8a3f5f04f945cdc231efb9773d73"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "vision-abilities",
+      "name": "Controlador da Visão",
+      "filePath": "src/game/VisionAbilities.ts",
+      "capability": "restart-required",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "bec2c0bf47fce6ccfa8b3a73f8c17f0b26841bb3786afaa50cc4f01f9ba0ef9a"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": true,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "bec2c0bf47fce6ccfa8b3a73f8c17f0b26841bb3786afaa50cc4f01f9ba0ef9a"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "bec2c0bf47fce6ccfa8b3a73f8c17f0b26841bb3786afaa50cc4f01f9ba0ef9a"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "agatha-config",
+      "name": "Configuração de Poderes da Agatha",
+      "filePath": "src/game/abilities/agatha/AgathaConfig.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "d261a6f8243ded1073ad36a4c473c6abe516f87825b0c5ec18e923764f4963a4"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d261a6f8243ded1073ad36a4c473c6abe516f87825b0c5ec18e923764f4963a4"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d261a6f8243ded1073ad36a4c473c6abe516f87825b0c5ec18e923764f4963a4"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "ironman-config",
+      "name": "Configuração de Armas do Homem de Ferro",
+      "filePath": "src/game/abilities/ironman/IronManConfig.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "95489063d20158b26572058015534dbe3c66b7d8fd424832565e3a3429dd77b7"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "95489063d20158b26572058015534dbe3c66b7d8fd424832565e3a3429dd77b7"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "95489063d20158b26572058015534dbe3c66b7d8fd424832565e3a3429dd77b7"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "vision-config",
+      "name": "Configuração de Poderes da Visão",
+      "filePath": "src/game/abilities/vision/VisionConfig.ts",
+      "capability": "restart-required",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "f85d8fa71abce7b7793618b25d235e0d39133079d7d08e3c1e8090e667d033df"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": true,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f85d8fa71abce7b7793618b25d235e0d39133079d7d08e3c1e8090e667d033df"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f85d8fa71abce7b7793618b25d235e0d39133079d7d08e3c1e8090e667d033df"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "agatha-abilities",
+      "name": "Controlador de Agatha Harkness",
+      "filePath": "src/game/AgathaAbilities.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "ff054a2022b9055b11ed37c0751db79b6cb593d171f89e8b94f011dc39c19697"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "ff054a2022b9055b11ed37c0751db79b6cb593d171f89e8b94f011dc39c19697"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "ff054a2022b9055b11ed37c0751db79b6cb593d171f89e8b94f011dc39c19697"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "ironman-abilities",
+      "name": "Controlador de Armadura Homem de Ferro",
+      "filePath": "src/game/IronManAbilities.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "7c0daa83e05133072eb37ca4a9638bb625d4beeb81bff298d0ee5d2b8d379c9c"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "7c0daa83e05133072eb37ca4a9638bb625d4beeb81bff298d0ee5d2b8d379c9c"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "7c0daa83e05133072eb37ca4a9638bb625d4beeb81bff298d0ee5d2b8d379c9c"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "animation-controller",
+      "name": "Controlador de Cinemática & Animações",
+      "filePath": "src/game/AnimationController.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "d4d81f0f01a8339b4c456c44c167e2fb989476465feebf30e31538b7c4c1d942"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d4d81f0f01a8339b4c456c44c167e2fb989476465feebf30e31538b7c4c1d942"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d4d81f0f01a8339b4c456c44c167e2fb989476465feebf30e31538b7c4c1d942"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "gameplay-restrictions",
+      "name": "Sistema de Restrições & Status",
+      "filePath": "src/game/GameplayRestrictions.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "948568f5b02a1b788e7be65c0a4f5ef792fd5c44b9619b35cc8b834323c10077"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "948568f5b02a1b788e7be65c0a4f5ef792fd5c44b9619b35cc8b834323c10077"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "948568f5b02a1b788e7be65c0a4f5ef792fd5c44b9619b35cc8b834323c10077"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "target-dummy",
+      "name": "Boneco de Treino & Alvos",
+      "filePath": "src/game/TargetDummy.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "695b072e225ae6c1b8f6cd6c242bb9d49ff7bdff055e5d88a05c73d89d1a7d65"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "695b072e225ae6c1b8f6cd6c242bb9d49ff7bdff055e5d88a05c73d89d1a7d65"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "695b072e225ae6c1b8f6cd6c242bb9d49ff7bdff055e5d88a05c73d89d1a7d65"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "projectile-system",
+      "name": "Sistema de Projéteis & Colisões",
+      "filePath": "src/game/ProjectileSystem.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "c98c07e6e230a3ea4e30211f88eab8d3cd1d934b522be7c77bcb8bf072d81f5c"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c98c07e6e230a3ea4e30211f88eab8d3cd1d934b522be7c77bcb8bf072d81f5c"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c98c07e6e230a3ea4e30211f88eab8d3cd1d934b522be7c77bcb8bf072d81f5c"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "combat-buttons",
+      "name": "HUD de Combate & Botões Touch",
+      "filePath": "src/components/CombatButtons.tsx",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "f73e05c758116a6fe5f953c635d687231497f34a7a09a8ef3e7598634149685f"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f73e05c758116a6fe5f953c635d687231497f34a7a09a8ef3e7598634149685f"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f73e05c758116a6fe5f953c635d687231497f34a7a09a8ef3e7598634149685f"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "aim-reticle",
+      "name": "Mira & Marcadores de Travamento",
+      "filePath": "src/components/AimReticle.tsx",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "feae63b6ad561d5cdc3dc45b4eec1fb2a014af91f06cc6cb8c8eee6663c08c39"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "feae63b6ad561d5cdc3dc45b4eec1fb2a014af91f06cc6cb8c8eee6663c08c39"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "feae63b6ad561d5cdc3dc45b4eec1fb2a014af91f06cc6cb8c8eee6663c08c39"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "virtual-joystick",
+      "name": "Joystick Analógico Virtual",
+      "filePath": "src/components/VirtualJoystick.tsx",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "9928e8a5c7b5e80ff2dfa5ed2e298845fc57a36027c886f8617d7b7af11cc0ff"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9928e8a5c7b5e80ff2dfa5ed2e298845fc57a36027c886f8617d7b7af11cc0ff"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9928e8a5c7b5e80ff2dfa5ed2e298845fc57a36027c886f8617d7b7af11cc0ff"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "power-select-modal",
+      "name": "Modal de Seleção de Personagem",
+      "filePath": "src/components/PowerSelectModal.tsx",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "1bcdc89c0889c51fe42cdd6a860580c4f6ddbbf98ae4d84cf053abfa5a760e95"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "1bcdc89c0889c51fe42cdd6a860580c4f6ddbbf98ae4d84cf053abfa5a760e95"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "1bcdc89c0889c51fe42cdd6a860580c4f6ddbbf98ae4d84cf053abfa5a760e95"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "orientation-guard",
+      "name": "Orientação & Tela Cheia (Mobile)",
+      "filePath": "src/components/OrientationGuard.tsx",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "cf88f96fba7d70107f94cc75d0704d4608afdab0523723711bc897edbc395a8c"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "cf88f96fba7d70107f94cc75d0704d4608afdab0523723711bc897edbc395a8c"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "cf88f96fba7d70107f94cc75d0704d4608afdab0523723711bc897edbc395a8c"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "settings-modal",
+      "name": "Modal de Configurações de Jogo",
+      "filePath": "src/components/SettingsModal.tsx",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "d75ea0373e4d93a5a23c4ecb4bc813275016824f168bc859db0743ac4e85adb4"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d75ea0373e4d93a5a23c4ecb4bc813275016824f168bc859db0743ac4e85adb4"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d75ea0373e4d93a5a23c4ecb4bc813275016824f168bc859db0743ac4e85adb4"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "deal-damage-system",
+      "name": "Sistema Central de Dano",
+      "filePath": "src/game/systems/DealDamageSystem.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "80934bac4f7591b710a709a6c0fa615cc4fd68c0afbe04af7750a12b95633404"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "80934bac4f7591b710a709a6c0fa615cc4fd68c0afbe04af7750a12b95633404"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "80934bac4f7591b710a709a6c0fa615cc4fd68c0afbe04af7750a12b95633404"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "flight-system",
+      "name": "FlightSystem — Infraestrutura de Voo",
+      "filePath": "src/game/systems/FlightSystem.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "72812fb79fddf58bc7657306a577712192dcd01f8763aeebb209beaa9b79bdcb"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "72812fb79fddf58bc7657306a577712192dcd01f8763aeebb209beaa9b79bdcb"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "72812fb79fddf58bc7657306a577712192dcd01f8763aeebb209beaa9b79bdcb"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "agatha-flight-config",
+      "name": "Configuração de Voo da Agatha",
+      "filePath": "src/game/systems/flight/AgathaFlightConfig.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "565521f078d6f70cb146e332781242d063e8ec99287f516ec5ed2fc89898b369"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "565521f078d6f70cb146e332781242d063e8ec99287f516ec5ed2fc89898b369"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "565521f078d6f70cb146e332781242d063e8ec99287f516ec5ed2fc89898b369"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "ironman-flight-config",
+      "name": "Configuração de Voo do Homem de Ferro",
+      "filePath": "src/game/systems/flight/IronManFlightConfig.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "a85f4f8c2682cce2597cb4dc6d15c58d22fd7575a09a524a9de6f5b372a54189"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a85f4f8c2682cce2597cb4dc6d15c58d22fd7575a09a524a9de6f5b372a54189"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a85f4f8c2682cce2597cb4dc6d15c58d22fd7575a09a524a9de6f5b372a54189"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "vision-flight-config",
+      "name": "Configuração de Voo da Visão",
+      "filePath": "src/game/systems/flight/VisionFlightConfig.ts",
+      "capability": "restart-required",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "79e5b655f6fbc9c3744fd52716ddcbb2b552bdd3766c1afc02057e3ae7137006"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": true,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "79e5b655f6fbc9c3744fd52716ddcbb2b552bdd3766c1afc02057e3ae7137006"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "79e5b655f6fbc9c3744fd52716ddcbb2b552bdd3766c1afc02057e3ae7137006"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "movement-system",
+      "name": "Sistema de Movimento & Colisão",
+      "filePath": "src/game/systems/MovementSystem.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "a6690020dcea70f74eeeb09dabab2f288124246799ce99b73781767b025b3f74"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a6690020dcea70f74eeeb09dabab2f288124246799ce99b73781767b025b3f74"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a6690020dcea70f74eeeb09dabab2f288124246799ce99b73781767b025b3f74"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "world-collision",
+      "name": "Colisão Universal do Mundo",
+      "filePath": "src/game/systems/WorldCollision.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "c8796400a2dc33cccdb80660eb0e9ea469433c41fef26cfa7241e2e54966a3a7"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c8796400a2dc33cccdb80660eb0e9ea469433c41fef26cfa7241e2e54966a3a7"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c8796400a2dc33cccdb80660eb0e9ea469433c41fef26cfa7241e2e54966a3a7"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "cooldown-system",
+      "name": "Sistema de Recarga",
+      "filePath": "src/game/systems/CooldownSystem.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "3a74c918e40727318ec10e1a6573065516f7a89c63d97933654db881e52a07ae"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3a74c918e40727318ec10e1a6573065516f7a89c63d97933654db881e52a07ae"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3a74c918e40727318ec10e1a6573065516f7a89c63d97933654db881e52a07ae"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "ability-button-system",
+      "name": "Sistema de Botões de Habilidade",
+      "filePath": "src/game/systems/AbilityButtonSystem.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "2a4ea4efffc174be689989a956a2e5fbe21de8cfb9d9771a2fc971d0a2d9a21c"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "2a4ea4efffc174be689989a956a2e5fbe21de8cfb9d9771a2fc971d0a2d9a21c"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "2a4ea4efffc174be689989a956a2e5fbe21de8cfb9d9771a2fc971d0a2d9a21c"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "sound-system",
+      "name": "SoundSystem — Áudio Central",
+      "filePath": "src/game/systems/SoundSystem.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "690e79e0e5685f912a8445a127420d932967482b8f5c3450445dd0a16e027832"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "690e79e0e5685f912a8445a127420d932967482b8f5c3450445dd0a16e027832"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "690e79e0e5685f912a8445a127420d932967482b8f5c3450445dd0a16e027832"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "settings-manager",
+      "name": "Gerenciador de Configurações",
+      "filePath": "src/game/SettingsManager.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "3ba874628235b126a9de3f77e78d29c3ae0e9436ea6b2b03eea40b93b85d7f72"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3ba874628235b126a9de3f77e78d29c3ae0e9436ea6b2b03eea40b93b85d7f72"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3ba874628235b126a9de3f77e78d29c3ae0e9436ea6b2b03eea40b93b85d7f72"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "live-config-manager",
+      "name": "Gerenciador de Configuração ao Vivo",
+      "filePath": "src/game/LiveConfigManager.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "fb644b86dbb0ad8d5329e68b1d409343378a8a05ad17e99ed60d042062f66bda"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "fb644b86dbb0ad8d5329e68b1d409343378a8a05ad17e99ed60d042062f66bda"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "fb644b86dbb0ad8d5329e68b1d409343378a8a05ad17e99ed60d042062f66bda"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "build-mode-manager",
+      "name": "Gerenciador do Modo Construção",
+      "filePath": "src/game/BuildModeManager.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "a288d36d6810ec77b90a2cc3716056bb740c8d10234c6bb68535213dd70ffbe0"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a288d36d6810ec77b90a2cc3716056bb740c8d10234c6bb68535213dd70ffbe0"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a288d36d6810ec77b90a2cc3716056bb740c8d10234c6bb68535213dd70ffbe0"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "game-scene",
+      "name": "Cena Principal Three.js (GameScene)",
+      "filePath": "src/game/GameScene.ts",
+      "capability": "restart-required",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "a7f11695751b520ec7e158b47300ddf943414ebfa6b54541c337c82075e5574a"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": true,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a7f11695751b520ec7e158b47300ddf943414ebfa6b54541c337c82075e5574a"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a7f11695751b520ec7e158b47300ddf943414ebfa6b54541c337c82075e5574a"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "stickman-rig",
+      "name": "Esqueleto Stickman Articulado R15",
+      "filePath": "src/game/StickmanRig.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "093a6869f38394b702479b95e3cfe15a6dbfb4fdf2d1eb7cd945b860b5d8e298"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "093a6869f38394b702479b95e3cfe15a6dbfb4fdf2d1eb7cd945b860b5d8e298"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "093a6869f38394b702479b95e3cfe15a6dbfb4fdf2d1eb7cd945b860b5d8e298"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "audio-manifest",
+      "name": "Manifesto Central de Áudio",
+      "filePath": "src/game/audio/AudioManifest.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "beb4a5ff344e411802e7bced2743095058d36eec6c650dad692303ae4638133f"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "beb4a5ff344e411802e7bced2743095058d36eec6c650dad692303ae4638133f"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "beb4a5ff344e411802e7bced2743095058d36eec6c650dad692303ae4638133f"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    },
+    {
+      "id": "audio-system",
+      "name": "Sistema de Áudio Cinematográfico",
+      "filePath": "src/game/AudioSystem.ts",
+      "capability": "hot-swap",
+      "lifecycle": "original",
+      "exportedSource": "original",
+      "exportedHash": {
+        "algorithm": "SHA-256",
+        "value": "a2e932a16c281ea3682708b70811a2eb86470120f2711dedf916a05d61b32240"
+      },
+      "hasRunningSource": false,
+      "hasAppliedSource": false,
+      "hasSavedSource": false,
+      "hasUnappliedSaved": false,
+      "hasUnappliedDraft": false,
+      "notApplied": false,
+      "requiresRestart": false,
+      "validation": "catalog-original",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a2e932a16c281ea3682708b70811a2eb86470120f2711dedf916a05d61b32240"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a2e932a16c281ea3682708b70811a2eb86470120f2711dedf916a05d61b32240"
+          }
+        }
+      },
+      "catalogChangedSinceCustomization": false,
+      "divergenceReasons": [],
+      "revision": 0,
+      "updatedAt": 1792910921531
+    }
+  ],
+  "pendingScripts": [
+    {
+      "id": "vision-mind-beam",
+      "name": "Raio da Mind Stone (Habilidade 1)",
+      "filePath": "src/game/abilities/vision/VisionMindBeam.ts",
+      "reason": "restart-required-draft",
+      "archivedPath": "build-script/pending/draft/src/game/abilities/vision/VisionMindBeam.ts"
+    }
+  ],
+  "catalogArchives": [
+    {
+      "scriptId": "vision-solar-blast",
+      "name": "Rajada Solar (Ataque Básico)",
+      "filePath": "src/game/abilities/vision/VisionSolarBlast.ts",
+      "archivedPath": "build-script/catalog/original/src/game/abilities/vision/VisionSolarBlast.ts"
+    }
+  ],
+  "divergences": [
+    "Rajada Solar (Ataque Básico): versão aplicada exportada para o próximo build/reinício; ela ainda não está em execução nesta sessão.",
+    "Raio da Mind Stone (Habilidade 1): rascunho não aplicado foi preservado em build-script/pending; somente versões aplicadas entram no código executável."
+  ],
+  "warnings": [],
+  "excluded": [
+    "node_modules/ (dependências instaladas)",
+    "dist/ (saída de build)",
+    ".git/ (histórico do repositório)",
+    ".agents/ e .opencode/ (ferramentas locais de desenvolvimento)",
+    "caches, arquivos temporários e logs",
+    ".env, .env.* (exceto .env.example), chaves privadas e credenciais"
+  ],
+  "files": [
+    {
+      "path": ".env.example",
+      "size": 106,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "27ff766def27059a6e3c8fa8b95fad6392ec26f46054bc3d3e456153381fd4f9"
+      },
+      "source": "generated",
+      "version": "generated",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Credenciais removidas; apenas nomes de variáveis preservados."
+    },
+    {
+      "path": ".github/workflows/opencode.yml",
+      "size": 1954,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "c63ba77c9a08673e9468ec2ce716c1cac9a22c67d594873d1b8fcd3905ff5ae2"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": ".gitignore",
+      "size": 184,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "fba06245330e927e2196ebe4c093f05ad7b6cbe6c68e305ec5c8e862aaf18b0d"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "Agents.md",
+      "size": 1081,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "62e7370c52b4ff155474f4d490a779a788ff970730bdf4487f91d17a2042e3f9"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "build-mode/scene.json",
+      "size": 7245,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "17ae7954abdf149ac7bb416ac59f022942b0b47aff5ade0d9fcc6ff94d0108bd"
+      },
+      "source": "generated",
+      "version": "generated",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Cópia JSON da cena do Build Mode."
+    },
+    {
+      "path": "build-script/catalog/original/src/game/abilities/agatha/AgathaArcaneBlast.ts",
+      "size": 5705,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "1c01ea56972fb0beba763b28bbad73308b7fa80a7ba0d0b8461056d69847d1af"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "build-script/catalog/original/src/game/abilities/agatha/AgathaChaosOrb.ts",
+      "size": 6332,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "c8f2b6ab7905c641f7710e2c1bbe95368f438cbe554068ced94ae25c9d8aac20"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "build-script/catalog/original/src/game/abilities/agatha/AgathaDarkDrain.ts",
+      "size": 6293,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "40eb648caf995b373b430fbe40f2576299683280fd1026d8ba5dc52f29c7898d"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "build-script/catalog/original/src/game/abilities/agatha/AgathaRunicWard.ts",
+      "size": 3661,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "1bbe5afab5c37635fcf29470d33497d1301094bb40b22b1fa5c6cc8143cfe85e"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "build-script/catalog/original/src/game/abilities/agatha/AgathaShadowStep.ts",
+      "size": 2158,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "83967686d346d069e0326fdbf4cd6fa37c88ef68438706307a17a7033ebfbedc"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "build-script/catalog/original/src/game/abilities/agatha/AgathaTelekineticChoke.ts",
+      "size": 7050,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "a5410318d6cdd325b3967a0b2618cdfe77aa2aa7f855a2edaa7eeeb09735bcc6"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "build-script/catalog/original/src/game/abilities/ironman/IronManMicroMissiles.ts",
+      "size": 1843,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "67c59fb84dc65965d22cfc07af28fa738e1ea1e2f237bdfb7b08cb704db8e071"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "build-script/catalog/original/src/game/abilities/ironman/IronManUnibeam.ts",
+      "size": 1645,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "b327d290bce3d4814b2011473644c3b4fff33d654fc51d3886843c054d28dd63"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "build-script/catalog/original/src/game/abilities/vision/VisionSolarBlast.ts",
+      "size": 6870,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "9a6c90f152f9a0bdfd92f6dc575e71d8e1c4ab585993ba8c636a3cf780ac1947"
+      },
+      "source": "catalog-archive",
+      "version": "original",
+      "scriptId": "vision-solar-blast",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9a6c90f152f9a0bdfd92f6dc575e71d8e1c4ab585993ba8c636a3cf780ac1947"
+          }
+        },
+        "draft": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "saved": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "validated": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "applied": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "divergenceReasons": [
+        "Rajada Solar (Ataque Básico): versão aplicada exportada para o próximo build/reinício; ela ainda não está em execução nesta sessão."
+      ],
+      "catalogChangedSinceCustomization": false,
+      "note": "Versão original do catálogo preservada fora do caminho principal."
+    },
+    {
+      "path": "build-script/pending/draft/src/game/abilities/vision/VisionMindBeam.ts",
+      "size": 10970,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+      },
+      "source": "pending-version",
+      "version": "draft",
+      "scriptId": "vision-mind-beam",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c5a4050519f134e15292777098240dce2ebb1c9de414f2aa2341e73cf267118e"
+          }
+        },
+        "draft": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+          }
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c5a4050519f134e15292777098240dce2ebb1c9de414f2aa2341e73cf267118e"
+          }
+        }
+      },
+      "pending": true,
+      "pendingReason": "restart-required-draft",
+      "validation": "not-validated",
+      "divergenceReasons": [
+        "Raio da Mind Stone (Habilidade 1): rascunho não aplicado foi preservado em build-script/pending; somente versões aplicadas entram no código executável."
+      ],
+      "note": "Versão não usada como principal; preservada para não perder alterações."
+    },
+    {
+      "path": "build-script/README.md",
+      "size": 1166,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "634a084f95395279d399b5a1675113f3cfa7ad1e46aec7739eb28d949b7613b0"
+      },
+      "source": "build-script-doc",
+      "version": "generated",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Documentação das regras de exportação do Build Script."
+    },
+    {
+      "path": "bun.lock",
+      "size": 76956,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "36afabc44d558ed94ba897ebcf20c205c0e8a76bb423849be83d0a219dd16884"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "capture.sh",
+      "size": 5214,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "f92ddf3361677ef84f95370de32acf6866d47590fe0fae1c4c19c44ab411ed33"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "index.html",
+      "size": 1169,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "b0e19ee61dc9ccd074f50b2aabd3c33fceab54bb8674a29ac0361bf8e3d2f37f"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "metadata.json",
+      "size": 298,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "4b258bc8e34533467a3f4b6b19324215de4a88856579b695bf4d12b670655060"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "package-lock.json",
+      "size": 158765,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "b96fceb7d1079883a1cf8f0764c86b2aea16de76e43ea4950c86ab3c5bdca5b5"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "package.json",
+      "size": 1047,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "e63e4f2512f9cb969cf1f2e0c9d71c1a6e39dc8d244378b8c1c9ac81346b2547"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "physics-sim-tmp.ts",
+      "size": 10421,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "db404113139b8cb0d039752ed5352d9d444a313f91acba7deafbf208a4fd3b37"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "public/assets/aistudio/3d-stickman-game_b12510c0.zip",
+      "size": 597868,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "b12510c04b775796b48792a1c985bd326d00a4a95237b63aea8364d1d238db5e"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/arcane-blast.mp3",
+      "size": 31391,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "cd78bbd71dffe953cb906e9a92f5a1a7f4b585fc368bad836bd3014c8eb1aac9"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/arcane-flight-loop.wav",
+      "size": 705718,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "1785ab9ec32716071aa8813d0472ae7c5d2bb0177653adb0cbc52da400a4f730"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/arcane-flight-start.mp3",
+      "size": 18672,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "4dca02475e22c7112594855d4d96257dfe5e9f04c31e2789d98af6153fec2c2a"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/arcane-flight-stop.mp3",
+      "size": 19374,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "33266152718ec4824ca8dd0eafcb02b9eb81e79b303ac4819a1e8d1c4f17eebe"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/chaos-cast.mp3",
+      "size": 31734,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "726ebc0d17795f68dde94f713d87d53b1d2af0438cee5c26ff25bd2297c4627c"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/chaos-impact.mp3",
+      "size": 53333,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "8e9bc8bc27ce24dc5f80c21ded67f96fdaccf7350b35216a5bed3d7187f93c12"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/choke-loop.wav",
+      "size": 423492,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "e0b825044fc483eb499a477695faab295f945ae37de46dda8d1c44c867bd67f8"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/choke-start.mp3",
+      "size": 24599,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "80d3c5a64e1605ac9a541df4d082b6d3da9b6e95e3bb4b48b79b4c6f80f40d5d"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/choke-tick.mp3",
+      "size": 12582,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "98e43fcf033e967197902102c0a57175cac987488959724b2cf89296e05332ee"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/dark-drain-loop.wav",
+      "size": 705678,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "e97d62bc7b84653b9d05c7fd46bab9b58a02d3c9fa6f18e7062a13a778d4233a"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/dark-drain-pulse.mp3",
+      "size": 33480,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "0a7770690b109cdc4cc6957b82be75000ee6f5ac51ccf30057d2e56358b2caf1"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/runic-ward.mp3",
+      "size": 28525,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "c5268bdaca96ae9ede6c81302e5ce1ee6a3e2fbd5a5c342c7671783f91c7503c"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/shadow-arrive.mp3",
+      "size": 19374,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "8b52b0eac911e6a304fa94d9eb6e46afa8344bb959054404961d39b32792b4ee"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/agatha/shadow-depart.mp3",
+      "size": 21464,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "129ad8938dfc36d2e5dcdbf6bf934bff00247a35fdc1ad28f35898eb1af5ac14"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/beam-burst.mp3",
+      "size": 36093,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "2207d2628caa5483900eee28869d06f2f0dee3ca5d0b1e0f83ca3ad4cfd45d83"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/beam-clash.mp3",
+      "size": 31391,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "cb924ef6718bf284ec3a701bf9f66b779d351605308c4995bc454b984b229395"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/beam-loop.wav",
+      "size": 705678,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "51d2c3b291ec074d8902bfdb612210c949040866f6bcca4a05299b6fe1a35113"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/explosion.mp3",
+      "size": 59603,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "fa6b95729276f3dc785831cf532c56ca544634c969438b5e70ad1c52f14a2e33"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/flight-start.mp3",
+      "size": 28256,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "7e6d5119ab125a0f204d0075c9ee9215065b489b700c67f600b5d15990f5d746"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/flight-stop.mp3",
+      "size": 30346,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "c34fae0f1a88f686ec9ba83b669b73053f802273529826ed6799253c3798e10d"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/laser-spin-loop.wav",
+      "size": 705718,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "5431916dba893133834f2906e60876a0776dddb31178566612380057aa67208f"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/missile-launch.mp3",
+      "size": 31391,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "53db5350201dbb8b579947486e453d8cf07cb109f90096db51a19c55917fa2b8"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/repulsor.mp3",
+      "size": 14150,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "113b4447c12149fafe474717d7ed416c713bfb3a48417fc66438f2b84e9ba476"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/thruster-dash.mp3",
+      "size": 21464,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "0cf5b37b53479969af15f9bda8f2d92aca7ff08c9bd8bf5fe041c20f25b3e624"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/unibeam-charge.mp3",
+      "size": 13105,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "a2a388449b851916e8f0c33e58685127116ef943bf8e61025a7d818e797e0bda"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/unibeam-fire.mp3",
+      "size": 37137,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "598117ec114657bfe0ef373680cfea1557df7e47afc0b50392151e326cac498e"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/ironman/unibeam-sequence.mp3",
+      "size": 48631,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "fbed93066b87f2790ab8639f569507a93f357ce9f484b3434a8caae99560f886"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/LICENSES.md",
+      "size": 6843,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "e53adce22f1e0ccb6ed09ae83999244a99ad839d2f5369548078323990fd2605"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/README.md",
+      "size": 565,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "40286fb4a54f2d86bcd5d9f7e8c22131fdba8223a726d13121611c87d3f40e36"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/shared/attack-cast.mp3",
+      "size": 23554,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "051a6529058fb0a30011bbce121f38a5bdd29af53e354ab53d3c2cd0f4802cb0"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/shared/destroy.mp3",
+      "size": 53856,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "714509988a075c11825596a666db2298cb1580398b0eb25eb07b2e1a1f09d303"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/shared/error.mp3",
+      "size": 15195,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "9e1338fe7d4c4c900481817c62fae623d4bf82207079a650ea84fb006799b16b"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/shared/hit.mp3",
+      "size": 11537,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "5c73d99b62beb2b1f41ae00c81fa866c606aaab35f831a49c3ab7b0098b3e348"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/shared/impact.mp3",
+      "size": 18329,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "79ddb718fedb1228de531e788c2fe1b9fdbe104bd969591df0c9d3a869c9648d"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "public/assets/audio/shared/ui-click.mp3",
+      "size": 4746,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "c5a540a51dc1f1914bd883e2dfdb904acd683a439f2513d34ea40646234e540a"
+      },
+      "source": "public-asset",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Recurso local copiado do diretório public/."
+    },
+    {
+      "path": "README.md",
+      "size": 7972,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "e249dc213a4d1b1f09d507fe1d50046d3829d8cccecb559df78b6991cb80a51e"
+      },
+      "source": "generated",
+      "version": "generated",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "README original + instruções de instalação, build e Build Script."
+    },
+    {
+      "path": "scripts/verify-export.mjs",
+      "size": 8916,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "7e75075d1014ce1a79fcc2d1ba2f0915077fe3ff5c9456f3cb3c4ae4d849fa8f"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/App.tsx",
+      "size": 22453,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "5ca78f87244accfb567008e94c753c3563925a7e3feefb2e57182bdff0f02439"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/components/AimReticle.tsx",
+      "size": 11085,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "feae63b6ad561d5cdc3dc45b4eec1fb2a014af91f06cc6cb8c8eee6663c08c39"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "aim-reticle",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "feae63b6ad561d5cdc3dc45b4eec1fb2a014af91f06cc6cb8c8eee6663c08c39"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "feae63b6ad561d5cdc3dc45b4eec1fb2a014af91f06cc6cb8c8eee6663c08c39"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/components/BuildMode/BuildModeContainer.tsx",
+      "size": 56258,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "cb4d20f327040b98955a4000cb7b24bef067b18de5f3f030a7dbf9e9559836fe"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/components/BuildMode/BuildToast.tsx",
+      "size": 1373,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "27dfdd8eaca3adfe26ab45f4b2ded2f6b2a968910bc3cd3cf168f8f4ebf50992"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/components/BuildMode/ConfigPanel.tsx",
+      "size": 41270,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "d97eaa95a8fc587cfcc5ff03bc44a37d35e766b9903ff7d77d40ceef30bf7c71"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/components/BuildMode/ScriptExplorer.tsx",
+      "size": 17188,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "f6270cb4ba58101da7fa385fa47976e091ec3a02cc16a507393c79ede5a9e86d"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/components/CombatButtons.tsx",
+      "size": 21268,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "f73e05c758116a6fe5f953c635d687231497f34a7a09a8ef3e7598634149685f"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "combat-buttons",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f73e05c758116a6fe5f953c635d687231497f34a7a09a8ef3e7598634149685f"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f73e05c758116a6fe5f953c635d687231497f34a7a09a8ef3e7598634149685f"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/components/OrientationGuard.tsx",
+      "size": 3704,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "cf88f96fba7d70107f94cc75d0704d4608afdab0523723711bc897edbc395a8c"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "orientation-guard",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "cf88f96fba7d70107f94cc75d0704d4608afdab0523723711bc897edbc395a8c"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "cf88f96fba7d70107f94cc75d0704d4608afdab0523723711bc897edbc395a8c"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/components/PowerSelectModal.tsx",
+      "size": 14001,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "1bcdc89c0889c51fe42cdd6a860580c4f6ddbbf98ae4d84cf053abfa5a760e95"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "power-select-modal",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "1bcdc89c0889c51fe42cdd6a860580c4f6ddbbf98ae4d84cf053abfa5a760e95"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "1bcdc89c0889c51fe42cdd6a860580c4f6ddbbf98ae4d84cf053abfa5a760e95"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/components/SettingsModal.tsx",
+      "size": 13750,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "d75ea0373e4d93a5a23c4ecb4bc813275016824f168bc859db0743ac4e85adb4"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "settings-modal",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d75ea0373e4d93a5a23c4ecb4bc813275016824f168bc859db0743ac4e85adb4"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d75ea0373e4d93a5a23c4ecb4bc813275016824f168bc859db0743ac4e85adb4"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/components/VirtualJoystick.tsx",
+      "size": 6155,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "9928e8a5c7b5e80ff2dfa5ed2e298845fc57a36027c886f8617d7b7af11cc0ff"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "virtual-joystick",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9928e8a5c7b5e80ff2dfa5ed2e298845fc57a36027c886f8617d7b7af11cc0ff"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9928e8a5c7b5e80ff2dfa5ed2e298845fc57a36027c886f8617d7b7af11cc0ff"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/agatha/AgathaArcaneBlast.ts",
+      "size": 17228,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+      },
+      "source": "script",
+      "version": "running",
+      "scriptId": "agatha-arcane-blast",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "validated": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "applied": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "running": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3e58c0dddff31f6f5bc64cb6d9de81f69ad44a0588915bfa618a6b1274ef4f27"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "runtime-confirmed",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/agatha/AgathaChaosOrb.ts",
+      "size": 21802,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "87fbbd3cdaa7316935c0091d651415ebc3381a580c8d5b56518639bcf454c1e5"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "agatha-chaos-orb",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "87fbbd3cdaa7316935c0091d651415ebc3381a580c8d5b56518639bcf454c1e5"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "87fbbd3cdaa7316935c0091d651415ebc3381a580c8d5b56518639bcf454c1e5"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/agatha/AgathaConfig.ts",
+      "size": 5988,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "d261a6f8243ded1073ad36a4c473c6abe516f87825b0c5ec18e923764f4963a4"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "agatha-config",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d261a6f8243ded1073ad36a4c473c6abe516f87825b0c5ec18e923764f4963a4"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d261a6f8243ded1073ad36a4c473c6abe516f87825b0c5ec18e923764f4963a4"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/agatha/AgathaDarkDrain.ts",
+      "size": 21342,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "9d96cdffdf1a18fce9bda4ea745fbab35d7e61134660bdc590d3f2405bcc7b0d"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "agatha-dark-drain",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9d96cdffdf1a18fce9bda4ea745fbab35d7e61134660bdc590d3f2405bcc7b0d"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9d96cdffdf1a18fce9bda4ea745fbab35d7e61134660bdc590d3f2405bcc7b0d"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/agatha/AgathaRunicWard.ts",
+      "size": 35994,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "8cacd7831995b182eaf63aae7bbcbefb037a5e0f1c3c569007e82cfa1b0a8dd8"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "agatha-runic-ward",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "8cacd7831995b182eaf63aae7bbcbefb037a5e0f1c3c569007e82cfa1b0a8dd8"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "8cacd7831995b182eaf63aae7bbcbefb037a5e0f1c3c569007e82cfa1b0a8dd8"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/agatha/AgathaShadowStep.ts",
+      "size": 19369,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "dc1943e791c1d0c5ebb32735ebbaa5931279a849c5b1ae79fd5058b3d9dbc6e8"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "agatha-shadow-step",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "dc1943e791c1d0c5ebb32735ebbaa5931279a849c5b1ae79fd5058b3d9dbc6e8"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "dc1943e791c1d0c5ebb32735ebbaa5931279a849c5b1ae79fd5058b3d9dbc6e8"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/agatha/AgathaTelekineticChoke.ts",
+      "size": 22892,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "e8b2011ed824c8bf60858c6d055994ae4f86db5be30d13098c3c6fe6ad913398"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "agatha-choke",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "e8b2011ed824c8bf60858c6d055994ae4f86db5be30d13098c3c6fe6ad913398"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "e8b2011ed824c8bf60858c6d055994ae4f86db5be30d13098c3c6fe6ad913398"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/ironman/IronManBeamFx.ts",
+      "size": 10619,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "aa3819849cbd39daf9a385d77357e43eb12eb51209f31b3cbe950606706233a4"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ironman-beam-fx",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "aa3819849cbd39daf9a385d77357e43eb12eb51209f31b3cbe950606706233a4"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "aa3819849cbd39daf9a385d77357e43eb12eb51209f31b3cbe950606706233a4"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/ironman/IronManConfig.ts",
+      "size": 5368,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "95489063d20158b26572058015534dbe3c66b7d8fd424832565e3a3429dd77b7"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ironman-config",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "95489063d20158b26572058015534dbe3c66b7d8fd424832565e3a3429dd77b7"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "95489063d20158b26572058015534dbe3c66b7d8fd424832565e3a3429dd77b7"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/ironman/IronManDualBeams.ts",
+      "size": 10970,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ironman-dual-beams",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/ironman/IronManMicroMissiles.ts",
+      "size": 23540,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "16cb147447b83517809e180380dca040963108c8261ece5d9250c91a5a1268c1"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ironman-micro-missiles",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "16cb147447b83517809e180380dca040963108c8261ece5d9250c91a5a1268c1"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "16cb147447b83517809e180380dca040963108c8261ece5d9250c91a5a1268c1"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/ironman/IronManRepulsor.ts",
+      "size": 6470,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "33b29edcae545f5676e3fcc9ee130f721a2e41211984b6706de7bd2827e82a82"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ironman-repulsor",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "33b29edcae545f5676e3fcc9ee130f721a2e41211984b6706de7bd2827e82a82"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "33b29edcae545f5676e3fcc9ee130f721a2e41211984b6706de7bd2827e82a82"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/ironman/IronManSpinningLasers.ts",
+      "size": 6429,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "f1d64ae1498da75cdfb03b0d91027f57d1a98140c7a239cbae6b52037d4e3030"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ironman-spinning-lasers",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f1d64ae1498da75cdfb03b0d91027f57d1a98140c7a239cbae6b52037d4e3030"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f1d64ae1498da75cdfb03b0d91027f57d1a98140c7a239cbae6b52037d4e3030"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/ironman/IronManUnibeam.ts",
+      "size": 15637,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "81c25a708e6088ecfcdff66d99dd045f8c9edb897f75620e0e22b3bd14a21fd7"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ironman-unibeam",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "81c25a708e6088ecfcdff66d99dd045f8c9edb897f75620e0e22b3bd14a21fd7"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "81c25a708e6088ecfcdff66d99dd045f8c9edb897f75620e0e22b3bd14a21fd7"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/vision/VisionConfig.ts",
+      "size": 4011,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "f85d8fa71abce7b7793618b25d235e0d39133079d7d08e3c1e8090e667d033df"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "vision-config",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f85d8fa71abce7b7793618b25d235e0d39133079d7d08e3c1e8090e667d033df"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "f85d8fa71abce7b7793618b25d235e0d39133079d7d08e3c1e8090e667d033df"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/vision/VisionMindBeam.ts",
+      "size": 6790,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "c5a4050519f134e15292777098240dce2ebb1c9de414f2aa2341e73cf267118e"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "vision-mind-beam",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c5a4050519f134e15292777098240dce2ebb1c9de414f2aa2341e73cf267118e"
+          }
+        },
+        "draft": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "b02442cc5e15306df16e2dacd4ee4fd55022d15ccbe9d360f2ce43103783a104"
+          }
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c5a4050519f134e15292777098240dce2ebb1c9de414f2aa2341e73cf267118e"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "divergenceReasons": [
+        "Raio da Mind Stone (Habilidade 1): rascunho não aplicado foi preservado em build-script/pending; somente versões aplicadas entram no código executável."
+      ],
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/vision/VisionPhasing.ts",
+      "size": 6300,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "eb3a6acd96b61d55365bae015a753a8b2e1c8a3f5f04f945cdc231efb9773d73"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "vision-phasing",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "eb3a6acd96b61d55365bae015a753a8b2e1c8a3f5f04f945cdc231efb9773d73"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "eb3a6acd96b61d55365bae015a753a8b2e1c8a3f5f04f945cdc231efb9773d73"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/abilities/vision/VisionSolarBlast.ts",
+      "size": 6871,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+      },
+      "source": "script",
+      "version": "applied",
+      "scriptId": "vision-solar-blast",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "9a6c90f152f9a0bdfd92f6dc575e71d8e1c4ab585993ba8c636a3cf780ac1947"
+          }
+        },
+        "draft": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "saved": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "validated": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "applied": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "08581642884cb57a72960d843dfb540a5c3835279c1c49855845608abb0a6b76"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "applied-not-confirmed-running",
+      "divergenceReasons": [
+        "Rajada Solar (Ataque Básico): versão aplicada exportada para o próximo build/reinício; ela ainda não está em execução nesta sessão."
+      ],
+      "catalogChangedSinceCustomization": false,
+      "catalogOriginalArchived": "build-script/catalog/original/src/game/abilities/vision/VisionSolarBlast.ts"
+    },
+    {
+      "path": "src/game/AgathaAbilities.ts",
+      "size": 6995,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "ff054a2022b9055b11ed37c0751db79b6cb593d171f89e8b94f011dc39c19697"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "agatha-abilities",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "ff054a2022b9055b11ed37c0751db79b6cb593d171f89e8b94f011dc39c19697"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "ff054a2022b9055b11ed37c0751db79b6cb593d171f89e8b94f011dc39c19697"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/AnimationController.ts",
+      "size": 23063,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "d4d81f0f01a8339b4c456c44c167e2fb989476465feebf30e31538b7c4c1d942"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "animation-controller",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d4d81f0f01a8339b4c456c44c167e2fb989476465feebf30e31538b7c4c1d942"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "d4d81f0f01a8339b4c456c44c167e2fb989476465feebf30e31538b7c4c1d942"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/AppliedScriptStore.ts",
+      "size": 10517,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "6021528656026bcad6764b526fbe78e9bf47a31dd5a90e2d5d5b390aa7a1b025"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/game/audio/AudioManifest.ts",
+      "size": 3147,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "beb4a5ff344e411802e7bced2743095058d36eec6c650dad692303ae4638133f"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "audio-manifest",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "beb4a5ff344e411802e7bced2743095058d36eec6c650dad692303ae4638133f"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "beb4a5ff344e411802e7bced2743095058d36eec6c650dad692303ae4638133f"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/AudioSystem.ts",
+      "size": 13749,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "a2e932a16c281ea3682708b70811a2eb86470120f2711dedf916a05d61b32240"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "audio-system",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a2e932a16c281ea3682708b70811a2eb86470120f2711dedf916a05d61b32240"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a2e932a16c281ea3682708b70811a2eb86470120f2711dedf916a05d61b32240"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/BuildModeManager.ts",
+      "size": 41465,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "a288d36d6810ec77b90a2cc3716056bb740c8d10234c6bb68535213dd70ffbe0"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "build-mode-manager",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a288d36d6810ec77b90a2cc3716056bb740c8d10234c6bb68535213dd70ffbe0"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a288d36d6810ec77b90a2cc3716056bb740c8d10234c6bb68535213dd70ffbe0"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/BuildTypes.ts",
+      "size": 1891,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "efb632366e4ff2690e3e2d67e2e116ecb56c8510a1b1d43a2e2d550a7fe803ee"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/game/GameplayRestrictions.ts",
+      "size": 4575,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "948568f5b02a1b788e7be65c0a4f5ef792fd5c44b9619b35cc8b834323c10077"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "gameplay-restrictions",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "948568f5b02a1b788e7be65c0a4f5ef792fd5c44b9619b35cc8b834323c10077"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "948568f5b02a1b788e7be65c0a4f5ef792fd5c44b9619b35cc8b834323c10077"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/GameScene.ts",
+      "size": 90423,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "a7f11695751b520ec7e158b47300ddf943414ebfa6b54541c337c82075e5574a"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "game-scene",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a7f11695751b520ec7e158b47300ddf943414ebfa6b54541c337c82075e5574a"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a7f11695751b520ec7e158b47300ddf943414ebfa6b54541c337c82075e5574a"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/generated/BuildModeDefaults.ts",
+      "size": 7496,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "63e3bea184d612697e58f3cca86f9e085c20bf26b6d2d0dc84a40472e9758cdc"
+      },
+      "source": "generated",
+      "version": "generated",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Cena padrão gerada a partir do Build Mode ao vivo."
+    },
+    {
+      "path": "src/game/generated/BuildScriptOverrides.ts",
+      "size": 5919,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "8b984c4d50cbb27b401f368bdd862838b8e6978e9104cc6a11ae9179a1d11bd3"
+      },
+      "source": "generated",
+      "version": "generated",
+      "pending": false,
+      "validation": "not-applicable",
+      "note": "Configurações ao vivo capturadas no momento da exportação."
+    },
+    {
+      "path": "src/game/IronManAbilities.ts",
+      "size": 47251,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "7c0daa83e05133072eb37ca4a9638bb625d4beeb81bff298d0ee5d2b8d379c9c"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ironman-abilities",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "7c0daa83e05133072eb37ca4a9638bb625d4beeb81bff298d0ee5d2b8d379c9c"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "7c0daa83e05133072eb37ca4a9638bb625d4beeb81bff298d0ee5d2b8d379c9c"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/LiveConfigManager.ts",
+      "size": 7105,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "fb644b86dbb0ad8d5329e68b1d409343378a8a05ad17e99ed60d042062f66bda"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "live-config-manager",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "fb644b86dbb0ad8d5329e68b1d409343378a8a05ad17e99ed60d042062f66bda"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "fb644b86dbb0ad8d5329e68b1d409343378a8a05ad17e99ed60d042062f66bda"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/ProjectExporter.ts",
+      "size": 34385,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "b33e143623a70c3134d9685ffd2afbd32377356b2a6607fb0e5155e0a1dae369"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/game/ProjectileSystem.ts",
+      "size": 11141,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "c98c07e6e230a3ea4e30211f88eab8d3cd1d934b522be7c77bcb8bf072d81f5c"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "projectile-system",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c98c07e6e230a3ea4e30211f88eab8d3cd1d934b522be7c77bcb8bf072d81f5c"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c98c07e6e230a3ea4e30211f88eab8d3cd1d934b522be7c77bcb8bf072d81f5c"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/RealProjectScripts.ts",
+      "size": 33147,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "5bedc184ec0cd4b3825eb3e9f83fbdbfd1faa60338dd753243b86604934fd266"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/game/ScriptPersistence.ts",
+      "size": 15319,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "428ad2d8bf0bc7d8d5633fb5a62c591c069cabeeea8172964a5fafa2e2b7dcfb"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/game/ScriptRuntimeEngine.ts",
+      "size": 94831,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "cda631d7735ae3b4a0d66ada8d5e936d2ff08f8a1b2bcc473f36c6c3237e6c35"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/game/ScriptSearch.ts",
+      "size": 9314,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "910d3be62fb668f73d63da0fe31f688443221a75ed78a4700636b826104048f0"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/game/SettingsManager.ts",
+      "size": 3621,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "3ba874628235b126a9de3f77e78d29c3ae0e9436ea6b2b03eea40b93b85d7f72"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "settings-manager",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3ba874628235b126a9de3f77e78d29c3ae0e9436ea6b2b03eea40b93b85d7f72"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3ba874628235b126a9de3f77e78d29c3ae0e9436ea6b2b03eea40b93b85d7f72"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/StickmanRig.ts",
+      "size": 15838,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "093a6869f38394b702479b95e3cfe15a6dbfb4fdf2d1eb7cd945b860b5d8e298"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "stickman-rig",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "093a6869f38394b702479b95e3cfe15a6dbfb4fdf2d1eb7cd945b860b5d8e298"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "093a6869f38394b702479b95e3cfe15a6dbfb4fdf2d1eb7cd945b860b5d8e298"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/AbilityButtonSystem.ts",
+      "size": 3244,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "2a4ea4efffc174be689989a956a2e5fbe21de8cfb9d9771a2fc971d0a2d9a21c"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ability-button-system",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "2a4ea4efffc174be689989a956a2e5fbe21de8cfb9d9771a2fc971d0a2d9a21c"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "2a4ea4efffc174be689989a956a2e5fbe21de8cfb9d9771a2fc971d0a2d9a21c"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/CooldownSystem.ts",
+      "size": 1367,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "3a74c918e40727318ec10e1a6573065516f7a89c63d97933654db881e52a07ae"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "cooldown-system",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3a74c918e40727318ec10e1a6573065516f7a89c63d97933654db881e52a07ae"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "3a74c918e40727318ec10e1a6573065516f7a89c63d97933654db881e52a07ae"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/DealDamageSystem.ts",
+      "size": 1505,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "80934bac4f7591b710a709a6c0fa615cc4fd68c0afbe04af7750a12b95633404"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "deal-damage-system",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "80934bac4f7591b710a709a6c0fa615cc4fd68c0afbe04af7750a12b95633404"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "80934bac4f7591b710a709a6c0fa615cc4fd68c0afbe04af7750a12b95633404"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/flight/AgathaFlightConfig.ts",
+      "size": 873,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "565521f078d6f70cb146e332781242d063e8ec99287f516ec5ed2fc89898b369"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "agatha-flight-config",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "565521f078d6f70cb146e332781242d063e8ec99287f516ec5ed2fc89898b369"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "565521f078d6f70cb146e332781242d063e8ec99287f516ec5ed2fc89898b369"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/flight/IronManFlightConfig.ts",
+      "size": 580,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "a85f4f8c2682cce2597cb4dc6d15c58d22fd7575a09a524a9de6f5b372a54189"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "ironman-flight-config",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a85f4f8c2682cce2597cb4dc6d15c58d22fd7575a09a524a9de6f5b372a54189"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a85f4f8c2682cce2597cb4dc6d15c58d22fd7575a09a524a9de6f5b372a54189"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/flight/VisionFlightConfig.ts",
+      "size": 589,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "79e5b655f6fbc9c3744fd52716ddcbb2b552bdd3766c1afc02057e3ae7137006"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "vision-flight-config",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "79e5b655f6fbc9c3744fd52716ddcbb2b552bdd3766c1afc02057e3ae7137006"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "79e5b655f6fbc9c3744fd52716ddcbb2b552bdd3766c1afc02057e3ae7137006"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/FlightSystem.ts",
+      "size": 3303,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "72812fb79fddf58bc7657306a577712192dcd01f8763aeebb209beaa9b79bdcb"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "flight-system",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "72812fb79fddf58bc7657306a577712192dcd01f8763aeebb209beaa9b79bdcb"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "72812fb79fddf58bc7657306a577712192dcd01f8763aeebb209beaa9b79bdcb"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/MovementSystem.ts",
+      "size": 7873,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "a6690020dcea70f74eeeb09dabab2f288124246799ce99b73781767b025b3f74"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "movement-system",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a6690020dcea70f74eeeb09dabab2f288124246799ce99b73781767b025b3f74"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "a6690020dcea70f74eeeb09dabab2f288124246799ce99b73781767b025b3f74"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/SoundSystem.ts",
+      "size": 317,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "690e79e0e5685f912a8445a127420d932967482b8f5c3450445dd0a16e027832"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "sound-system",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "690e79e0e5685f912a8445a127420d932967482b8f5c3450445dd0a16e027832"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "690e79e0e5685f912a8445a127420d932967482b8f5c3450445dd0a16e027832"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/systems/WorldCollision.ts",
+      "size": 11680,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "c8796400a2dc33cccdb80660eb0e9ea469433c41fef26cfa7241e2e54966a3a7"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "world-collision",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c8796400a2dc33cccdb80660eb0e9ea469433c41fef26cfa7241e2e54966a3a7"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "c8796400a2dc33cccdb80660eb0e9ea469433c41fef26cfa7241e2e54966a3a7"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/TargetDummy.ts",
+      "size": 12511,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "695b072e225ae6c1b8f6cd6c242bb9d49ff7bdff055e5d88a05c73d89d1a7d65"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "target-dummy",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "695b072e225ae6c1b8f6cd6c242bb9d49ff7bdff055e5d88a05c73d89d1a7d65"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "695b072e225ae6c1b8f6cd6c242bb9d49ff7bdff055e5d88a05c73d89d1a7d65"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/game/VisionAbilities.ts",
+      "size": 5553,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "bec2c0bf47fce6ccfa8b3a73f8c17f0b26841bb3786afaa50cc4f01f9ba0ef9a"
+      },
+      "source": "script",
+      "version": "original",
+      "scriptId": "vision-abilities",
+      "states": {
+        "original": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "bec2c0bf47fce6ccfa8b3a73f8c17f0b26841bb3786afaa50cc4f01f9ba0ef9a"
+          }
+        },
+        "draft": {
+          "present": false,
+          "hash": null
+        },
+        "saved": {
+          "present": false,
+          "hash": null
+        },
+        "validated": {
+          "present": false,
+          "hash": null
+        },
+        "applied": {
+          "present": false,
+          "hash": null
+        },
+        "running": {
+          "present": false,
+          "hash": null
+        },
+        "exported": {
+          "present": true,
+          "hash": {
+            "algorithm": "SHA-256",
+            "value": "bec2c0bf47fce6ccfa8b3a73f8c17f0b26841bb3786afaa50cc4f01f9ba0ef9a"
+          }
+        }
+      },
+      "pending": false,
+      "validation": "catalog-original",
+      "catalogChangedSinceCustomization": false
+    },
+    {
+      "path": "src/index.css",
+      "size": 493,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "9838565e724695a56d07c1a5aa343f72fada2ba0399c5599920abe4d2fabca61"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/main.tsx",
+      "size": 272,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "d9363bf8bf5dad62f1628a8fa4f6a3ba606645c3aced40344e1860565bd24a07"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "src/vite-env.d.ts",
+      "size": 759,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "e1835e0d6c45a5a3fc0d7e45048820f7274e124aef45ccaa70c757bc38760775"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "start.sh",
+      "size": 2172,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "8056a1a199d45beb477d82ed6650c6e33e9d1f077cd27d67bb6d5ede53c56901"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "startup.sh",
+      "size": 38,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "7269fdd881f2a8fff804aed9d18e4487c2978912720204045ead0a0c5472b25f"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "tsconfig.json",
+      "size": 577,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "26a11c3b6e749247de9c23f78748155bdb433cc50bba4155c6a1c71e3a161a51"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    },
+    {
+      "path": "vite.config.ts",
+      "size": 16002,
+      "hash": {
+        "algorithm": "SHA-256",
+        "value": "2836d6c685f4df1b925438b74d46b51b70542fa1f4646b5fa5f549791a3c097b"
+      },
+      "source": "project",
+      "version": "original",
+      "pending": false,
+      "validation": "not-applicable"
+    }
+  ]
+}
