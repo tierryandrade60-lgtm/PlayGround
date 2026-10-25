@@ -3,7 +3,7 @@
 <!-- omgithub:readme:start -->
 ## 🚀 Build, play, and remix with OMGithub
 
-**Remixed using [OMGithub.com](https://omgithub.com).**
+**Created using [OMGithub.com](https://omgithub.com).**
 
 [![OMGithub](https://img.shields.io/badge/OMGithub-Open%20project-orange?style=for-the-badge)](https://omgithub.com/tierryandrade60-lgtm/PlayGround)
 [![GitHub](https://img.shields.io/badge/GitHub-Source-181717?logo=github&style=for-the-badge)](https://github.com/tierryandrade60-lgtm/PlayGround)
@@ -15,5 +15,4 @@
 - 🐛 [Report an issue](https://github.com/tierryandrade60-lgtm/PlayGround/issues).
 - 👤 [Explore the creator's projects](https://omgithub.com/tierryandrade60-lgtm).
 - 🌍 [Create with OMGithub](https://omgithub.com).
-- 🧬 [Explore the remix source](https://github.com/tierryandrade60-lgtm/PlayGround/tree/0c974fea8293d9b711014055b85a4a9ec9b8d6d8).
 <!-- omgithub:readme:end -->
