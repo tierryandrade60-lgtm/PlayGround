@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f6b26b" />
+    <meta
+      name="description"
+      content="Oi is a tiny sky spirit with places to go. Charge, release and hop across a glowing archipelago in this one-touch 3D game."
+    />
+    <title>Oi — Sky Hop</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd9a0'/%3E%3Ccircle cx='32' cy='32' r='17' fill='%23fff6e6'/%3E%3Ccircle cx='26' cy='30' r='2.6' fill='%233b2b3f'/%3E%3Ccircle cx='38' cy='30' r='2.6' fill='%233b2b3f'/%3E%3Ccircle cx='32' cy='40' r='3' fill='%23ff9f8a'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene" aria-label="Oi, a 3D sky hopping game" role="img"></canvas>
+      <div id="vignette" aria-hidden="true"></div>
+
+      <div id="ui">
+        <div id="hud" class="hud" hidden>
+          <div class="hud-top">
+            <div class="score-card">
+              <span class="score-label">Score</span>
+              <span id="score" class="score-value">0</span>
+            </div>
+            <div class="hud-tools">
+              <div class="best-pill small">
+                <span class="best-label">Best</span>
+                <span id="bestHud">0</span>
+              </div>
+              <button id="soundHud" class="icon-btn" type="button" aria-label="Mute sound" aria-pressed="false">
+                <svg class="icon icon-on" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 9.5v5h3.2L12 18V6L7.2 9.5H4Z" fill="currentColor" />
+                  <path d="M15.2 8.4a5 5 0 0 1 0 7.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                  <path d="M17.8 6a8.4 8.4 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".65" />
+                </svg>
+                <svg class="icon icon-off" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 9.5v5h3.2L12 18V6L7.2 9.5H4Z" fill="currentColor" />
+                  <path d="m15.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div id="combo" class="combo" hidden>
+            <span id="comboValue">x2</span>
+            <span class="combo-label">flow</span>
+          </div>
+
+          <div id="floaters" class="floaters" aria-hidden="true"></div>
+
+          <div id="hint" class="hint">
+            <span class="hint-hold">Hold</span> to charge &nbsp;·&nbsp; <span class="hint-release">Release</span> to hop
+          </div>
+
+          <div id="charge" class="charge" aria-hidden="true">
+            <div class="charge-track">
+              <div id="chargeFill" class="charge-fill"></div>
+              <div class="charge-ticks"><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="charge-caption">
+              <span id="chargeWord">power</span>
+              <span id="chargePct">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <section id="menu" class="screen menu">
+          <div class="menu-top">
+            <div class="brand-wrap">
+              <h1 class="brand" aria-label="Oi">oi<span class="brand-dot">.</span></h1>
+              <p class="tagline">a tiny sky spirit with places to go</p>
+            </div>
+          </div>
+          <div class="menu-bottom">
+            <button id="play" class="btn primary" type="button">
+              <span>Play</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 18 12 8 18.5Z" fill="currentColor" /></svg>
+            </button>
+            <div class="menu-row">
+              <button id="how" class="btn ghost" type="button">How to play</button>
+              <div class="best-pill">
+                <span class="best-label">Best</span>
+                <span id="bestMenu">0</span>
+              </div>
+              <button id="soundMenu" class="icon-btn glass" type="button" aria-label="Mute sound" aria-pressed="false">
+                <svg class="icon icon-on" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 9.5v5h3.2L12 18V6L7.2 9.5H4Z" fill="currentColor" />
+                  <path d="M15.2 8.4a5 5 0 0 1 0 7.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                  <path d="M17.8 6a8.4 8.4 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".65" />
+                </svg>
+                <svg class="icon icon-off" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 9.5v5h3.2L12 18V6L7.2 9.5H4Z" fill="currentColor" />
+                  <path d="m15.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+            <p class="menu-note">one touch &nbsp;·&nbsp; endless skies</p>
+          </div>
+        </section>
+
+        <section id="gameover" class="screen overlay" hidden>
+          <div class="panel">
+            <p class="eyebrow">the sky keeps going</p>
+            <h2 class="panel-title">Nice hops!</h2>
+            <div class="result-grid">
+              <div class="result">
+                <span class="result-label">Score</span>
+                <span id="finalHops" class="result-value">0</span>
+              </div>
+              <div class="result">
+                <span class="result-label">Best</span>
+                <span id="finalBest" class="result-value">0</span>
+              </div>
+              <div class="result">
+                <span class="result-label">Longest flow</span>
+                <span id="finalCombo" class="result-value">0</span>
+              </div>
+            </div>
+            <p id="newBest" class="new-best" hidden>new best!</p>
+            <button id="again" class="btn primary" type="button">Play again</button>
+            <button id="toMenu" class="btn quiet" type="button">Back to title</button>
+          </div>
+        </section>
+
+        <section id="howto" class="screen overlay sheet" hidden>
+          <div class="panel">
+            <p class="eyebrow">how to play</p>
+            <h2 class="panel-title small">Be a good guest.</h2>
+            <ol class="how-list">
+              <li><span class="how-num">1</span><div><strong>Hold anywhere</strong> to charge Oi's hop. A dotted arc previews the landing.</div></li>
+              <li><span class="how-num">2</span><div><strong>Release</strong> when the marker sits on the next island.</div></li>
+              <li><span class="how-num">3</span><div>Land near the middle for a <strong>perfect</strong>. Catch fireflies for extra points.</div></li>
+            </ol>
+            <p class="how-note">Works with touch, mouse, or the space bar.</p>
+            <button id="closeHow" class="btn primary" type="button">Got it</button>
+          </div>
+        </section>
+
+        <div id="loading" class="loading">
+          <div class="loading-oi">
+            <span></span>
+          </div>
+          <p>waking up the sky</p>
+        </div>
+
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

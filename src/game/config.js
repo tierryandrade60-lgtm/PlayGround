@@ -1,0 +1,48 @@
+export const PALETTE = {
+  skyTop: '#1f3a78',
+  skyMid: '#68a5e6',
+  skyHorizon: '#ffcf94',
+  skyLow: '#ff9f74',
+  sun: '#fff0c4',
+  fog: '#ffc98f',
+  grass: ['#5fc98c', '#4fb97e', '#78dda3'],
+  grassEdge: '#3a9a6b',
+  rock: ['#a85a47', '#8f4c43', '#b46d55'],
+  rockDeep: '#5f3339',
+  foliage: ['#3d9e6f', '#4fb37f', '#69c994', '#31885f'],
+  trunk: '#8a4f3f',
+  blossom: ['#ffb3c7', '#ffd58a', '#c9a6ff'],
+  crystal: ['#ffd48a', '#a9e6ff', '#ffb6cf'],
+  oiBody: '#fff1d8',
+  oiGlow: '#ffd08a',
+  ink: '#3a2842',
+  blush: '#ff9f8a',
+  halo: '#ffe08a',
+  firefly: '#ffe9a6',
+  marker: '#ffdf9b',
+  perfect: '#ffe08a',
+  collect: '#b9f6cf',
+  fail: '#ff9f8a',
+}
+
+export const WORLD = {
+  gravity: 27,
+  startTop: 0,
+  startRadius: 3.1,
+  killDepth: 26,
+  fogNear: 50,
+  fogFar: 170,
+  cameraFar: 420,
+  trailCount: 64,
+}
+
+export const GAME = {
+  chargePeriod: 2.35,
+  rangeFactorMin: 0.32,
+  rangeFactorMax: 1.62,
+  landingTolerance: 1.02,
+  perfectRatio: 0.34,
+  goodRatio: 0.72,
+  firefliesPerGap: 3,
+  fireflyValue: 5,
+}
