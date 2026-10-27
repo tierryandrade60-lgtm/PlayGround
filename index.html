@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#05080d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>BLACKSITE // Zero Hour</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 fill=%22%2305080d%22/><path d=%22M7 24V8h4l10 16V8h4v16h-4L11 8v16z%22 fill=%22%23ff8f38%22/></svg>">
+<link rel="preload" href="assets/fonts/chakra-600.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="assets/fonts/rajdhani-600.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="game-canvas"></canvas>
+<div id="fx-flash"></div>
+<div id="fx-damage"></div>
+<div id="fx-lowhealth"></div>
+<div id="fx-vignette"></div>
+
+<div id="hud" class="hidden">
+  <div id="compass">
+    <div class="compass-strip"><canvas id="compass-canvas" width="640" height="44"></canvas></div>
+    <div id="heading">000</div>
+  </div>
+
+  <div id="wave-pill">
+    <span class="wave-label">WAVE</span>
+    <span id="wave-number">01</span>
+    <span class="wave-sep"></span>
+    <span id="wave-enemies">0 HOSTILES</span>
+  </div>
+
+  <div id="score-block">
+    <div class="score-caption">SCORE</div>
+    <div id="score">0</div>
+    <div id="kills-line"><span id="kills">0</span> KILLS</div>
+  </div>
+
+  <div id="minimap-wrap">
+    <canvas id="minimap" width="220" height="220"></canvas>
+    <div class="minimap-ring"></div>
+    <div id="minimap-label">SECTOR 7 // OUTPOST</div>
+  </div>
+
+  <div id="killfeed"></div>
+
+  <div id="crosshair">
+    <span class="ch-line ch-top"></span>
+    <span class="ch-line ch-bottom"></span>
+    <span class="ch-line ch-left"></span>
+    <span class="ch-line ch-right"></span>
+    <span class="ch-dot"></span>
+  </div>
+  <div id="hitmarker"><span></span><span></span><span></span><span></span></div>
+
+  <div id="damage-indicator">
+    <div class="dmg-arc" id="dmg-arc"></div>
+  </div>
+
+  <div id="vitals">
+    <div class="vital-head">
+      <span class="operator">SGT. REEVES</span>
+      <span class="status">COMBAT READY</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">HP</span>
+      <div class="bar"><div id="health-bar" class="bar-fill health"></div></div>
+      <span id="health-num" class="bar-num">100</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">ARM</span>
+      <div class="bar"><div id="armor-bar" class="bar-fill armor"></div></div>
+      <span id="armor-num" class="bar-num">100</span>
+    </div>
+  </div>
+
+  <div id="weapon-block">
+    <div id="weapon-name">MK-17 VECTOR</div>
+    <div id="ammo-line">
+      <span id="ammo">30</span>
+      <span class="ammo-divider">/</span>
+      <span id="reserve">210</span>
+    </div>
+    <div id="fire-mode"><span class="dot"></span> AUTO <span id="ammo-type">5.56 AP</span></div>
+    <div id="reload-track"><div id="reload-fill"></div></div>
+  </div>
+
+  <div id="objective-banner">
+    <div class="obj-kicker">OBJECTIVE</div>
+    <div class="obj-title">HOLD THE OUTPOST</div>
+    <div class="obj-sub">SURVIVE THE ASSAULT</div>
+  </div>
+
+  <div id="wave-banner" class="hidden">
+    <div class="banner-kicker" id="banner-kicker">HOSTILE WAVE</div>
+    <div class="banner-title" id="banner-title">WAVE 01</div>
+    <div class="banner-sub" id="banner-sub">INBOUND</div>
+  </div>
+
+  <div id="pickup-toast"></div>
+
+  <div id="controls-hint">
+    <span class="desktop-hint">WASD MOVE &nbsp;·&nbsp; MOUSE AIM &nbsp;·&nbsp; LMB FIRE &nbsp;·&nbsp; RMB ADS &nbsp;·&nbsp; R RELOAD &nbsp;·&nbsp; SPACE JUMP</span>
+    <span class="touch-hint">LEFT STICK MOVE &nbsp;·&nbsp; DRAG RIGHT TO AIM &nbsp;·&nbsp; HOLD FIRE</span>
+  </div>
+</div>
+
+<div id="mobile-controls" class="hidden">
+  <div id="stick-zone">
+    <div id="stick-base"><div id="stick-knob"></div></div>
+  </div>
+  <div id="look-zone"></div>
+  <div id="touch-buttons">
+    <button id="btn-fire" class="tbtn fire" aria-label="Fire"><span class="tbtn-inner"></span><span class="tbtn-label">FIRE</span></button>
+    <button id="btn-ads" class="tbtn small" aria-label="Aim down sights"><span class="tbtn-label">ADS</span></button>
+    <button id="btn-reload" class="tbtn small" aria-label="Reload"><span class="tbtn-label">RELOAD</span></button>
+    <button id="btn-jump" class="tbtn small" aria-label="Jump"><span class="tbtn-label">JUMP</span></button>
+    <button id="btn-sprint" class="tbtn small" aria-label="Sprint"><span class="tbtn-label">RUN</span></button>
+  </div>
+</div>
+
+<div id="menu" class="screen">
+  <div class="menu-grid"></div>
+  <div class="menu-scan"></div>
+  <div class="menu-content">
+    <div class="brand">
+      <div class="brand-mark"><span></span><span></span><span></span></div>
+      <div class="brand-text">
+        <div class="brand-kicker">TACTICAL OPERATIONS DIVISION</div>
+        <h1>BLACKSITE<span class="brand-accent">//</span><em>ZERO HOUR</em></h1>
+      </div>
+    </div>
+    <div class="menu-sub">SECTOR 7 · KARST OUTPOST · 0347 HRS · HOSTILE CONTACT IMMINENT</div>
+    <div class="menu-panel">
+      <div class="panel-line"><span>MODE</span><strong>ENDLESS ASSAULT</strong></div>
+      <div class="panel-line"><span>LOADOUT</span><strong>MK-17 VECTOR · AP ROUNDS</strong></div>
+      <div class="panel-line"><span>THREAT</span><strong class="threat">SEVERE</strong></div>
+      <div class="panel-line"><span>BEST</span><strong id="best-stat">0 PTS · WAVE 0</strong></div>
+    </div>
+    <div class="menu-actions">
+      <button id="deploy-btn" aria-label="Start" class="deploy-btn"><span class="deploy-glow"></span><span class="deploy-text">Start</span><span class="deploy-sub">DEPLOY TO SECTOR 7</span></button>
+      <div class="quality-row">
+        <span>QUALITY</span>
+        <div class="seg" id="quality-seg">
+          <button data-quality="high">HIGH</button>
+          <button data-quality="balanced" class="active">BALANCED</button>
+          <button data-quality="performance">FAST</button>
+        </div>
+      </div>
+      <div class="sens-row">
+        <span>SENSITIVITY</span>
+        <input id="sens" type="range" min="0.4" max="2.4" step="0.1" value="1.2">
+        <output id="sens-out">1.2</output>
+      </div>
+    </div>
+    <div class="menu-footer">
+      <div class="mf-item"><b>01</b> SURVIVE ESCALATING WAVES</div>
+      <div class="mf-item"><b>02</b> ELIMINATE SENTINEL UNITS</div>
+      <div class="mf-item"><b>03</b> HOLD THE LINE</div>
+    </div>
+  </div>
+  <div class="menu-side">
+    <div class="side-label">OPERATOR FEED</div>
+    <div class="side-text" id="side-text">ALL UNITS, BE ADVISED. SENTINEL SWARM MOVING ON THE OUTPOST FROM ALL VECTORS. WEAPONS FREE.</div>
+    <div class="side-ticker"><span>UPLINK STABLE</span><span class="blink">●</span><span>LAT 41.22 / LON 69.17</span></div>
+  </div>
+</div>
+
+<div id="pause" class="screen hidden">
+  <div class="pause-card">
+    <div class="pause-kicker">OPERATION SUSPENDED</div>
+    <h2>PAUSED</h2>
+    <div class="pause-stats">
+      <div><span>WAVE</span><b id="pause-wave">1</b></div>
+      <div><span>SCORE</span><b id="pause-score">0</b></div>
+      <div><span>KILLS</span><b id="pause-kills">0</b></div>
+    </div>
+    <button id="resume-btn" aria-label="Resume" class="cta">Resume</button>
+    <button id="quit-btn" class="ghost">ABORT MISSION</button>
+  </div>
+</div>
+
+<div id="gameover" class="screen hidden">
+  <div class="dead-card">
+    <div class="dead-kicker">SIGNAL LOST</div>
+    <h2>OPERATOR <span>DOWN</span></h2>
+    <div class="dead-stats">
+      <div><span>WAVES SURVIVED</span><b id="over-wave">0</b></div>
+      <div><span>FINAL SCORE</span><b id="over-score">0</b></div>
+      <div><span>ELIMINATIONS</span><b id="over-kills">0</b></div>
+      <div><span>ACCURACY</span><b id="over-acc">0%</b></div>
+    </div>
+    <button id="restart-btn" aria-label="Restart" class="cta">Redeploy</button>
+    <button id="menu-btn" class="ghost">RETURN TO MENU</button>
+  </div>
+</div>
+
+<div id="loading">
+  <div class="load-inner">
+    <div class="load-mark"><span></span><span></span><span></span><span></span></div>
+    <div class="load-title">BLACKSITE</div>
+    <div class="load-bar"><div id="load-fill"></div></div>
+    <div class="load-status" id="load-status">INITIALIZING RENDER PIPELINE</div>
+  </div>
+</div>
+
+<div id="rotate-hint">
+  <div class="rotate-icon"></div>
+  <div>ROTATE DEVICE TO LANDSCAPE</div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/examples/jsm/" } }
+</script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
